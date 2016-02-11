@@ -21,7 +21,7 @@ type Signal interface {
 /* Interval is considered to be a time duration from -infinity to +infinity.
  Intervals here can be generated from time.Duration, signals.Interval(time.Duration).
  encoded as a time.Duration, which is encoded as an int64, giving actually a range of 290 years at nanosecond resolution.
- Levels at -ve intervals are considered imaginary, and not used, unless a Delay makes them +ve. (see modifiers).*/
+ Levels at -ve intervals are considered imaginary, and not used, unless a Delay makes them +ve.*/
 type Interval time.Duration
 
 func (i Interval) String() string {
