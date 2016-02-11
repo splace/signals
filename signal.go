@@ -38,7 +38,9 @@ const LevelBits = 64
 const HalfLevelBits = LevelBits / 2
 
 //const HalfLevel=2<<(HalfLevelBits-1)
-const MaxLevelfloat64 float64 = float64(MaxLevel - 512) // float64 has less resolution than int64 at maxlevel, use this to scale some signals down
+
+// float64 has less resolution than int64 at maxlevel, use this to scale some signals down
+const MaxLevelfloat64 float64 = float64(MaxLevel - 512) 
 
 // formatted representation of a level as percentage.
 func (l Level) String() string {
