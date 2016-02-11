@@ -1,0 +1,1 @@
+[{Period:     0.00s} {Setting:    50.00%}]
