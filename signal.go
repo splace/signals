@@ -39,7 +39,7 @@ const HalfLevelBits = LevelBits / 2
 
 //const HalfLevel=2<<(HalfLevelBits-1)
 
-// float64 has less resolution than int64 at maxlevel, use this to scale some signals down
+// float64 has less resolution than int64 at maxlevel, so need this to scale float64 sourced signals to never overflow int64
 const MaxLevelfloat64 float64 = float64(MaxLevel - 512) 
 
 // formatted representation of a level as percentage.
