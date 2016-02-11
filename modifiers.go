@@ -57,10 +57,10 @@ type Reflected struct {
 }
 
 func (s Reflected) Level(t Interval) Level {
-	if r:=s.Signal.Level(t);r<0{
-		return -MaxLevel-r
-	}else{
-		return MaxLevel-r
+	if r := s.Signal.Level(t); r < 0 {
+		return -MaxLevel - r
+	} else {
+		return MaxLevel - r
 	}
 }
 

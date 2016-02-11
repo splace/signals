@@ -86,7 +86,7 @@ func TestMarshal(t *testing.T) {
 	}
 	defer file.Close()
 	var s Product
-	s = append(s, Sine{UnitTime/1000}, Constant{MaxLevel / 2})
+	s = append(s, Sine{UnitTime / 1000}, Constant{MaxLevel / 2})
 	/*	s1,err := json.Marshal(s)
 		 	if err != nil {
 				panic(err)
@@ -124,6 +124,7 @@ func TestUnmarshal(t *testing.T) {
 	fmt.Fscanf(file, "%#v", &s1)
 	fmt.Printf("%#v\n", s1)
 }
+
 /*  Hal3 Wed Feb 10 21:17:32 GMT 2016 go version go1.5.1 linux/amd64
 === RUN   TestSquare
    100.00%   100.00%   100.00%   100.00%   100.00%  -100.00%  -100.00%  -100.00%  -100.00%  -100.00%   100.00%   100.00%   100.00%   100.00%   100.00%  -100.00%  -100.00%  -100.00%  -100.00%  -100.00%

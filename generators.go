@@ -5,13 +5,12 @@ import (
 )
 
 type Constant struct {
-	Setting Level 
+	Setting Level
 }
 
 func (s Constant) Level(t Interval) Level {
 	return s.Setting
 }
-
 
 type Sine struct {
 	Period Interval

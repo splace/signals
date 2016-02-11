@@ -1,14 +1,14 @@
 package signals
 
 type ADSREnvelope struct {
-	attackEnd         Interval
-	attackSlope       Level
-	decaySlope        Level
-	sustainStart      Interval
-	sustain Level
-	sustainEnd        Interval
-	releaseSlope      Level
-	end               Interval
+	attackEnd    Interval
+	attackSlope  Level
+	decaySlope   Level
+	sustainStart Interval
+	sustain      Level
+	sustainEnd   Interval
+	releaseSlope Level
+	end          Interval
 }
 
 //  Attack Decay Sustain Release (ADSR) envelope.  see https://en.wikipedia.org/wiki/Synthesizer#Attack_Decay_Sustain_Release_.28ADSR.29_envelope
@@ -32,3 +32,4 @@ func (s ADSREnvelope) Level(t Interval) Level {
 		return 0
 	}
 }
+

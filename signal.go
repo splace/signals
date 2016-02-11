@@ -1,9 +1,9 @@
 // Package signals generates and manipulates signals.
-// signals here are as:- "https://en.wikipedia.org/wiki/Signal_processing" 
+// signals here are as:- "https://en.wikipedia.org/wiki/Signal_processing"
 // where they "convey information about the behavior or attributes of some phenomenon"
 // here, more specifically, "any quantity exhibiting variation in time or variation in space"
 // currently this package supports only 1-Dimensionsal variation.
-// and for simplicity terminolology used represents analogy variation in time. 
+// and for simplicity terminolology used represents analogy variation in time.
 // this package is intended to be general, and so a base package for import, and used then with specific real-world quantities.
 package signals
 
@@ -19,9 +19,9 @@ type Signal interface {
 }
 
 /* Interval is considered to be a time duration from -infinity to +infinity.
- Intervals here can be generated from time.Duration, signals.Interval(time.Duration).
- encoded as a time.Duration, which is encoded as an int64, giving actually a range of 290 years at nanosecond resolution.
- Levels at -ve intervals are considered imaginary, and not used, unless a Delay makes them +ve.*/
+Intervals here can be generated from time.Duration, signals.Interval(time.Duration).
+encoded as a time.Duration, which is encoded as an int64, giving actually a range of 290 years at nanosecond resolution.
+Levels at -ve intervals are considered imaginary, and not used, unless a Delay makes them +ve.*/
 type Interval time.Duration
 
 func (i Interval) String() string {
@@ -36,10 +36,11 @@ type Level int64
 const MaxLevel Level = math.MaxInt64
 const LevelBits = 64
 const HalfLevelBits = LevelBits / 2
-//const HalfLevel=2<<(HalfLevelBits-1)
-const MaxLevelfloat64 float64= float64(MaxLevel-512)  // float64 has less resolution than int64 at maxlevel, use this to scale some signals down
 
-// formatted representation of a level as percentage. 
+//const HalfLevel=2<<(HalfLevelBits-1)
+const MaxLevelfloat64 float64 = float64(MaxLevel - 512) // float64 has less resolution than int64 at maxlevel, use this to scale some signals down
+
+// formatted representation of a level as percentage.
 func (l Level) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(MaxLevel))
 }
@@ -68,6 +69,4 @@ func (c Product) Level(t Interval) (total Level) {
 	}
 	return
 }
-
-
 

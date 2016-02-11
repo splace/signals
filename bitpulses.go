@@ -4,7 +4,7 @@ import (
 	"math/big"
 )
 
-// pulse train specified by the bits of a big int 
+// pulse train specified by the bits of a big int
 type PulsePattern struct {
 	BitPattern big.Int
 	PulseWidth Interval
@@ -22,3 +22,4 @@ func (s PulsePattern) Level(t Interval) Level {
 		}
 	}
 }
+
