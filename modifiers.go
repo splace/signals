@@ -18,6 +18,8 @@ func (s Spedup) Level(t Interval) Level {
 	return s.Signal.Level(Interval(float32(t) * s.Factor))
 }
 
+// TODO spedup tone should have period changed
+
 type SpedupProgressive struct {
 	Signal
 	Rate Interval
@@ -36,7 +38,7 @@ func (s Looping) Level(t Interval) Level {
 	return s.Signal.Level(t % s.Length)
 }
 
-func (s Looping) Period(t Interval) Interval {
+func (s Looping) Period() Interval {
 	return s.Length
 }
 
@@ -66,5 +68,17 @@ func (s Reflected) Level(t Interval) Level {
 	} else {
 		return MaxLevel - r
 	}
+}
+
+
+
+type Modulated struct {
+	Signal
+	Modulation Signal
+	Factor Interval
+}
+
+func (s Modulated) Level(t Interval) Level {
+	return s.Signal.Level(t+MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64,s.Factor))
 }
 
