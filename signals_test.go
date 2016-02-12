@@ -79,15 +79,16 @@ func TestBitPulses(t *testing.T) {
 	fmt.Println()
 }
 
-func TestMarshal(t *testing.T) {
+func TestGob(t *testing.T) {
 
-	file, err := os.Create("main.js")
+	file, err := os.Create("signal.gob")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
-	var s Multi
-	s = append(s, Sine{UnitTime / 1000}, Constant{MaxLevel / 2})
+	s:= Sine{UnitTime / 1000}
+	//var s Multi
+	//s = append(s, Sine{UnitTime / 1000}, Constant{MaxLevel / 2})
 
 	/*	s1,err := json.Marshal(s)
 			 	if err != nil {
@@ -111,8 +112,8 @@ func TestMarshal(t *testing.T) {
 	}
 
 	gob.Register(Sine{})
-	gob.Register(Constant{})
-	gob.Register(Multi{})
+	//gob.Register(Constant{})
+	//gob.Register(Multi{})
 
 	enc := gob.NewEncoder(file)
 	interfaceEncode(enc, s)
@@ -120,7 +121,7 @@ func TestMarshal(t *testing.T) {
 }
 
 func TestUnmarshal(t *testing.T) {
-	file, err := os.Open("main.js")
+	file, err := os.Open("signal.gob")
 	if err != nil {
 		panic(err)
 	}
@@ -136,8 +137,7 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 	dec := gob.NewDecoder(file)
-	result := interfaceDecode(dec)
-	fmt.Println(result)
+	s1 := interfaceDecode(dec)
 
 	/*
 		s,err:=ioutil.ReadAll(file)
@@ -155,9 +155,10 @@ func TestUnmarshal(t *testing.T) {
 				panic(err)
 			}
 	*/
-	var s1 Multi
 
 	fmt.Fscanf(file, "%#v", &s1)
 	fmt.Printf("%#v\n", s1)
 
 }
+
+
