@@ -36,6 +36,10 @@ func (s Looping) Level(t Interval) Level {
 	return s.Signal.Level(t % s.Length)
 }
 
+func (s Looping) Period(t Interval) Interval {
+	return s.Length
+}
+
 type Inverted struct {
 	Signal
 }

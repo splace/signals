@@ -72,3 +72,13 @@ func (c Product) Level(t Interval) (total Level) {
 	return
 }
 
+func (c Product) Period() (period Interval) {
+	if len(c)>0 {
+		if tone, ok := c[0].(Tone); ok {
+			return tone.Period()
+		}
+	}
+	return
+}
+
+

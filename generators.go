@@ -13,11 +13,15 @@ func (s Constant) Level(t Interval) Level {
 }
 
 type Sine struct {
-	Period Interval
+	Cycle Interval
 }
 
 func (s Sine) Level(t Interval) Level {
-	return Level(math.Sin(float64(t)/float64(s.Period)*2*math.Pi) * MaxLevelfloat64)
+	return Level(math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) * MaxLevelfloat64)
+}
+
+func (s Sine) Period() Interval {
+	return s.Cycle
 }
 
 type Pulse struct {
@@ -33,15 +37,19 @@ func (s Pulse) Level(t Interval) Level {
 }
 
 type Square struct {
-	Period Interval
+	Cycle Interval
 }
 
 func (s Square) Level(t Interval) Level {
-	if t%s.Period >= s.Period/2 {
+	if t%s.Cycle >= s.Cycle/2 {
 		return -MaxLevel
 	} else {
 		return MaxLevel
 	}
+}
+
+func (s Square) Period() Interval {
+	return s.Cycle
 }
 
 type RampUp struct {
