@@ -97,4 +97,3 @@ type Sigmoid struct {
 func (s Sigmoid) Level(t Interval) Level {
 	return Level(float64(MaxLevel) / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }
-

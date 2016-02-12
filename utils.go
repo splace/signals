@@ -30,4 +30,3 @@ func MultiplyInterval(m interface{}, d Interval) Interval {
 		return d
 	}
 }
-

@@ -46,7 +46,7 @@ const HalfLevelBits = LevelBits / 2
 //const HalfLevel=2<<(HalfLevelBits-1)
 
 // float64 has less resolution than int64 at maxlevel, so need this to scale float64 sourced signals to never overflow int64
-const MaxLevelfloat64 float64 = float64(MaxLevel - 512) 
+const MaxLevelfloat64 float64 = float64(MaxLevel - 512)
 
 // formatted representation of a level as percentage.
 func (l Level) String() string {
@@ -79,12 +79,10 @@ func (c Product) Level(t Interval) (total Level) {
 }
 
 func (c Product) Period() (period Interval) {
-	if len(c)>0 {
+	if len(c) > 0 {
 		if tone, ok := c[0].(Tone); ok {
 			return tone.Period()
 		}
 	}
 	return
 }
-
-

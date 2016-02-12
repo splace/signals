@@ -1,7 +1,7 @@
 package signals
 
 // Tones are signals that repeat periodically
-type Tone interface{
+type Tone interface {
 	Signal
 	Period() Interval
 }
@@ -10,5 +10,3 @@ type Tone interface{
 func NewTone(period Interval, Volume uint8) Tone {
 	return Product{Sine{period}, Constant{MaxLevel / 100 * Level(Volume)}}
 }
-
-

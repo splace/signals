@@ -124,5 +124,3 @@ func TestUnmarshal(t *testing.T) {
 	fmt.Fscanf(file, "%#v", &s1)
 	fmt.Printf("%#v\n", s1)
 }
-
-

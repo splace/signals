@@ -29,16 +29,16 @@ func (s SpedupProgressive) Level(t Interval) Level {
 	return s.Signal.Level(t + t*t/s.Rate)
 }
 
-type Looping struct {
+type Looped struct {
 	Signal
 	Length Interval
 }
 
-func (s Looping) Level(t Interval) Level {
+func (s Looped) Level(t Interval) Level {
 	return s.Signal.Level(t % s.Length)
 }
 
-func (s Looping) Period() Interval {
+func (s Looped) Period() Interval {
 	return s.Length
 }
 
@@ -70,15 +70,12 @@ func (s Reflected) Level(t Interval) Level {
 	}
 }
 
-
-
 type Modulated struct {
 	Signal
 	Modulation Signal
-	Factor Interval
+	Factor     Interval
 }
 
 func (s Modulated) Level(t Interval) Level {
-	return s.Signal.Level(t+MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64,s.Factor))
+	return s.Signal.Level(t + MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64, s.Factor))
 }
-

@@ -22,4 +22,3 @@ func (s PulsePattern) Level(t Interval) Level {
 		}
 	}
 }
-
