@@ -1,6 +1,7 @@
 package signals
 
 import (
+	"encoding/gob"
 	"fmt"
 	"math/big"
 	"os"
@@ -85,16 +86,37 @@ func TestMarshal(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	var s Product
+	var s Multi
 	s = append(s, Sine{UnitTime / 1000}, Constant{MaxLevel / 2})
-	/*	s1,err := json.Marshal(s)
-		 	if err != nil {
-				panic(err)
-			}
 
-			fmt.Fprint(file,string(s1))
+	/*	s1,err := json.Marshal(s)
+			 	if err != nil {
+					panic(err)
+				}
+
+				fmt.Fprint(file,string(s1))
+		fmt.Fprintf(file, "%+v", s)
+		fmt.Fprintf(file, "%#v\n", s)
 	*/
-	fmt.Fprintf(file, "%+v", s)
+	fmt.Fprintf(file, "%v\n", s)
+	fmt.Fprintf(file, "%s\n", s)
+	fmt.Fprintf(file, "%#v\n", s)
+	fmt.Fprintf(file, "%+v\n", s)
+
+	interfaceEncode := func(enc *gob.Encoder, s Signal) {
+		err := enc.Encode(&s)
+		if err != nil {
+			t.Fatal("encode error:", err)
+		}
+	}
+
+	gob.Register(Sine{})
+	gob.Register(Constant{})
+	gob.Register(Multi{})
+
+	enc := gob.NewEncoder(file)
+	interfaceEncode(enc, s)
+
 }
 
 func TestUnmarshal(t *testing.T) {
@@ -103,6 +125,20 @@ func TestUnmarshal(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
+
+	interfaceDecode := func(dec *gob.Decoder) Signal {
+		var s Signal
+		err := dec.Decode(&s)
+		if err != nil {
+			t.Fatal("decode error:", err)
+		}
+		return s
+	}
+
+	dec := gob.NewDecoder(file)
+	result := interfaceDecode(dec)
+	fmt.Println(result)
+
 	/*
 		s,err:=ioutil.ReadAll(file)
 		if err != nil {
@@ -119,8 +155,9 @@ func TestUnmarshal(t *testing.T) {
 				panic(err)
 			}
 	*/
-	var s1 Product
+	var s1 Multi
 
 	fmt.Fscanf(file, "%#v", &s1)
 	fmt.Printf("%#v\n", s1)
+
 }
