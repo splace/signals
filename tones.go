@@ -6,7 +6,7 @@ type Tone interface{
 	Period() Interval
 }
 
-// Tone whose source is a scaled sine
+// make a Tone whose source is a scaled sine
 func NewTone(period Interval, Volume uint8) Tone {
 	return Product{Sine{period}, Constant{MaxLevel / 100 * Level(Volume)}}
 }
