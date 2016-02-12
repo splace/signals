@@ -1,5 +1,5 @@
 /*
-	Package signals generates and manipulates signals.
+Package signals generates and manipulates signals.
 	signals here are as:- "https://en.wikipedia.org/wiki/Signal_processing"
 	where they "convey information about the behaviour or attributes of some phenomenon"
 	here, more specifically, "any quantity exhibiting variation in time or variation in space"
