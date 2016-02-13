@@ -2,7 +2,7 @@
 
 overview:
 
-	https://github.com/splace/signals/blob/master/doc.go	
+https://github.com/splace/signals/blob/master/doc.go	
 
 installation:
 
