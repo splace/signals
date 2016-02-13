@@ -1,11 +1,14 @@
 package signals
 
-// Tones are signals that repeat periodically
+// periodicals are signals that repeat 
 type Periodical interface {
 	Signal
 	Period() Interval
 }
 
+func NewTone(period Interval, volume uint8) Multi {
+	return Multi{Sine{period}, NewConstant(volume)}
+}
 /*
 type Tone struct{
 	Signal
@@ -16,7 +19,5 @@ func (s Tone) Period() Interval{
 	return s.Cycle
 }
 */
-// make a Tone whose source is a stretched sine
-func NewTone(period Interval, volume uint8) Multi {
-	return Multi{Sine{period}, NewConstant(volume)}
-}
+// make a periodical whose source is a sine
+

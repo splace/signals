@@ -1,4 +1,3 @@
-// Package signals generates and manipulates abstract procedural signals.
 package signals
 
 import (
