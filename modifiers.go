@@ -113,7 +113,4 @@ func (s TriggerRising) Level(t Interval) Level {
 	return s.Signal.Level(t + s.Delay)
 }
 
-/*  hal3 Sat 13 Feb 06:04:51 GMT 2016 go version go1.5.1 linux/386
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Sat 13 Feb 06:04:51 GMT 2016 */
 
