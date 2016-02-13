@@ -1,16 +1,4 @@
-/*
-Package signals generates and manipulates signals.
-
-signals here are as:- "https://en.wikipedia.org/wiki/Signal_processing",
-where they "convey information about the behaviour or attributes of some phenomenon",
-more specifically here:- "any quantity exhibiting variation in time or variation in space".
-
-currently this package supports only 1-Dimensionsal variation.
-
-for simplicity terminolology used represents analogue variation in time.
-
-intended to be general, a base package for import, and used then with specific real-world quantities.
-*/
+// Package signals generates and manipulates abstract procedural signals.
 package signals
 
 import (
