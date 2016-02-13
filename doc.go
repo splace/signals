@@ -1,4 +1,3 @@
-package signals
 /*
 Package signals generates and manipulates signals:- https://en.wikipedia.org/wiki/Signal_processing.
 
@@ -20,6 +19,8 @@ Main Types
 Level :- a value from -MaxLevel to +MaxLevel
 Interval :- a value with UnitTime somewhere near the center of its range.
 
-*/
 
+
+*/
+package signals
 
