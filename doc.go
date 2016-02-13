@@ -12,12 +12,14 @@ this package is intended to be general, and so a base package for import, and th
 Fundamental Types
 
 Level :- can have a value from -MaxLevel to +MaxLevel
+
 Interval :- 'usually' can be used as if infinite (+ve and -ve), with UnitTime somewhere near the center of its precision range.
 
 Interfaces
 
 Signal :- has method Level() which returns a Level value from an Interval value parameter.
-Tone :- a Signal with an additional method  Period(), that returns the signals repeat period Interval.
+
+Tone :- a Signal with an additional method  Period(), that returns the signals assumed repeat period Interval.
 	
 */
 package signals
