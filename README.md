@@ -12,6 +12,15 @@ currently this package supports only 1-Dimensionsal variation.
 and for simplicity terminolology used represents analogue variation in time.
 
 this package is intended to be general, and so a base package for import, and used then with specific real-world quantities.
+
+example: 
+
+    import "os"
+    import "github.com/splace/signals"
+  
+    file,err := os.Open(<<path>>)
+    if err==nil {
+  	}
 	
 installation:
 
