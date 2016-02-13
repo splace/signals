@@ -1,3 +1,4 @@
+package signals
 /*
 Package signals generates and manipulates signals:- https://en.wikipedia.org/wiki/Signal_processing.
 
@@ -11,15 +12,14 @@ this package is intended to be general, and so a base package for import, and us
 
 Interfaces
 
-	Signal :- method Level() returns a Level value from an Interval value parameter.
-	Tone :- a Signal with a method  Period() that returns its repeat period Interval.
+Signal :- method Level() returns a Level value from an Interval value parameter.
+Tone :- a Signal with an additional method  Period(), that returns the signals repeat period Interval.
 	
-Types
+Main Types
 
-	Level :- a value from -MaxLevel to +MaxLevel
-	Interval :- a value with UnitTime somewhere near the center of its range. 
+Level :- a value from -MaxLevel to +MaxLevel
+Interval :- a value with UnitTime somewhere near the center of its range.
+
 */
-package signals
-/*
-doc test
-*/
+
+
