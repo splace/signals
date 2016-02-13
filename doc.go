@@ -19,7 +19,7 @@ Interfaces
 
 Signal :- has method Level() which returns a Level value from an Interval value parameter.
 
-Tone :- a Signal with an additional method  Period(), that returns the signals assumed repeat period Interval.
+Periodical :- a Signal with an additional method  Period(), that returns the signals assumed repeat period Interval.
 	
 */
 package signals

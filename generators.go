@@ -12,6 +12,10 @@ func (s Constant) Level(t Interval) Level {
 	return s.Setting
 }
 
+func NewConstant(volume uint8) Constant{
+	return Constant{MaxLevel / 100 * Level(volume)}
+}
+
 type Sine struct {
 	Cycle Interval
 }
