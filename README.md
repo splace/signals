@@ -10,17 +10,17 @@ Example:
 ```go
 package main
 import "github.com/splace/signals"
-import ("fmt","os")
+import ("fmt";"os")
 
 func main() {
-	m := signals.NewTone(UnitTime/100, 50)
+	m := signals.NewTone(signals.UnitTime/100, 50)
 	var file *os.File
 	var err error
 	if file, err = os.Create(fmt.Sprintf("Sine%+v.wav", m)); err != nil {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, m, 1*UnitTime, 8000, 1)
+	signals.Encode(file, m, 1*signals.UnitTime, 8000, 1)
 }
 ```
 Output: 1 sec, 100hz, 50% volume,sine wave, @8k samples/sec, 8bit unsigned PCM (u8), WAV file 
