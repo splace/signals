@@ -9,6 +9,8 @@ this package supports only 1-Dimensionsal variation, and for simplicity the term
 
 this package is intended to be general, and so a base package for import, and then used with specific real-world quantities.
 
+signals can be encode/decoded as go code binary (gob), and encoded as PCM wave files.
+
 Fundamental Types
 
 Level :- can have a value from -MaxLevel to +MaxLevel
