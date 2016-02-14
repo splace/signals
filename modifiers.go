@@ -3,10 +3,10 @@ package signals
 // a Signal that delays the time of another signal
 type Delayed struct {
 	Signal
-	Delay Interval
+	Delay interval
 }
 
-func (s Delayed) Level(t Interval) Level {
+func (s Delayed) Level(t interval) level {
 	return s.Signal.Level(t - s.Delay)
 }
 
@@ -16,32 +16,32 @@ type Spedup struct {
 	Factor float32
 }
 
-func (s Spedup) Level(t Interval) Level {
-	return s.Signal.Level(Interval(float32(t) * s.Factor))
+func (s Spedup) Level(t interval) level {
+	return s.Signal.Level(interval(float32(t) * s.Factor))
 }
 
 // TODO spedup tone should have period changed
 
 type SpedupProgressive struct {
 	Signal
-	Rate Interval
+	Rate interval
 }
 
-func (s SpedupProgressive) Level(t Interval) Level {
+func (s SpedupProgressive) Level(t interval) level {
 	return s.Signal.Level(t + t*t/s.Rate)
 }
 
 // a Signal that repeats another signal
 type Looped struct {
 	Signal
-	Length Interval
+	Length interval
 }
 
-func (s Looped) Level(t Interval) Level {
+func (s Looped) Level(t interval) level {
 	return s.Signal.Level(t % s.Length)
 }
 
-func (s Looped) Period() Interval {
+func (s Looped) Period() interval {
 	return s.Length
 }
 
@@ -50,7 +50,7 @@ type Inverted struct {
 	Signal
 }
 
-func (s Inverted) Level(t Interval) Level {
+func (s Inverted) Level(t interval) level {
 	return -s.Signal.Level(t)
 }
 
@@ -59,7 +59,7 @@ type Reversed struct {
 	Signal
 }
 
-func (s Reversed) Level(t Interval) Level {
+func (s Reversed) level(t interval) level {
 	return s.Signal.Level(-t)
 }
 
@@ -68,7 +68,7 @@ type Reflected struct {
 	Signal
 }
 
-func (s Reflected) Level(t Interval) Level {
+func (s Reflected) Level(t interval) level {
 	if r := s.Signal.Level(t); r < 0 {
 		return -MaxLevel - r
 	} else {
@@ -80,37 +80,35 @@ func (s Reflected) Level(t Interval) Level {
 type Modulated struct {
 	Signal
 	Modulation Signal
-	Factor     Interval
+	Factor     interval
 }
 
-func (s Modulated) Level(t Interval) Level {
+func (s Modulated) Level(t interval) level {
 	return s.Signal.Level(t + MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64, s.Factor))
 }
 
 // brings forward in time a signal to the point when it passes a trigger level at zero time.
 type TriggerRising struct {
 	Signal
-	Trigger Level
-	Resolution Interval
-	MaxDelay Interval
-	Delay Interval
-	searched Signal
-	locatedTrigger Level	
+	Trigger        level
+	Resolution     interval
+	MaxDelay       interval
+	Delay          interval
+	searched       Signal
+	locatedTrigger level
 }
 
-func (s TriggerRising) Level(t Interval) Level {
-	if s.Trigger!=s.locatedTrigger || s.searched!=s.Signal {
-		s.searched=s.Signal
-		s.locatedTrigger=s.Trigger	
-		s.Delay=0
-		for t:=Interval(0);t<s.MaxDelay;t+=s.Resolution{
-			if s.Signal.Level(t)>s.Trigger {
-				s.Delay=t
+func (s TriggerRising) Level(t interval) level {
+	if s.Trigger != s.locatedTrigger || s.searched != s.Signal {
+		s.searched = s.Signal
+		s.locatedTrigger = s.Trigger
+		s.Delay = 0
+		for t := interval(0); t < s.MaxDelay; t += s.Resolution {
+			if s.Signal.Level(t) > s.Trigger {
+				s.Delay = t
 				break
-			} 
+			}
 		}
 	}
 	return s.Signal.Level(t + s.Delay)
 }
-
-

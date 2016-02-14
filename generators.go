@@ -5,34 +5,34 @@ import (
 )
 
 type Constant struct {
-	Setting Level
+	Constant level "level"
 }
 
-func (s Constant) Level(t Interval) Level {
-	return s.Setting
+func (s Constant) Level(t interval) level {
+	return s.Constant
 }
 
-func NewConstant(volume uint8) Constant{
-	return Constant{MaxLevel / 100 * Level(volume)}
+func NewConstant(volume uint8) Constant {
+	return Constant{MaxLevel / 100 * level(volume)}
 }
 
 type Sine struct {
-	Cycle Interval
+	Cycle interval
 }
 
-func (s Sine) Level(t Interval) Level {
-	return Level(math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) * MaxLevelfloat64)
+func (s Sine) Level(t interval) level {
+	return level(math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) * MaxLevelfloat64)
 }
 
-func (s Sine) Period() Interval {
+func (s Sine) Period() interval {
 	return s.Cycle
 }
 
 type Pulse struct {
-	Width Interval
+	Width interval
 }
 
-func (s Pulse) Level(t Interval) Level {
+func (s Pulse) Level(t interval) level {
 	if t > s.Width {
 		return 0
 	} else {
@@ -41,10 +41,10 @@ func (s Pulse) Level(t Interval) Level {
 }
 
 type Square struct {
-	Cycle Interval
+	Cycle interval
 }
 
-func (s Square) Level(t Interval) Level {
+func (s Square) Level(t interval) level {
 	if t%s.Cycle >= s.Cycle/2 {
 		return -MaxLevel
 	} else {
@@ -52,42 +52,42 @@ func (s Square) Level(t Interval) Level {
 	}
 }
 
-func (s Square) Period() Interval {
+func (s Square) Period() interval {
 	return s.Cycle
 }
 
 type RampUp struct {
-	Period Interval
+	Period interval
 }
 
-func (s RampUp) Level(t Interval) Level {
+func (s RampUp) Level(t interval) level {
 	if t < 0 {
 		return 0
 	} else if t > s.Period {
 		return MaxLevel
 	} else {
-		return Level(Interval(MaxLevel) / s.Period * t)
+		return level(interval(MaxLevel) / s.Period * t)
 	}
 }
 
 type RampDown struct {
-	Period Interval
+	Period interval
 }
 
-func (s RampDown) Level(t Interval) Level {
+func (s RampDown) Level(t interval) level {
 	if t < 0 {
 		return MaxLevel
 	} else if t > s.Period {
 		return 0
 	} else {
-		return Level(Interval(MaxLevel) / s.Period * (s.Period - t))
+		return level(interval(MaxLevel) / s.Period * (s.Period - t))
 	}
 }
 
 type Heavyside struct {
 }
 
-func (s Heavyside) Level(t Interval) Level {
+func (s Heavyside) Level(t interval) level {
 	if t < 0 {
 		return 0
 	}
@@ -95,9 +95,9 @@ func (s Heavyside) Level(t Interval) Level {
 }
 
 type Sigmoid struct {
-	Steepness Interval
+	Steepness interval
 }
 
-func (s Sigmoid) Level(t Interval) Level {
-	return Level(float64(MaxLevel) / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
+func (s Sigmoid) Level(t interval) level {
+	return level(float64(MaxLevel) / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }

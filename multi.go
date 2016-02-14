@@ -9,10 +9,10 @@ import (
 // multiplication scales so that, MaxLevel*MaxLevel=MaxLevel (so MaxLevel is unity).
 // like logic AND; all its signals (at a particular momemt) need to be MaxLevel to produce a Multi of MaxLevel.
 // where as, ANY signal at zero will generate a Multi of zero.
-// Multi is also a Periodical, taking its period, if any, from its first member. 
+// Multi is also a Periodical, taking its period, if any, from its first member.
 type Multi []Signal
 
-func (c Multi) Level(t Interval) (total Level) {
+func (c Multi) Level(t interval) (total level) {
 	total = MaxLevel
 	for _, s := range c {
 		l := s.Level(t)
@@ -30,7 +30,7 @@ func (c Multi) Level(t Interval) (total Level) {
 	return
 }
 
-func (c Multi) Period() (period Interval) {
+func (c Multi) Period() (period interval) {
 	if len(c) > 0 {
 		if s, ok := c[0].(Periodical); ok {
 			return s.Period()
@@ -38,7 +38,7 @@ func (c Multi) Period() (period Interval) {
 	}
 	return
 }
-func init(){
+func init() {
 	gob.Register(Multi{})
 	gob.Register(Sine{})
 	gob.Register(Constant{})
@@ -60,10 +60,10 @@ func init(){
 	gob.Register(TriggerRising{})
 }
 
-func (c Multi) Save(p io.Writer) error{
+func (c Multi) Save(p io.Writer) error {
 	return gob.NewEncoder(p).Encode(&c)
 }
 
-func (c *Multi) Load(p io.Reader) error{
+func (c *Multi) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }

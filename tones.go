@@ -1,14 +1,15 @@
 package signals
 
-// periodicals are signals that repeat 
+// periodicals are signals that repeat
 type Periodical interface {
 	Signal
-	Period() Interval
+	Period() interval
 }
 
-func NewTone(period Interval, volume uint8) Multi {
+func NewTone(period interval, volume uint8) Multi {
 	return Multi{Sine{period}, NewConstant(volume)}
 }
+
 /*
 type Tone struct{
 	Signal
@@ -20,4 +21,3 @@ func (s Tone) Period() Interval{
 }
 */
 // make a periodical whose source is a sine
-

@@ -7,10 +7,10 @@ import (
 // pulse train specified by the bits of a big int
 type PulsePattern struct {
 	BitPattern big.Int
-	PulseWidth Interval
+	PulseWidth interval
 }
 
-func (s PulsePattern) Level(t Interval) Level {
+func (s PulsePattern) Level(t interval) level {
 	//if bp := s.BitPattern.BitLen() - int(t/s.PulseWidth); bp < 0 { // higher number bits come first
 	if bp := int(t / s.PulseWidth); bp < 0 {
 		return 0
