@@ -82,13 +82,14 @@ func TestSum(t *testing.T) {
 }
 
 func TestTrigger(t *testing.T) {
-	s := Triggered{NewADSREnvelope(UnitTime, UnitTime, UnitTime, MaxLevel/2, UnitTime), MaxLevel / 3 * 2, true,UnitTime / 100, UnitTime * 10, 0, nil, 0}
+	s := Triggered{NewADSREnvelope(UnitTime, UnitTime, UnitTime, MaxLevel/2, UnitTime), MaxLevel / 3 * 2, true,UnitTime / 100, UnitTime * 10, 0, nil, 0,false}
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
 	}
 	fmt.Println()
 	fmt.Println(s.Delay)
-	s.Trigger = MaxLevel / 3
+	//s.Trigger = MaxLevel / 3
+	s.Rising=false
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
 	}

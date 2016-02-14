@@ -87,7 +87,10 @@ func (s Modulated) Level(t interval) level {
 	return s.Signal.Level(t + MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64, s.Factor))
 }
 
-// brings forward in time a signal to the point when it passes a trigger level at zero time.
+// Triggered brings forward in time a signal to make it cross a trigger level at zero time.
+// searches with a Resolution, from Delay+Resolution to MaxDelay, then from 0 to Delay.
+// Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round. 
+// Rising can be alternated to find either way crossing
 type Triggered struct {
 	Signal
 	Trigger        level
@@ -97,19 +100,30 @@ type Triggered struct {
 	Delay          interval
 	searched       Signal
 	locatedTrigger level
+	locatedRising bool
 }
 
-func (s Triggered) Level(t interval) level {
-	if s.Trigger != s.locatedTrigger || s.searched != s.Signal {
+func (s *Triggered) Level(t interval) level {
+	if s.Trigger != s.locatedTrigger || s.searched != s.Signal || s.locatedRising != s.Rising {
 		s.searched = s.Signal
 		s.locatedTrigger = s.Trigger
-		s.Delay = 0
-		for t := interval(0); t < s.MaxDelay; t += s.Resolution {
+		s.locatedRising=s.Rising
+		if s.Rising && s.Signal.Level(s.Delay) > s.Trigger || !s.Rising && s.Signal.Level(s.Delay) < s.Trigger {
+			s.Delay+=s.Resolution
+		}
+		for t := s.Delay; t <= s.MaxDelay; t += s.Resolution {
 			if s.Rising && s.Signal.Level(t) > s.Trigger || !s.Rising && s.Signal.Level(t) < s.Trigger {
 				s.Delay = t
-				break
+				return s.Signal.Level(t)
 			}
 		}
+		for t := interval(0); t < s.Delay; t += s.Resolution {
+			if s.Rising && s.Signal.Level(t) > s.Trigger || !s.Rising && s.Signal.Level(t) < s.Trigger {
+				s.Delay = t
+				return s.Signal.Level(t)
+			}
+		}
+		s.Delay=0		
 	}
 	return s.Signal.Level(t + s.Delay)
 }
