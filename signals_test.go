@@ -65,6 +65,22 @@ func TestReflect(t *testing.T) {
 	fmt.Println()
 }
 
+func TestMulti(t *testing.T) {
+	s := Multi{Sine{UnitTime*5},Sine{UnitTime*10}}
+	for t := Interval(0); t < 5*UnitTime; t += UnitTime / 10 {
+		fmt.Print(s.Level(t))
+	}
+	fmt.Println()
+}
+
+func TestSum(t *testing.T) {
+	s := Sum{Multi{Sine{UnitTime*5},NewConstant(50)},Multi{Sine{UnitTime*10},NewConstant(50)}}
+	for t := Interval(0); t < 5*UnitTime; t += UnitTime / 10 {
+		fmt.Print(s.Level(t))
+	}
+	fmt.Println()
+}
+
 func TestTrigger(t *testing.T) {
 	s := TriggerRising{NewADSREnvelope(UnitTime, UnitTime, UnitTime, MaxLevel/2, UnitTime),MaxLevel/3*2,UnitTime/100,UnitTime*10,0,nil,0}
 	for t := Interval(0); t < 5*UnitTime; t += UnitTime / 10 {
@@ -123,4 +139,4 @@ func TestSaveLoad(t *testing.T) {
 }
 
 
-
+/
