@@ -28,7 +28,7 @@ Example:
 	}
 
 output:
-	"https://github.com/splace/signals/blob/master/Sine[{Cycle:     0.01s} {Constant:    50.00%}].wav"
+	"https://github.com/splace/signals/blob/master/Sine[{Cycle:%20%20%20%20%200.01s}%20{Constant:%20%20%20%2050.00%}].wav"
 
 status:
 
