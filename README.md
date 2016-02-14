@@ -12,7 +12,7 @@ Signal generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,Constant,RampUp,Ra
 
 Signal modifiers:- Delay,Spedup,Looped,Inverted,Reversed,Modulated,TriggerRising
 
-Signal Conbiners:- Add,Multi
+Signal Combiners:- Add,Multi
 
 installation:
 
