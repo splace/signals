@@ -1,12 +1,12 @@
 # signals
 
-overview:
+Overview:
 
 https://github.com/splace/signals/blob/master/doc.go	
 
 (included in doc below)
 
-installation:
+Installation:
 
      go get github.com/splace/signals   
 
@@ -27,17 +27,17 @@ func main() {
 	Encode(file, m, 1*UnitTime, 8000, 1)
 }
 ```
-output: 1 sec, 100hz, 50% volume,sine wave, @8k samples/sec, 8bit unsigned PCM (u8), WAV file 
+Output: 1 sec, 100hz, 50% volume,sine wave, @8k samples/sec, 8bit unsigned PCM (u8), WAV file 
 
 [Sine[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/signals/blob/master/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
 
-status:
+Status:
 
-Signal generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,Constant,RampUp,RampDown,Sigmoid
+generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,Constant,RampUp,RampDown,Sigmoid
 
-Signal modifiers:- Delay,Spedup,Looped,Inverted,Reversed,Modulated,TriggerRising
+modifiers:- Delay,Spedup,Looped,Inverted,Reversed,Modulated,TriggerRising
 
-Signal Combiners:- Add,Multi
+combiners:- Add,Multi
 
 docs: 
      
