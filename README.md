@@ -9,18 +9,22 @@ Installation:
 Example:
 ```go
 package main
-import "github.com/splace/signals"
-import ("fmt";"os")
+import (
+	"fmt"
+	"os"
+)
+
+import . "../../signals"
 
 func main() {
-	m := signals.NewTone(signals.UnitTime/100, 50)
+	m := NewTone(UnitTime/100, 50)
 	var file *os.File
 	var err error
 	if file, err = os.Create(fmt.Sprintf("Sine%+v.wav", m)); err != nil {
 		panic(err)
 	}
 	defer file.Close()
-	signals.Encode(file, m, 1*signals.UnitTime, 8000, 1)
+	Encode(file, m, 1*UnitTime, 8000, 1)
 }
 ```
 Output: 1 sec, 100hz, 50% volume,sine wave, @8k samples/sec, 8bit unsigned PCM (u8), WAV file 
@@ -29,9 +33,9 @@ Output: 1 sec, 100hz, 50% volume,sine wave, @8k samples/sec, 8bit unsigned PCM (
 
 Status:
 
-generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,Constant,RampUp,RampDown,Sigmoid
+generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid
 
-modifiers:- Delay,Spedup,Looped,Inverted,Reversed,Modulated,TriggerRising
+modifiers:- Delay,Spedup,Looped,Inverted,Reversed,Modulated,Triggered
 
 combiners:- Add,Multi
 
