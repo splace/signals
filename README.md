@@ -1,8 +1,6 @@
 # signals
 
-Overview: (included in godoc reference below)
-
-https://github.com/splace/signals/blob/master/doc.go	
+Overview: (see godoc reference below)
 
 Installation:
 
