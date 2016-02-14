@@ -57,7 +57,7 @@ func init() {
 	gob.Register(Reflected{})
 	gob.Register(Modulated{})
 	gob.Register(ADSREnvelope{})
-	gob.Register(TriggerRising{})
+	gob.Register(Triggered{})
 }
 
 func (c Multi) Save(p io.Writer) error {

@@ -13,9 +13,9 @@ signals can be encode/decoded as go code binary (gob), and encoded as PCM wave f
 
 Fundamental Types
 
-Level :- can have a value from -MaxLevel to +MaxLevel
+level :- can have a value from -MaxLevel to +MaxLevel
 
-Interval :- 'usually' can be used as if infinite (+ve and -ve), with UnitTime somewhere near the center of its precision range.
+interval :- 'usually' can be used as if infinite (+ve and -ve), with UnitTime somewhere near the center of its precision range.
 
 Interfaces
 

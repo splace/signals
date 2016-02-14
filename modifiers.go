@@ -88,9 +88,10 @@ func (s Modulated) Level(t interval) level {
 }
 
 // brings forward in time a signal to the point when it passes a trigger level at zero time.
-type TriggerRising struct {
+type Triggered struct {
 	Signal
 	Trigger        level
+	Rising	bool
 	Resolution     interval
 	MaxDelay       interval
 	Delay          interval
@@ -98,13 +99,13 @@ type TriggerRising struct {
 	locatedTrigger level
 }
 
-func (s TriggerRising) Level(t interval) level {
+func (s Triggered) Level(t interval) level {
 	if s.Trigger != s.locatedTrigger || s.searched != s.Signal {
 		s.searched = s.Signal
 		s.locatedTrigger = s.Trigger
 		s.Delay = 0
 		for t := interval(0); t < s.MaxDelay; t += s.Resolution {
-			if s.Signal.Level(t) > s.Trigger {
+			if s.Rising && s.Signal.Level(t) > s.Trigger || !s.Rising && s.Signal.Level(t) < s.Trigger {
 				s.Delay = t
 				break
 			}

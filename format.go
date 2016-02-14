@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-// encode as unsigned
+// encode as unsigned PCM data in a Riff wave container (wav file format) 
 func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, bytes uint8) {
 	binaryWrite := func(w io.Writer, d interface{}) {
 		if err := binary.Write(w, binary.LittleEndian, d); err != nil {
