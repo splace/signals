@@ -29,7 +29,7 @@ Example:
 
 output:
 
-	"https://github.com/splace/signals/blob/master/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav"
+"https://github.com/splace/signals/blob/master/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav"
 
 status:
 
