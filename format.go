@@ -2,7 +2,7 @@ package signals
 
 import (
 	"encoding/binary"
-	"bytes"
+	//"bytes"
 	"fmt"
 	"io"
 )
@@ -46,13 +46,14 @@ func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleByt
 			l:=s.Level(interval(i)*samplePeriod)
 			binaryWrite(w,int16(l>>shift))
 		}
-	case 3:
+/*	case 3:
 		var i uint32
 		buf:= bytes.NewBuffer(make([]bytes,4))
 		for ; i < samples; i++ {
 			l:=s.Level(interval(i)*samplePeriod)
 			binaryWrite(buf,int32(l>>shift))
 		}
+*/
 	case 4:
 		var i uint32
 		for ; i < samples; i++ {
