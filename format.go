@@ -2,12 +2,16 @@ package signals
 
 import (
 	"encoding/binary"
+	"bytes"
 	"fmt"
 	"io"
 )
 
+
+
+
 // encode a signal as an unsigned PCM data in a Riff wave container (wav file format) 
-func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, bytes uint8) {
+func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleBytes uint8) {
 	binaryWrite := func(w io.Writer, d interface{}) {
 		if err := binary.Write(w, binary.LittleEndian, d); err != nil {
 			panic(err)
@@ -16,25 +20,49 @@ func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, bytes uin
 	samplePeriod := MultiplyInterval(1/float32(sampleRate), UnitTime)
 	samples := uint32(length/samplePeriod) + 1
 	fmt.Fprint(w, "RIFF")
-	binaryWrite(w, uint32(samples+36))
+	binaryWrite(w, samples*uint32(sampleBytes)+36)
 	fmt.Fprint(w, "WAVE")
 	fmt.Fprint(w, "fmt ")
 	binaryWrite(w, uint32(16))
 	binaryWrite(w, uint16(1))
 	binaryWrite(w, uint16(1))
 	binaryWrite(w, sampleRate)
-	binaryWrite(w, sampleRate)
-	binaryWrite(w, uint16(bytes))
-	binaryWrite(w, uint16(8*bytes))
+	binaryWrite(w, sampleRate*uint32(sampleBytes))
+	binaryWrite(w, uint16(sampleBytes))
+	binaryWrite(w, uint16(8*sampleBytes))
 	fmt.Fprint(w, "data")
-	binaryWrite(w, uint32(samples))
-	var i uint32
-	var shift uint8 = LevelBits - 8*bytes
-	var offset level = 2 << (bytes*8 - 2)
-	for ; i < samples; i++ {
-		w.Write([]byte{byte(s.Level(interval(i)*samplePeriod)>>shift + offset)})
-	}
+	binaryWrite(w, samples*uint32(sampleBytes))
+	var shift uint8 = LevelBits - 8*sampleBytes
+	switch sampleBytes{
+	case 1:
+		var i uint32
+		for ; i < samples; i++ {
+			l:=s.Level(interval(i)*samplePeriod)
+			binaryWrite(w,uint8(l>>shift+128))
+		}
+	case 2:
+		var i uint32
+		for ; i < samples; i++ {
+			l:=s.Level(interval(i)*samplePeriod)
+			binaryWrite(w,int16(l>>shift))
+		}
+	case 3:
+		var i uint32
+		buf:= bytes.NewBuffer(make([]bytes,4))
+		for ; i < samples; i++ {
+			l:=s.Level(interval(i)*samplePeriod)
+			binaryWrite(buf,int32(l>>shift))
+		}
+	case 4:
+		var i uint32
+		for ; i < samples; i++ {
+			l:=s.Level(interval(i)*samplePeriod)
+			binaryWrite(w,int32(l>>shift))
+		}
+	}	
 }
+
+
 
 /* PCM all possible formats
 
