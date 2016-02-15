@@ -149,3 +149,6 @@ func TestSaveWav(t *testing.T) {
 	Encode(file, m, UnitTime, 8000, 1)
 }
 
+
+//TODO noise, scale on multi, stack for sum, multiplex?
+
