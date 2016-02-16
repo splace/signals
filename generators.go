@@ -1,8 +1,19 @@
 package signals
+import	"encoding/gob"
 
 import (
 	"math"
 )
+func init() {
+	gob.Register(Sine{})
+	gob.Register(Constant{})
+	gob.Register(Pulse{})
+	gob.Register(Square{})
+	gob.Register(RampUp{})
+	gob.Register(RampDown{})
+	gob.Register(Heavyside{})
+	gob.Register(Sigmoid{})
+}
 
 type Constant struct {
 	Constant level "level"

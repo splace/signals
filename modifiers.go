@@ -1,4 +1,16 @@
 package signals
+import	"encoding/gob"
+func init() {
+	gob.Register(Delayed{})
+	gob.Register(Spedup{})
+	gob.Register(SpedupProgressive{})
+	gob.Register(Looped{})
+	gob.Register(Inverted{})
+	gob.Register(Reversed{})
+	gob.Register(Reflected{})
+	gob.Register(Modulated{})
+	gob.Register(Triggered{})
+}
 
 // a Signal that delays the time of another signal
 type Delayed struct {

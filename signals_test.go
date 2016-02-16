@@ -98,6 +98,27 @@ func TestTrigger(t *testing.T) {
 	fmt.Println()
 }
 
+func TestNoise(t *testing.T) {
+	s := NewNoise()
+	for t := interval(0); t < 40*UnitTime; t += UnitTime {
+		fmt.Print(s.Level(t))
+	}
+	fmt.Println()
+	var file *os.File
+	var err error
+	if file, err = os.Create(fmt.Sprintf("Noise%+v.wav", s)); err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	Encode(file, s, UnitTime, 8000, 1)
+	var file2 *os.File
+	if file2, err = os.Create(fmt.Sprintf("Noise2%+v.wav", s)); err != nil {
+		panic(err)
+	}
+	defer file2.Close()
+	Encode(file2, s, UnitTime, 16000, 1)
+}
+
 func TestBitPulses(t *testing.T) {
 	i := new(big.Int)
 	_, err := fmt.Sscanf("01110111011101110111011101110111", "%b", i)
@@ -149,4 +170,7 @@ func TestSaveWav(t *testing.T) {
 	Encode(file, m, UnitTime, 8000, 1)
 }
 
-//TODO noise, scale on multi, stack for sum, multiplex?
+//TODO scale on multi
+
+
+
