@@ -74,7 +74,7 @@ func TestMulti(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
-	s := Stack{Multiplex{Sine{UnitTime * 5}, NewConstant(50)}, Multiplex{Sine{UnitTime * 10}, NewConstant(50)}}
+	s := Stack{Sine{UnitTime * 5},Sine{UnitTime * 10}}
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
 	}
@@ -169,8 +169,5 @@ func TestSaveWav(t *testing.T) {
 	defer file.Close()
 	Encode(file, m, UnitTime, 8000, 1)
 }
-
-//TODO scale on multi
-
 
 
