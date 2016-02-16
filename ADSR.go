@@ -1,5 +1,9 @@
 package signals
 
+func init() {
+	gob.Register(ADSREnvelope{})
+}
+
 //  Attack Decay Sustain Release (ADSR) envelope.  see https://en.wikipedia.org/wiki/Synthesizer#Attack_Decay_Sustain_Release_.28ADSR.29_envelope
 type ADSREnvelope struct {
 	attackEnd    interval
