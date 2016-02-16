@@ -89,27 +89,27 @@ func (s Modulated) Level(t interval) level {
 
 // Triggered brings forward in time a signal to make it cross a trigger level at zero time.
 // searches with a Resolution, from Delay+Resolution to MaxDelay, then from 0 to Delay.
-// Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round. 
+// Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round.
 // Rising can be alternated to find either way crossing
 type Triggered struct {
 	Signal
 	Trigger        level
-	Rising	bool
+	Rising         bool
 	Resolution     interval
 	MaxDelay       interval
 	Delay          interval
 	searched       Signal
 	locatedTrigger level
-	locatedRising bool
+	locatedRising  bool
 }
 
 func (s *Triggered) Level(t interval) level {
 	if s.Trigger != s.locatedTrigger || s.searched != s.Signal || s.locatedRising != s.Rising {
 		s.searched = s.Signal
 		s.locatedTrigger = s.Trigger
-		s.locatedRising=s.Rising
+		s.locatedRising = s.Rising
 		if s.Rising && s.Signal.Level(s.Delay) > s.Trigger || !s.Rising && s.Signal.Level(s.Delay) < s.Trigger {
-			s.Delay+=s.Resolution
+			s.Delay += s.Resolution
 		}
 		for t := s.Delay; t <= s.MaxDelay; t += s.Resolution {
 			if s.Rising && s.Signal.Level(t) > s.Trigger || !s.Rising && s.Signal.Level(t) < s.Trigger {
@@ -123,7 +123,7 @@ func (s *Triggered) Level(t interval) level {
 				return s.Signal.Level(t)
 			}
 		}
-		s.Delay=0		
+		s.Delay = 0
 	}
 	return s.Signal.Level(t + s.Delay)
 }

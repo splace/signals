@@ -66,7 +66,7 @@ func TestReflect(t *testing.T) {
 }
 
 func TestMulti(t *testing.T) {
-	s := Multi{Sine{UnitTime * 5}, Sine{UnitTime * 10}}
+	s := Multiplex{Sine{UnitTime * 5}, Sine{UnitTime * 10}}
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
 	}
@@ -74,7 +74,7 @@ func TestMulti(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
-	s := Sum{Multi{Sine{UnitTime * 5}, NewConstant(50)}, Multi{Sine{UnitTime * 10}, NewConstant(50)}}
+	s := Stack{Multiplex{Sine{UnitTime * 5}, NewConstant(50)}, Multiplex{Sine{UnitTime * 10}, NewConstant(50)}}
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
 	}
@@ -82,14 +82,14 @@ func TestSum(t *testing.T) {
 }
 
 func TestTrigger(t *testing.T) {
-	s := Triggered{NewADSREnvelope(UnitTime, UnitTime, UnitTime, MaxLevel/2, UnitTime), MaxLevel / 3 * 2, true,UnitTime / 100, UnitTime * 10, 0, nil, 0,false}
+	s := Triggered{NewADSREnvelope(UnitTime, UnitTime, UnitTime, MaxLevel/2, UnitTime), MaxLevel / 3 * 2, true, UnitTime / 100, UnitTime * 10, 0, nil, 0, false}
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
 	}
 	fmt.Println()
 	fmt.Println(s.Delay)
 	//s.Trigger = MaxLevel / 3
-	s.Rising=false
+	s.Rising = false
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
 	}
@@ -129,7 +129,7 @@ func TestSaveLoad(t *testing.T) {
 	}
 	defer file.Close()
 
-	m1 := Multi{}
+	m1 := Multiplex{}
 	if err := m1.Load(file); err != nil {
 		panic("unable to load")
 	}
@@ -149,6 +149,4 @@ func TestSaveWav(t *testing.T) {
 	Encode(file, m, UnitTime, 8000, 1)
 }
 
-
 //TODO noise, scale on multi, stack for sum, multiplex?
-

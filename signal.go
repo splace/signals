@@ -39,4 +39,3 @@ const MaxLevelfloat64 float64 = float64(MaxLevel - 512)
 func (l level) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(MaxLevel))
 }
-

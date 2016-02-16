@@ -7,8 +7,8 @@ type Periodical interface {
 }
 
 // a periodical (type multi) based on a sine wave, and having a set volume%.
-func NewTone(period interval, volume uint8) Multi {
-	return Multi{Sine{period}, NewConstant(volume)}
+func NewTone(period interval, volume uint8) Multiplex {
+	return Multiplex{Sine{period}, NewConstant(volume)}
 }
 
 /*
