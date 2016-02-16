@@ -9,8 +9,8 @@ func init() {
 	gob.Register(Noise{})
 }
 
-// Noise is a deterministic random level, white.
-// deterministic becasue has the same value at the same time for the same Noise, but random otherwise.
+// Noise is a deterministic random level Signal, white noise.
+// it has the same value at the same time, but random otherwise.
 type Noise struct {
 	generator rand.Rand
 }
