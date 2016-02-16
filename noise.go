@@ -11,6 +11,7 @@ func init() {
 
 // Noise is a deterministic random level Signal, white noise.
 // it has the same value at the same time, but random otherwise.
+// determinism allows caching even for this type
 type noise struct {
 	generator rand.Rand
 }

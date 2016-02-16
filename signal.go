@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// TODO cache
+
 // signal types can represent an analogue level as it varies with time
 type Signal interface {
 	Level(interval) level

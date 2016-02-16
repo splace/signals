@@ -73,7 +73,7 @@ func TestMulti(t *testing.T) {
 	fmt.Println()
 }
 
-func TestSum(t *testing.T) {
+func TestStack(t *testing.T) {
 	s := Stack{Sine{UnitTime * 5},Sine{UnitTime * 10}}
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
