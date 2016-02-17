@@ -48,3 +48,9 @@ func (c Multiplex) Save(p io.Writer) error {
 func (c *Multiplex) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
+
+// helper: needed becasue can't use type literal with array source. 
+func NewMultiplex(c ...Signal) Multiplex{
+	return Multiplex(c)
+}
+

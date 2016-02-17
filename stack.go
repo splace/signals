@@ -39,6 +39,10 @@ func (c Stack) Save(p io.Writer) error {
 func (c *Stack) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
+// helper: needed becasue can't use type literal with array source. 
+func NewStack(c ...Signal) Stack{
+	return Stack(c)
+}
 
 
 // Sum is a Stack that doesn't scale its contents, so can overflow.
