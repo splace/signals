@@ -9,10 +9,9 @@ import (
 
 // encode a signal as PCM data in a Riff wave container (mono wav file format)
 func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleBytes uint8) {
-	fmt.Println(length)
 	binaryWrite := func(w io.Writer, d interface{}) {
 		if err := binary.Write(w, binary.LittleEndian, d); err != nil {
-			panic(err)
+			panic(err.Error()+fmt.Sprint(w,d))
 		}
 	}
 	samplePeriod := MultiplyInterval(1/float32(sampleRate), UnitTime)
@@ -52,7 +51,6 @@ func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleByt
 			binaryWrite(w, int32(s.Level(interval(i)*samplePeriod)>>(LevelBits-32)))
 		}
 	}
-}/*  Hal3 Wed Feb 17 00:31:16 GMT 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Wed Feb 17 00:31:16 GMT 2016 */
+}
+
 

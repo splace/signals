@@ -1,5 +1,6 @@
 package signals
 import	"encoding/gob"
+
 func init() {
 	gob.Register(Delayed{})
 	gob.Register(Spedup{})
