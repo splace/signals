@@ -35,9 +35,9 @@ Status:
 
 generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,Noise
 
-modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered
+modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmented
 
-combiners:- Stack,Multiplex
+combiners:- Stack,Multiplex,Sum
 
 docs: 
      

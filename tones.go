@@ -6,7 +6,7 @@ type Periodical interface {
 	Period() interval
 }
 
-// a periodical (type multi) based on a sine wave, and having a set volume%.
+// a periodical (type multiplex) based on a sine wave, and having a set volume%.
 func NewTone(period interval, volume float32) Multiplex {
 	return Multiplex{Sine{period}, NewConstant(volume)}
 }

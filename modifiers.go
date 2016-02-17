@@ -100,6 +100,20 @@ func (s Modulated) Level(t interval) level {
 	return s.Signal.Level(t + MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64, s.Factor))
 }
 
+
+// a Signal that has equal width uniform gradients as an approximation to another signal
+type Segmented struct {
+	Signal
+	Width   interval
+}
+
+func (s Segmented) Level(t interval) level {
+	temp:=t%s.Resolution
+	// TODO cache: store values and reuse if still with the same segment, could be used as cache to improve efficiency of many signals
+	return s.Signal.Level(t-temp)/level(s.Width)*level(s.Width-temp)+s.Signal.Level(t+s.Width-temp)/level(s.Width)*level(temp)
+}
+
+
 // Triggered brings forward in time a signal to make it cross a trigger level at zero time.
 // searches with a Resolution, from Delay+Resolution to MaxDelay, then from 0 to Delay.
 // Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round.
