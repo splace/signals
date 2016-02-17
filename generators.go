@@ -23,8 +23,8 @@ func (s Constant) Level(t interval) level {
 	return s.Constant
 }
 
-func NewConstant(volume uint8) Constant {
-	return Constant{MaxLevel / 100 * level(volume)}
+func NewConstant(volume float32) Constant {
+	return Constant{MaxLevel / 10000 * level(100*volume)}
 }
 
 type Sine struct {
