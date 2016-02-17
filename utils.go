@@ -1,5 +1,11 @@
 package signals
 
+import "time"
+
+func Interval(d time.Duration) interval{
+	return MultiplyInterval(d.Seconds(), UnitTime)
+}
+
 func MultiplyInterval(m interface{}, d interval) interval {
 	switch mt := m.(type) {
 	case int:
