@@ -23,5 +23,9 @@ Signal :- has method Level() which returns a Level value from an Interval value 
 
 Periodical :- a Signal with an additional method  Period(), that returns the signals assumed repeat period Interval.
 
+Notes:
+
+PCM Signals are stored as an evenly spaced array of levels, with various precisions, and  can be saved/loaded, so could be used as a cache. 
+
 */
 package signals

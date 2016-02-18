@@ -33,7 +33,7 @@ Output: 1 sec, 100hz, 50% volume, Sine wave, @8k samples/sec, 8bit unsigned PCM 
 
 Status:
 
-generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,Noise
+generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,Noise,PCM
 
 modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmented
 
