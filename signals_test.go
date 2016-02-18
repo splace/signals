@@ -169,5 +169,68 @@ func TestSaveWav(t *testing.T) {
 	defer file.Close()
 	Encode(file, m, UnitTime, 8000, 1)
 }
+func TestLoad(t *testing.T) {
+	stream, err := os.Open("middlec.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer stream.Close()
+	noises, err := Decode(stream)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(len(noises))
+}
 
+func TestLoadChannels(t *testing.T) {
+	stream, err := os.Open("pcm0808s.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer stream.Close()
+	noises, err := Decode(stream)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(len(noises))
+}
+func TestCombineSounds(t *testing.T) {
+	stream, err := os.Open("M1F1-uint8-AFsp.wav")
+	if err != nil {
+		panic(err)
+	}
+	noise, err := Decode(stream)
 
+	defer stream.Close()
+	wavFile, err := os.Create("M1F1-uint8-AFsp-combined.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer wavFile.Close()
+	Encode(wavFile,Sum{noise[0], noise[1]}, noise[0].Duration(), 44100, 1)
+}
+func TestSaveLoadSave(t *testing.T) {
+	m := NewTone(UnitTime/1000, 50)
+	wavFile, err := os.Create("TestSaveLoad.wav")
+	if err != nil {
+		panic(err)
+	}
+	Encode(wavFile,m, UnitTime, 44100, 2)
+	wavFile.Close()
+	stream, err := os.Open("TestSaveLoad.wav")
+	if err != nil {
+		panic(err)
+	}
+	noise, err := Decode(stream)
+	if err != nil {
+		panic(err)
+	}
+
+	defer stream.Close()
+	wavFile, err= os.Create("TestSaveLoadSave.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer wavFile.Close()
+	Encode(wavFile,noise[0], noise[0].Duration(), 44100, 2)
+}

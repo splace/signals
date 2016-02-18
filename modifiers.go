@@ -108,7 +108,7 @@ type Segmented struct {
 }
 
 func (s Segmented) Level(t interval) level {
-	temp:=t%s.Resolution
+	temp:=t%s.Width
 	// TODO cache: store values and reuse if still with the same segment, could be used as cache to improve efficiency of many signals
 	return s.Signal.Level(t-temp)/level(s.Width)*level(s.Width-temp)+s.Signal.Level(t+s.Width-temp)/level(s.Width)*level(temp)
 }
