@@ -25,7 +25,7 @@ Periodical :- a Signal with an additional method  Period(), that returns the sig
 
 Notes:
 
-PCM Signals are stored as an evenly spaced array of levels, with various precisions, and  can be saved/loaded, so could be used as a cache. 
+PCM Signals are stored as an evenly spaced array of levels, with various precisions, and can be saved/loaded, so could be used as a cache. 
 
 */
 package signals
