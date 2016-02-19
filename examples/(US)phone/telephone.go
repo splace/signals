@@ -19,7 +19,7 @@ const ms=UnitTime/1000
 Audible Ring Tone is 440 Hz and 480 Hz for 2 seconds on and 4 seconds off
 ReceiverOffHook is 1400 Hz, 2060 Hz, 2450 Hz, and 2600 Hz at 0 dBm0/frequency on and off every .1 second
 No Such Number is 200 to 400 Hz modulated at 1 Hz, interrupted every 6 seconds for .5 seconds.
-Line Busy Tone is a Low Tone that is on and off every .5 seconds.
+Line Busy Tone is 480 Hz and 630 Hz that is on and off every .5 seconds.
 */
 
 func main(){

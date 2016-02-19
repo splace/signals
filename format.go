@@ -101,7 +101,7 @@ func (s PCM) Duration() interval{
 }
 
 // 8 bit PCM Signal
-// unlike other precisions of PCM, that use signed, this uses the default openal and wave file representation, unsigned.  
+// unlike the other precisions of PCM, that use signed numbers, 8bit uses the default OpenAL and wave file representation, unsigned.  
 type PCM8bit struct{
 	PCM
 	}
@@ -174,7 +174,7 @@ type format struct {
 	Bits        uint16
 }
 
-// decode a stream into th appropriate PCM Signal
+// decode a stream into the appropriate PCM Signal
 func Decode(wav io.Reader) ([]limitedSignal, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
