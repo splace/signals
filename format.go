@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-// encode a signal as PCM data in a Riff wave container (mono wav file format)
+// encode a signal as PCM data, one channel, in a Riff wave container.
 func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleBytes uint8) {
 	binaryWrite := func(w io.Writer, d interface{}) {
 		if err := binary.Write(w, binary.LittleEndian, d); err != nil {
@@ -85,7 +85,7 @@ func (e ErrWavParse) Error() string {
 	return fmt.Sprintf("WAVE Parse,%s:%v", e.description, e.source)
 }
 
-type limitedSignal interface{
+type PCMSignal interface{
 	Signal
 	Duration() interval
 }
@@ -114,7 +114,7 @@ func (s PCM) Duration() interval{
 }
 
 // 8 bit PCM Signal
-// unlike the other precisions of PCM, that use signed numbers, 8bit uses un-signed, the default OpenAL and wave file representation.  
+// unlike the other precisions of PCM, that use signed data, 8bit uses un-signed, the default OpenAL and wave file representation.  
 type PCM8bit struct{
 	PCM
 	}
@@ -187,8 +187,8 @@ type format struct {
 	Bits        uint16
 }
 
-// decode a stream into an array of the appropriately typed PCM Signals
-func Decode(wav io.Reader) ([]limitedSignal, error) {
+// decode a stream into an array of PCMSignals
+func Decode(wav io.Reader) ([]PCMSignal, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
 	var formatData format
@@ -264,7 +264,7 @@ func Decode(wav io.Reader) ([]limitedSignal, error) {
 
 		}
 	}
-	signals := make([]limitedSignal, formatData.Channels)
+	signals := make([]PCMSignal, formatData.Channels)
 
 	var c uint32
 	if formatData.Bits == 8 {
@@ -279,4 +279,6 @@ func Decode(wav io.Reader) ([]limitedSignal, error) {
 	}
 	return signals, nil
 }
+
+
 

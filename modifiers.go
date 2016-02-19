@@ -100,6 +100,7 @@ func (s Modulated) Level(t interval) level {
 	return s.Signal.Level(t + MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64, s.Factor))
 }
 
+// TODO if a modulation signal is periodic then the modulated will be, or, smaller of either?
 /*
 // a Signal that stretches the time of another signal, in proportion to the value of a modulation signal
 type Modulated struct {
