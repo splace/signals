@@ -34,24 +34,24 @@ func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleByt
 	var i uint32
 	switch sampleBytes {
 	case 1:
-		if pcm,ok:=s.(PCM8bit);ok && pcm.SamplePeriod==samplePeriod && pcm.length==length{
-			w.Write(pcm.Data) // TODO can cope with shorter length
+		if pcm,ok:=s.(PCM8bit);ok && pcm.samplePeriod==samplePeriod && pcm.length==length{
+			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
 				binaryWrite(w, uint8(s.Level(interval(i)*samplePeriod)>>(LevelBits-8)+128))
 			}
 		}
 	case 2:
-		if pcm,ok:=s.(PCM16bit);ok && pcm.SamplePeriod==samplePeriod && pcm.length==length{
-			w.Write(pcm.Data) // TODO can cope with shorter length
+		if pcm,ok:=s.(PCM16bit);ok && pcm.samplePeriod==samplePeriod && pcm.length==length{
+			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
 				binaryWrite(w, int16(s.Level(interval(i)*samplePeriod)>>(LevelBits-16)))
 			}
 		}
 	case 3:
-		if pcm,ok:=s.(PCM24bit);ok && pcm.SamplePeriod==samplePeriod && pcm.length==length{
-			w.Write(pcm.Data) // TODO can cope with shorter length
+		if pcm,ok:=s.(PCM24bit);ok && pcm.samplePeriod==samplePeriod && pcm.length==length{
+			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			buf := bytes.NewBuffer(make([]byte, 4))
 			for ; i < samples; i++ {
@@ -61,8 +61,8 @@ func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleByt
 		}
 
 	case 4:
-		if pcm,ok:=s.(PCM32bit);ok && pcm.SamplePeriod==samplePeriod && pcm.length==length{
-			w.Write(pcm.Data) // TODO can cope with shorter length
+		if pcm,ok:=s.(PCM32bit);ok && pcm.samplePeriod==samplePeriod && pcm.length==length{
+			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
 				binaryWrite(w, int32(s.Level(interval(i)*samplePeriod)>>(LevelBits-32)))
@@ -92,26 +92,39 @@ type limitedSignal interface{
 
 // PCM data holder
 type PCM struct {
-	SamplePeriod interval
+	samplePeriod interval
 	length interval
-	Data        []uint8
+	data        []uint8
 }
+
+// make a PCM Signal from a Signal using specified parameters 
+func NewPCM(s Signal, length interval, sampleRate uint32, sampleBytes uint8) Signal{
+	in, out := io.Pipe()
+	go func() {
+		Encode(out,s,length,sampleRate,sampleBytes)
+		out.Close()
+	}()
+	noise, _ := Decode(in)
+	in.Close()
+	return noise[0]
+}
+
 func (s PCM) Duration() interval{
 	return s.length
 }
 
 // 8 bit PCM Signal
-// unlike the other precisions of PCM, that use signed numbers, 8bit uses the default OpenAL and wave file representation, unsigned.  
+// unlike the other precisions of PCM, that use signed numbers, 8bit uses un-signed, the default OpenAL and wave file representation.  
 type PCM8bit struct{
 	PCM
 	}
 
 func (s PCM8bit) Level(offset interval) level {
-	index := int(offset / s.SamplePeriod )
-	if index < 0 || index >= len(s.Data)-1 {
+	index := int(offset / s.samplePeriod )
+	if index < 0 || index >= len(s.data)-1 {
 		return 0
 	}
-	return level(s.Data[index]-128) * (MaxLevel >> 7)
+	return level(s.data[index]-128) * (MaxLevel >> 7)
 }
 
 // 16 bit PCM Signal
@@ -120,11 +133,11 @@ type PCM16bit struct{
 	}
 
 func (s PCM16bit) Level(offset interval) level {
-	index := int(offset / s.SamplePeriod )*2
-	if index < 0 || index >= len(s.Data)-3 {
+	index := int(offset / s.samplePeriod )*2
+	if index < 0 || index >= len(s.data)-3 {
 		return 0
 	}
-	return level(int16(s.Data[index]) | int16(s.Data[index+1])<<8)* (MaxLevel >> 15)
+	return level(int16(s.data[index]) | int16(s.data[index+1])<<8)* (MaxLevel >> 15)
 }
 // 24 bit PCM Signal
 type PCM24bit struct{
@@ -132,11 +145,11 @@ type PCM24bit struct{
 	}
 
 func (s PCM24bit) Level(offset interval) level {
-	index := int(offset / s.SamplePeriod )*3
-	if index < 0 || index >= len(s.Data)-4 {
+	index := int(offset / s.samplePeriod )*3
+	if index < 0 || index >= len(s.data)-4 {
 		return 0
 	}
-	return level(int32(s.Data[index]) | int32(s.Data[index+1])<<8 | int32(s.Data[index+2])<<16 )* (MaxLevel >> 23)
+	return level(int32(s.data[index]) | int32(s.data[index+1])<<8 | int32(s.data[index+2])<<16 )* (MaxLevel >> 23)
 }
 // 32 bit PCM Signal
 type PCM32bit struct{
@@ -144,11 +157,11 @@ type PCM32bit struct{
 	}
 
 func (s PCM32bit) Level(offset interval) level {
-	index := int(offset / s.SamplePeriod )*4
-	if index < 0 || index >= len(s.Data)-5 {
+	index := int(offset / s.samplePeriod )*4
+	if index < 0 || index >= len(s.data)-5 {
 		return 0
 	}
-	return level(int32(s.Data[index]) | int32(s.Data[index+1])<<8 | int32(s.Data[index+2])<<16 | int32(s.Data[index+3])<<24)* (MaxLevel >> 31)
+	return level(int32(s.data[index]) | int32(s.data[index+1])<<8 | int32(s.data[index+2])<<16 | int32(s.data[index+3])<<24)* (MaxLevel >> 31)
 }
 
 // RIFF file header holder
@@ -158,13 +171,13 @@ type riffHeader struct {
 	C5, C6, C7, C8 byte
 }
 
-// RIFF chink header holder
+// RIFF chunk header holder
 type chunkHeader struct {
 	C1, C2, C3, C4 byte
 	DataLen        uint32
 }
 
-// wave encoding format holder
+// PCM format holder
 type format struct {
 	Code        uint16
 	Channels    uint16
@@ -174,7 +187,7 @@ type format struct {
 	Bits        uint16
 }
 
-// decode a stream into the appropriate PCM Signal
+// decode a stream into an array of the appropriately typed PCM Signals
 func Decode(wav io.Reader) ([]limitedSignal, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
@@ -266,6 +279,4 @@ func Decode(wav io.Reader) ([]limitedSignal, error) {
 	}
 	return signals, nil
 }
-
-
 

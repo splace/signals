@@ -23,12 +23,16 @@ func (s Constant) Level(t interval) level {
 	return s.Constant
 }
 
-func DB(percent uint8) float64 {
-	return 6*math.Log2(float64(percent)/100)
+func DB(vol float64) float64 {
+	return 6*math.Log2(vol)
+}
+func Vol(DB float64) float64 {
+	return math.Pow(2,DB/6)
 }
 
+
 func NewConstant(DB float64) Constant {
-	return Constant{level(float64(MaxLevel)*math.Pow(2,DB/6))}
+	return Constant{level(MaxLevelfloat64*Vol(DB))}
 }
 
 type Sine struct {
@@ -114,7 +118,7 @@ type Sigmoid struct {
 }
 
 func (s Sigmoid) Level(t interval) level {
-	return level(float64(MaxLevel) / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
+	return level(MaxLevelfloat64 / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }
 
 

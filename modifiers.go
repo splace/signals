@@ -100,7 +100,17 @@ func (s Modulated) Level(t interval) level {
 	return s.Signal.Level(t + MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64, s.Factor))
 }
 
+/*
+// a Signal that stretches the time of another signal, in proportion to the value of a modulation signal
+type Modulated struct {
+	Signal
+	Modulation Signal
+	Factor     float64
+}
 
+func (s Modulated) Level(t interval) level {
+	return s.Signal.Level(interval(float64(t) * DB(float64(s.Modulation.Level(t))/MaxLevelfloat64*s.Factor))
+}
 // a Signal that has equal width uniform gradients as an approximation to another signal
 type Segmented struct {
 	Signal
@@ -109,9 +119,33 @@ type Segmented struct {
 
 func (s Segmented) Level(t interval) level {
 	temp:=t%s.Width
-	// TODO cache: store values and reuse if still with the same segment, could be used as cache to improve efficiency of many signals
 	return s.Signal.Level(t-temp)/level(s.Width)*level(s.Width-temp)+s.Signal.Level(t+s.Width-temp)/level(s.Width)*level(temp)
 }
+*/
+// TODO cache: store values and reuse if still within the same segment, could be used as cache to improve efficiency of many signals
+
+// a Signal that has equal width uniform gradients as an approximation to another signal
+type Segmented struct {
+	Signal
+	Width interval
+	i1,i2 interval
+	l1,l2 level
+}
+func NewSegmented(s Signal,w interval) Segmented {
+	return Segmented{Signal:s,Width:w}
+}
+
+func (s Segmented) Level(t interval) level {
+	temp:=t%s.Width
+	if t-temp!=s.i1 || t-temp+s.Width!=s.i2{
+		s.i1=t-temp
+		s.i2=t-temp+s.Width
+		s.l1=s.Signal.Level(s.i1)
+		s.l2=s.Signal.Level(s.i2)
+	}
+	return s.l1/level(s.Width)*level(s.Width-temp)+s.l2/level(s.Width)*level(temp)
+}
+
 
 
 // Triggered brings forward in time a signal to make it cross a trigger level at zero time.
