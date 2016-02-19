@@ -23,8 +23,12 @@ func (s Constant) Level(t interval) level {
 	return s.Constant
 }
 
-func NewConstant(volume float32) Constant {
-	return Constant{MaxLevel / 10000 * level(100*volume)}
+func dB(percent uint8) float64 {
+	return 6*math.Log2(float64(percent)/100)
+}
+
+func NewConstant(dB float64) Constant {
+	return Constant{MaxLevel*level(math.Pow(2,dB/6))}
 }
 
 type Sine struct {
@@ -44,7 +48,7 @@ type Pulse struct {
 }
 
 func (s Pulse) Level(t interval) level {
-	if t > s.Width {
+	if t > s.Width || t<0 {
 		return 0
 	} else {
 		return MaxLevel
@@ -112,3 +116,5 @@ type Sigmoid struct {
 func (s Sigmoid) Level(t interval) level {
 	return level(float64(MaxLevel) / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }
+
+

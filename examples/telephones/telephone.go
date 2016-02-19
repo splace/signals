@@ -34,11 +34,27 @@ Notes
 
 func main(){
 	Save("BusyTone.wav",Multiplex{Looped{Pulse{375*ms},750*ms}, Sine{UnitTime / 400}})
-	Save("EngagedTone.wav",Looped{Multiplex{Pulse{975*ms}, Looped{Pulse{ 400*ms},750*ms}, Sine{UnitTime / 400}}, 1500*ms})
+	Save("EngagedTone.wav",Looped{Multiplex{Sum{Multiplex{Pulse{400*ms},NewConstant(50)},Delayed{Pulse{225*ms},750*ms}}, Sine{UnitTime / 400}}, 1500*ms})  //-6db about 50%
 	Save("RingingTone.wav",Looped{Multiplex{Pulse{UnitTime}, Looped{Pulse{400*ms}, 600*ms}, Stack{Sine{UnitTime/450},Sine{UnitTime/400}}}, UnitTime * 3})
 	Save("NumberUnobtainableTone.wav",Sine{UnitTime / 400})
 	Save("dialTone.wav",Stack{Sine{UnitTime/450},Sine{UnitTime/350}})
 
 }
 
+/*  Hal3 Fri Feb 19 00:31:57 GMT 2016 go version go1.5.1 linux/amd64
+Fri Feb 19 00:32:07 GMT 2016 */
+/*  Hal3 Fri Feb 19 00:33:45 GMT 2016 go version go1.5.1 linux/amd64
+Fri Feb 19 00:33:50 GMT 2016 */
+/*  Hal3 Fri Feb 19 00:35:21 GMT 2016 go version go1.5.1 linux/amd64
+Fri Feb 19 00:35:26 GMT 2016 */
+/*  Hal3 Fri Feb 19 00:37:37 GMT 2016 go version go1.5.1 linux/amd64
+Fri Feb 19 00:37:42 GMT 2016 */
+/*  Hal3 Fri Feb 19 00:39:38 GMT 2016 go version go1.5.1 linux/amd64
+Fri Feb 19 00:39:43 GMT 2016 */
+/*  Hal3 Fri Feb 19 00:42:42 GMT 2016 go version go1.5.1 linux/amd64
+Fri Feb 19 00:42:42 GMT 2016 */
+/*  Hal3 Fri Feb 19 00:42:58 GMT 2016 go version go1.5.1 linux/amd64
+Fri Feb 19 00:42:59 GMT 2016 */
+/*  Hal3 Fri Feb 19 00:43:45 GMT 2016 go version go1.5.1 linux/amd64
+Fri Feb 19 00:43:50 GMT 2016 */
 

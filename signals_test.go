@@ -139,7 +139,7 @@ func TestSaveLoad(t *testing.T) {
 		panic(err)
 	}
 	//m:=Multi{Sine{UnitTime / 1000},Constant{50}}
-	m := NewTone(UnitTime/1000, 50)
+	m := NewTone(UnitTime/1000, -6)
 	if err := m.Save(file); err != nil {
 		panic("unable to save")
 	}
@@ -159,7 +159,7 @@ func TestSaveLoad(t *testing.T) {
 }
 
 func TestSaveWav(t *testing.T) {
-	m := NewTone(UnitTime/100, 50)
+	m := NewTone(UnitTime/100, -6)
 
 	var file *os.File
 	var err error
@@ -210,7 +210,7 @@ func TestCombineSounds(t *testing.T) {
 	Encode(wavFile,Sum{noise[0], noise[1]}, noise[0].Duration(), 44100, 1)
 }
 func TestSaveLoadSave(t *testing.T) {
-	m := NewTone(UnitTime/1000, 50)
+	m := NewTone(UnitTime/1000, -6)
 	wavFile, err := os.Create("TestSaveLoad.wav")
 	if err != nil {
 		panic(err)
