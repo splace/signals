@@ -23,12 +23,12 @@ func (s Constant) Level(t interval) level {
 	return s.Constant
 }
 
-func dB(percent uint8) float64 {
+func DB(percent uint8) float64 {
 	return 6*math.Log2(float64(percent)/100)
 }
 
-func NewConstant(dB float64) Constant {
-	return Constant{MaxLevel*level(math.Pow(2,dB/6))}
+func NewConstant(DB float64) Constant {
+	return Constant{level(float64(MaxLevel)*math.Pow(2,DB/6))}
 }
 
 type Sine struct {
