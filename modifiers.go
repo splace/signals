@@ -125,8 +125,7 @@ func (s Segmented) Level(t interval) level {
 */
 // TODO cache: store values and reuse if still within the same segment, 
 
-// a Signal that has equal width uniform gradients as an approximation to another signal
-// could be used as a cache to improve performance of expensive Signals
+// a Signal that has equal width uniform gradients as an approximation to another signal.
 type Segmented struct {
 	Signal
 	Width interval

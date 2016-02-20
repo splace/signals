@@ -85,6 +85,7 @@ func (e ErrWavParse) Error() string {
 	return fmt.Sprintf("WAVE Parse,%s:%v", e.description, e.source)
 }
 
+// Pulse-code modulation
 type PCMSignal interface{
 	Signal
 	Duration() interval
@@ -97,7 +98,7 @@ type PCM struct {
 	data        []uint8
 }
 
-// make a PCM Signal from a Signal using specified parameters 
+// make a PCMSignal from a Signal using specified parameters, could be used as a cache to improve performance of expensive Signals
 func NewPCM(s Signal, length interval, sampleRate uint32, sampleBytes uint8) Signal{
 	in, out := io.Pipe()
 	go func() {
