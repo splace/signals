@@ -3,13 +3,15 @@ Package signals generates and manipulates signals:- https://en.wikipedia.org/wik
 
 Overview
 
-signals are entirely procedural, all values are calculated as needed, currently no cache.
+Signals are procedural, levels are calculated as needed, meaning changes in parameters, or arrangment, are immediately effective.
 
-this package supports only 1-Dimensionsal variation, and for simplicity the terminolology used represents analogue variation in time.
+PCMSignals are stored, at a particular precision, and can be used to cache an expensive precedural Signal. 
 
-this package is intended to be general, and so a base package for import, and then used with specific real-world quantities.
+only 1-Dimensionsal variation, and for simplicity the terminolology used represents analogue variation in time.
 
-signals can be encode/decoded as go code binary (gob), and encoded as PCM wave files.
+intended to be general, and a base package for import, then used with specific real-world quantities.
+
+Signals can be encode/decoded as go code binary (gob), (probably best not used for PCMSignals, where saving as wav files is available.)
 
 Fundamental Types
 
@@ -25,7 +27,7 @@ Periodical :- a Signal with an additional method  Period(), that returns the sig
 
 Notes
 
-PCM Signals are an evenly spaced array of levels, stored at a particular precision, and can be saved/loaded. could be used as a cache. 
+PCMSignals are an evenly spaced array of levels, with different types that store at a particular precisions. 
 
 */
 package signals
