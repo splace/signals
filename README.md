@@ -33,7 +33,7 @@ Output: 1 sec, 100hz, 50% volume (-6dB), Sine wave, @8k samples/sec, 8bit unsign
 
 Status:
 
-generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,Noise,PCM(bits)
+generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,Noise,PCM<<bits>>bit
 
 modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmented
 
