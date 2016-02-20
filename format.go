@@ -110,7 +110,6 @@ func (p PCM)Duration()interval{
 }
 
 // make a PCMSignal type, from a Signal, using particular parameters,
-// could be used as a cache to improve performance of expensive Signals
 func NewPCM(s Signal, length interval, sampleRate uint32, sampleBytes uint8) PCMSignal {
 	in, out := io.Pipe()
 	go func() {
