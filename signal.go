@@ -39,3 +39,15 @@ const MaxLevelfloat64 float64 = float64(MaxLevel - 512)
 func (l level) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(MaxLevel))
 }
+
+// periodicals are signals that repeat
+type Periodical interface {
+	Signal
+	Period() interval
+}
+
+// a periodical (type multiplex) based on a sine wave, and having a set volume%.
+func NewTone(period interval, volume float64) Multiplex {
+	return Multiplex{Sine{period}, NewConstant(volume)}
+}
+

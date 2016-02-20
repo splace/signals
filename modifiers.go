@@ -123,9 +123,10 @@ func (s Segmented) Level(t interval) level {
 	return s.Signal.Level(t-temp)/level(s.Width)*level(s.Width-temp)+s.Signal.Level(t+s.Width-temp)/level(s.Width)*level(temp)
 }
 */
-// TODO cache: store values and reuse if still within the same segment, could be used as cache to improve efficiency of many signals
+// TODO cache: store values and reuse if still within the same segment, 
 
 // a Signal that has equal width uniform gradients as an approximation to another signal
+// could be used as a cache to improve performance of expensive Signals
 type Segmented struct {
 	Signal
 	Width interval

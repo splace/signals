@@ -106,13 +106,13 @@ func TestNoise(t *testing.T) {
 	fmt.Println()
 	var file *os.File
 	var err error
-	if file, err = os.Create(fmt.Sprintf("Noise%+v.wav", s)); err != nil {
+	if file, err = os.Create("Noise.wav"); err != nil {
 		panic(err)
 	}
 	defer file.Close()
 	Encode(file, s, UnitTime, 8000, 1)
 	var file2 *os.File
-	if file2, err = os.Create(fmt.Sprintf("Noise2%+v.wav", s)); err != nil {
+	if file2, err = os.Create("Noise2.wav"); err != nil {
 		panic(err)
 	}
 	defer file2.Close()
@@ -244,7 +244,9 @@ func TestPiping(t *testing.T) {
 	Encode(wavFile,NewPCM(NewTone(UnitTime/2000, -6), UnitTime, 44100, 2),UnitTime,44100,2)
 }
 
-/*  hal3 Fri 19 Feb 04:35:24 GMT 2016 go version go1.5.1 linux/386
+/*  Hal3 Sat Feb 20 00:05:49 GMT 2016 go version go1.5.1 linux/amd64
+Sat Feb 20 00:05:54 GMT 2016 */
+/*  Hal3 Sat Feb 20 00:06:17 GMT 2016 go version go1.5.1 linux/amd64
 === RUN   TestSquare
    100.00%   100.00%   100.00%   100.00%   100.00%  -100.00%  -100.00%  -100.00%  -100.00%  -100.00%   100.00%   100.00%   100.00%   100.00%   100.00%  -100.00%  -100.00%  -100.00%  -100.00%  -100.00%
 --- PASS: TestSquare (0.00s)
@@ -263,7 +265,7 @@ func TestPiping(t *testing.T) {
 --- PASS: TestSigmoid (0.00s)
 === RUN   TestADSREnvelope
      0.00%    10.00%    20.00%    30.00%    40.00%    50.00%    60.00%    70.00%    80.00%    90.00%   100.00%    95.00%    90.00%    85.00%    80.00%    75.00%    70.00%    65.00%    60.00%    55.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    45.00%    40.00%    35.00%    30.00%    25.00%    20.00%    15.00%    10.00%     5.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%
---- PASS: TestADSREnvelope (0.00s)
+--- PASS: TestADSREnvelope (0.01s)
 === RUN   TestReflect
    100.00%    90.00%    80.00%    70.00%    60.00%    50.00%    40.00%    30.00%    20.00%    10.00%     0.00%     5.00%    10.00%    15.00%    20.00%    25.00%    30.00%    35.00%    40.00%    45.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    50.00%    55.00%    60.00%    65.00%    70.00%    75.00%    80.00%    85.00%    90.00%    95.00%   100.00%   100.00%   100.00%   100.00%   100.00%   100.00%   100.00%   100.00%   100.00%   100.00%
 --- PASS: TestReflect (0.00s)
@@ -282,28 +284,28 @@ func TestPiping(t *testing.T) {
 --- PASS: TestTrigger (0.00s)
 === RUN   TestNoise
     23.94%   -52.49%     8.21%    -9.87%   -74.46%   -68.54%   -31.13%   -28.89%    11.03%    43.01%   -71.97%   -35.88%   -58.86%    47.80%    21.68%   -34.58%   -66.41%    10.38%     4.28%   -14.14%   -17.82%   -31.24%    22.84%   -21.90%    17.72%    23.27%    38.15%    65.67%   -72.58%   -66.54%   -33.93%     4.60%   -42.08%   -36.43%   -48.60%   -10.65%   -17.75%    25.50%    23.76%   -87.69%
---- PASS: TestNoise (1.06s)
+--- PASS: TestNoise (1.30s)
 === RUN   TestBitPulses
    100.00%   100.00%   100.00%     0.00%   100.00%   100.00%   100.00%     0.00%   100.00%   100.00%   100.00%     0.00%   100.00%   100.00%   100.00%     0.00%   100.00%   100.00%   100.00%     0.00%   100.00%   100.00%   100.00%     0.00%   100.00%   100.00%   100.00%     0.00%   100.00%   100.00%   100.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%     0.00%
 --- PASS: TestBitPulses (0.00s)
 === RUN   TestSaveLoad
-signals.Multiplex{signals.Sine{Cycle:1000000}, signals.Constant{Constant:4611686018427387904}}
---- PASS: TestSaveLoad (0.00s)
+signals.Multiplex{signals.Sine{Cycle:1000000}, signals.Constant{Constant:4611686018427387392}}
+--- PASS: TestSaveLoad (0.03s)
 === RUN   TestSaveWav
---- PASS: TestSaveWav (0.05s)
+--- PASS: TestSaveWav (0.04s)
 === RUN   TestLoad
 1
---- PASS: TestLoad (0.01s)
+--- PASS: TestLoad (0.10s)
 === RUN   TestLoadChannels
 2
 --- PASS: TestLoadChannels (0.11s)
 === RUN   TestCombineSounds
---- PASS: TestCombineSounds (0.68s)
+--- PASS: TestCombineSounds (0.67s)
 === RUN   TestSaveLoadSave
---- PASS: TestSaveLoadSave (0.46s)
+--- PASS: TestSaveLoadSave (0.56s)
 === RUN   TestPiping
 --- PASS: TestPiping (0.34s)
 PASS
-ok  	_/home/simon/Dropbox/github/working/signals	2.723s
-Fri 19 Feb 04:35:28 GMT 2016 */
+ok  	_/home/simon/Dropbox/github/working/signals	3.169s
+Sat Feb 20 00:06:25 GMT 2016 */
 
