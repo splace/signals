@@ -16,7 +16,7 @@ func init() {
 }
 
 type Constant struct {
-	Constant level "level"
+	Constant level
 }
 
 func (s Constant) Level(t interval) level {
@@ -29,7 +29,6 @@ func DB(vol float64) float64 {
 func Vol(DB float64) float64 {
 	return math.Pow(2,DB/6)
 }
-
 
 func NewConstant(DB float64) Constant {
 	return Constant{level(MaxLevelfloat64*Vol(DB))}

@@ -51,7 +51,7 @@ type LimitedSignal interface {
 	limiter
 }
 
-// Samples are limitedSignals that can be assumed to be zero before their start interval
+// Samples are limitedSignals that can be assumed to be zero before their start interval.
 type Sample interface {
 	LimitedSignal
 	Start() interval
@@ -73,11 +73,5 @@ type LimitedPeriodicalSignal interface {
 	Signal
 	limiter
 	PeriodicalSignal
-}
-
-
-// a periodical (type multiplex) based on a sine wave, and having a set volume%.
-func NewTone(period interval, volume float64) Multiplex {
-	return Multiplex{Sine{period}, NewConstant(volume)}
 }
 

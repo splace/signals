@@ -65,3 +65,10 @@ func NewMultiplex(c ...Signal) Multiplex{
 	return Multiplex(c)
 }
 
+// returns a periodical (type multiplex) based on a sine wave,
+// with peak level set to MaxLevel adjusted by dB,
+// dB should always be negative to remain in level limits.
+func NewTone(period interval, dB float64) Multiplex {
+	return Multiplex{Sine{period}, NewConstant(dB)}
+}
+
