@@ -116,7 +116,7 @@ func NewPCM(s Signal, length interval, sampleRate uint32, sampleBytes uint8) PCM
 	}()
 	noise, _ := Decode(in)
 	in.Close()
-	return noise[0]
+	return noise[0].(PCMSignal)
 }
 
 // 8 bit PCMSignal
@@ -207,9 +207,9 @@ type PCMformat struct {
 	Bits        uint16
 }
 
-// Decode a stream into an array of PCMSignals.
+// Decode a stream into an array of Signals.
 // one Signal for each channel in the encoding.
-func Decode(wav io.Reader) ([]PCMSignal, error) {
+func Decode(wav io.Reader) ([]Signal, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
 	var format PCMformat
@@ -286,7 +286,7 @@ func Decode(wav io.Reader) ([]PCMSignal, error) {
 
 		}
 	}
-	signals := make([]PCMSignal, format.Channels)
+	signals := make([]Signal, format.Channels)
 
 	var c uint32
 	if format.Bits == 8 {
@@ -311,3 +311,6 @@ func Decode(wav io.Reader) ([]PCMSignal, error) {
 	}
 	return signals, nil
 }
+
+
+

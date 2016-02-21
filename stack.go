@@ -32,8 +32,9 @@ func (c Stack) Period() (period interval) {
 }
 
 func (c Stack) Duration() (max interval) {
+	max=-1
 	for _, s := range c {
-		if sls, ok := s.(LimitedSignal); ok {
+		if sls, ok := s.(limiter); ok {
 			if newmax := sls.Duration(); newmax > max {
 				max = newmax
 			}

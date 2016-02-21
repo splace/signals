@@ -43,9 +43,10 @@ func (c Multiplex) Period() (period interval) {
 }
 
 func (c Multiplex) Duration() (min interval) {
+	min=-1
 	for _, s := range c {
 		if sls, ok := s.(limiter); ok {
-			if newmin := sls.Duration(); newmin < min || min==0 {
+			if newmin := sls.Duration(); newmin>=0 && (min==-1 || newmin < min)  {
 				min = newmin
 			}
 		}	
@@ -54,6 +55,7 @@ func (c Multiplex) Duration() (min interval) {
 }
 /*
 // this doesn't work because Note is still a limiter (multiplex) an has durarion zero
+// or TPIAW  multiplex with no limited's, results in a limited of zero duration. not good
 func (c Multiplex) Duration() (min interval) {
 	var found bool
 	for _, s := range c {
