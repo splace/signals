@@ -8,9 +8,8 @@ import (
 
 func main() {
 	m := NewTone(UnitTime/100, -6)
-	var file *os.File
-	var err error
-	if file, err = os.Create(fmt.Sprintf("Sine%+v.wav", m)); err != nil {
+	file, err := os.Create(fmt.Sprintf("Sine%+v.wav", m)) // file named after go code of signal
+	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
