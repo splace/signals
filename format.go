@@ -88,9 +88,8 @@ func (e ErrWavParse) Error() string {
 
 // PCMSignal is a Pulse-code modulated Signal's behaviour
 type PCMSignal interface {
-	Signal
-	Duration() interval
-	SamplePeriod() interval
+	LimitedSignal
+	ModulatePeriod() interval
 	Encode(w io.Writer)
 }
 
@@ -101,7 +100,7 @@ type PCM struct {
 	data         []uint8
 }
 
-func (p PCM)SamplePeriod()interval{
+func (p PCM)ModulatePeriod()interval{
 	return p.samplePeriod 
 }
 
@@ -135,7 +134,7 @@ func (s PCM8bit) Level(offset interval) level {
 	return level(s.data[index]-128) * (MaxLevel >> 7)
 }
 func (s PCM8bit) Encode(w io.Writer) {
-	Encode(w,s, s.Duration(), uint32(UnitTime/s.SamplePeriod()), 1)
+	Encode(w,s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 1)
 }	
 
 // 16 bit PCM Signal
@@ -151,7 +150,7 @@ func (s PCM16bit) Level(offset interval) level {
 	return level(int16(s.data[index])|int16(s.data[index+1])<<8) * (MaxLevel >> 15)
 }
 func (s PCM16bit) Encode(w io.Writer) {
-	Encode(w,s, s.Duration(), uint32(UnitTime/s.SamplePeriod()), 2)
+	Encode(w,s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 2)
 }
 
 // 24 bit PCM Signal
@@ -167,7 +166,7 @@ func (s PCM24bit) Level(offset interval) level {
 	return level(int32(s.data[index])|int32(s.data[index+1])<<8|int32(s.data[index+2])<<16) * (MaxLevel >> 23)
 }
 func (s PCM24bit) Encode(w io.Writer) {
-	Encode(w,s, s.Duration(),uint32(UnitTime/s.SamplePeriod()), 3)
+	Encode(w,s, s.Duration(),uint32(UnitTime/s.ModulatePeriod()), 3)
 }	
 		
 
@@ -184,7 +183,7 @@ func (s PCM32bit) Level(offset interval) level {
 	return level(int32(s.data[index])|int32(s.data[index+1])<<8|int32(s.data[index+2])<<16|int32(s.data[index+3])<<24) * (MaxLevel >> 31)
 }
 func (s PCM32bit) Encode(w io.Writer) {
-	Encode(w,s, s.Duration(), uint32(UnitTime/s.SamplePeriod()), 4)
+	Encode(w,s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 4)
 }	
 
 // RIFF file header holder

@@ -23,9 +23,13 @@ Interfaces
 
 Signal :- has method Level() which returns a Level value from an Interval value parameter.
 
-PCMSignal :- a Signal with with additional methods; SamplePeriod() returns the interval of each sample and Duration() returns the total saved interval of the Signal. 
+LimitedSignal :- has a Duration() method that returns the interval after which the signal can be assumed to return zero. ie ends.
+
+PCMSignal :- a LimitedSignal with with additional method SamplePeriod() returning the interval spacing of recorded levels.
 
 Periodical :- a Signal with an additional method Period(), that returns the signals assumed repeat period Interval.
+
+LimitedPeriodicalSignal :- a signal that both repeats and ends.
 
 Notes
 

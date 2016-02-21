@@ -23,7 +23,7 @@ func (s Delayed) Level(t interval) level {
 	return s.Signal.Level(t - s.Delay)
 }
 
-// a Signal that sppeds up the time of another signal
+// a Signal that speeds up the time of another signal
 type Spedup struct {
 	Signal
 	Factor float32

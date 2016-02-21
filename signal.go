@@ -40,11 +40,41 @@ func (l level) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(MaxLevel))
 }
 
-// periodicals are signals that repeat
-type Periodical interface {
+// limitedSignals are signals that can be assumed is zero after a duration
+type limiter interface {
+	Duration() interval
+}
+
+// limitedSignals are signals that can be assumed is zero after a duration
+type LimitedSignal interface {
 	Signal
+	limiter
+}
+
+// Samples are limitedSignals that can be assumed to be zero before their start interval
+type Sample interface {
+	LimitedSignal
+	Start() interval
+}
+
+// Periodicals are signals that repeat
+type PeriodicalSignal interface {
 	Period() interval
 }
+
+// Periodicals are signals that repeat
+type Periodical interface {
+	Signal
+	PeriodicalSignal
+}
+
+// Periodicals are signals that repeat
+type LimitedPeriodicalSignal interface {
+	Signal
+	limiter
+	PeriodicalSignal
+}
+
 
 // a periodical (type multiplex) based on a sine wave, and having a set volume%.
 func NewTone(period interval, volume float64) Multiplex {

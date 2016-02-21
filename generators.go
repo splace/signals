@@ -59,6 +59,11 @@ func (s Pulse) Level(t interval) level {
 	}
 }
 
+func (s Pulse) Duration() interval {
+	return s.Width
+}
+
+
 type Square struct {
 	Cycle interval
 }

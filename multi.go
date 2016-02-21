@@ -41,6 +41,17 @@ func (c Multiplex) Period() (period interval) {
 	return
 }
 
+func (c Multiplex) Duration() (min interval) {
+	for _, s := range c {
+		if sls, ok := s.(LimitedSignal); ok { 
+			if newmin:=sls.Duration();newmin<min{
+				min=newmin
+			}
+		}
+	}
+	return
+}
+
 func (c Multiplex) Save(p io.Writer) error {
 	return gob.NewEncoder(p).Encode(&c)
 }

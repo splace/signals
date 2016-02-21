@@ -25,8 +25,19 @@ func (c Stack) Level(t interval) (total level) {
 
 func (c Stack) Period() (period interval) {
 	if len(c) > 0 {
-		if s, ok := c[0].(Periodical); ok {
+		if s, ok := c[0].(Periodical); ok { // TODO might be better as the shortest perios?
 			return s.Period()
+		}
+	}
+	return
+}
+
+func (c Stack) Duration() (max interval) {
+	for _, s := range c {
+		if sls, ok := s.(LimitedSignal); ok { 
+			if newmax:=sls.Duration();newmax>max{
+				max=newmax
+			}
 		}
 	}
 	return
@@ -46,10 +57,12 @@ func NewStack(c ...Signal) Stack{
 
 
 // Sum is a Stack that doesn't scale its contents, so can overflow.
-type Sum Stack
-
+type Sum struct{
+	Stack
+	}
+	
 func (c Sum) Level(t interval) (total level) {
-	for _, s := range c {
+	for _, s := range c.Stack {
 		total += s.Level(t)
 	}
 	return
@@ -57,7 +70,8 @@ func (c Sum) Level(t interval) (total level) {
 
 // helper: needed becasue can't use type literal with array source. 
 func NewSum(c ...Signal) Sum{
-	return Sum(c)
+	return Sum{Stack(c)}
 }
+
 
 
