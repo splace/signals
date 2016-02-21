@@ -1,6 +1,6 @@
 # signals
 
-Status: (Beta :- stabalising API)
+Status: (Beta :- stabilising API)
 
 Overview: (see godoc reference below)
 
