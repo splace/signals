@@ -37,7 +37,7 @@ generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,N
 
 modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmented
 
-combiners:- Stack,Multiplex,Sum
+combiners:- Stack,Sum,Multiplex
 
 docs: 
      

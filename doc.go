@@ -9,9 +9,9 @@ PCMSignals are stored, at a particular precision, and can be used to cache an ex
 
 only 1-Dimensionsal variation, and for simplicity the terminolology used represents analogue variation in time.
 
-intended to be general, and a base package for import, then used with specific real-world quantities.
+intended to be abstract, and a base package for import, then used with specific real-world quantities.
 
-Signals can be encode/decoded as go code binary (gob), (probably best not used for PCMSignals, where saving as wav files is available.)
+Signals can be encode/decoded as go code binary (gob), or wav files (signals saved as wav are loaded back as PCMSignals) 
 
 Fundamental Types
 
@@ -30,10 +30,6 @@ PCMSignal :- a LimitedSignal with with additional method SamplePeriod() returnin
 Periodical :- a Signal with an additional method Period(), that returns the signals assumed repeat period Interval.
 
 LimitedPeriodicalSignal :- a signal that both repeats and ends.
-
-Notes
-
-PCMSignals are an evenly spaced array of levels, with different types that store at a particular precisions.
 
 */
 package signals
