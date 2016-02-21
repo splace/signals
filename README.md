@@ -31,7 +31,9 @@ Output: 1 sec, 100hz, 50% volume (-6dB), Sine wave, @8k samples/sec, 8bit unsign
 
 [Sine[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/signals/blob/master/examples/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
 
-Status:
+Status: (Beta :- stabalising API)
+
+Features:
 
 generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,Noise,PCM<<bits>>bit
 
