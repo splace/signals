@@ -28,7 +28,7 @@ func main() {
 	Encode(file, m, 1*UnitTime, 8000, 2)
 }
 ```
-Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte unsigned PCM (u16), WAV file 
+Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signed PCM (s16), WAV file 
 
 [Sine[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/signals/blob/master/examples/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
 
