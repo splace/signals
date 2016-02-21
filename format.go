@@ -6,15 +6,15 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"os"
 	"log"
+	"os"
 )
 
 // Encode a signal as PCM data, one channel, in a Riff wave container.
 func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleBytes uint8) {
 	binaryWrite := func(w io.Writer, d interface{}) {
 		if err := binary.Write(w, binary.LittleEndian, d); err != nil {
-			log.Println("Encode failure:"+ err.Error() + fmt.Sprint(w, d))
+			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w, d))
 		}
 	}
 	samplePeriod := MultiplyInterval(1/float32(sampleRate), UnitTime)
@@ -72,7 +72,6 @@ func Encode(w io.Writer, s Signal, length interval, sampleRate uint32, sampleByt
 	}
 }
 
-
 type ErrWavParse struct {
 	description string
 	source      io.Reader
@@ -93,18 +92,18 @@ type PCMSignal interface {
 	Encode(w io.Writer)
 }
 
-// PCM is the state and behaviour common to all PCMSignals. 
+// PCM is the state and behaviour common to all PCMSignals.
 type PCM struct {
 	samplePeriod interval
 	length       interval
 	data         []uint8
 }
 
-func (p PCM)ModulatePeriod()interval{
-	return p.samplePeriod 
+func (p PCM) ModulatePeriod() interval {
+	return p.samplePeriod
 }
 
-func (p PCM)Duration()interval{
+func (p PCM) Duration() interval {
 	return p.length
 }
 
@@ -134,8 +133,8 @@ func (s PCM8bit) Level(offset interval) level {
 	return level(s.data[index]-128) * (MaxLevel >> 7)
 }
 func (s PCM8bit) Encode(w io.Writer) {
-	Encode(w,s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 1)
-}	
+	Encode(w, s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 1)
+}
 
 // 16 bit PCM Signal
 type PCM16bit struct {
@@ -150,7 +149,7 @@ func (s PCM16bit) Level(offset interval) level {
 	return level(int16(s.data[index])|int16(s.data[index+1])<<8) * (MaxLevel >> 15)
 }
 func (s PCM16bit) Encode(w io.Writer) {
-	Encode(w,s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 2)
+	Encode(w, s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 2)
 }
 
 // 24 bit PCM Signal
@@ -166,9 +165,8 @@ func (s PCM24bit) Level(offset interval) level {
 	return level(int32(s.data[index])|int32(s.data[index+1])<<8|int32(s.data[index+2])<<16) * (MaxLevel >> 23)
 }
 func (s PCM24bit) Encode(w io.Writer) {
-	Encode(w,s, s.Duration(),uint32(UnitTime/s.ModulatePeriod()), 3)
-}	
-		
+	Encode(w, s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 3)
+}
 
 // 32 bit PCM Signal
 type PCM32bit struct {
@@ -183,8 +181,8 @@ func (s PCM32bit) Level(offset interval) level {
 	return level(int32(s.data[index])|int32(s.data[index+1])<<8|int32(s.data[index+2])<<16|int32(s.data[index+3])<<24) * (MaxLevel >> 31)
 }
 func (s PCM32bit) Encode(w io.Writer) {
-	Encode(w,s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 4)
-}	
+	Encode(w, s, s.Duration(), uint32(UnitTime/s.ModulatePeriod()), 4)
+}
 
 // RIFF file header holder
 type riffHeader struct {
@@ -244,7 +242,7 @@ func Decode(wav io.Reader) ([]PCMSignal, error) {
 		return nil, ErrWavParse{"not whole byte samples size!", wav}
 	}
 
-	//nice TODO a "LIST" chunk with, 3 fields third being "INFO", can contain "ICOP" and "ICRD" chunks providing copyright and creation date information. 
+	//nice TODO a "LIST" chunk with, 3 fields third being "INFO", can contain "ICOP" and "ICRD" chunks providing copyright and creation date information.
 
 	//	ByteRate    uint32
 	//	SampleBytes uint16
@@ -279,7 +277,7 @@ func Decode(wav io.Reader) ([]PCMSignal, error) {
 	samples := dataHeader.DataLen / uint32(format.Channels) / uint32(format.Bits/8)
 	var s uint32
 	for ; s < samples; s++ {
-		// deinterlace channels by reading directly into consecutive blocks
+		// deinterlace channels by reading directly into separate blocks
 		var c uint32
 		for ; c < uint32(format.Channels); c++ {
 			if n, err := wav.Read(sampleData[(c*samples+s)*uint32(format.Bits/8) : (c*samples+s+1)*uint32(format.Bits/8)]); err != nil || n != int(format.Bits/8) {
@@ -313,6 +311,3 @@ func Decode(wav io.Reader) ([]PCMSignal, error) {
 	}
 	return signals, nil
 }
-
-
-

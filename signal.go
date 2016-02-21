@@ -40,38 +40,37 @@ func (l level) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(MaxLevel))
 }
 
-// limitedSignals are signals that can be assumed is zero after a duration
+// limiter adds a Duration method requirment.
 type limiter interface {
 	Duration() interval
 }
 
-// limitedSignals are signals that can be assumed is zero after a duration
+// LimitedSignals are used as Signals that can be assumed is zero after a duration
 type LimitedSignal interface {
 	Signal
 	limiter
 }
 
-// Samples are limitedSignals that can be assumed to be zero before their start interval.
+// Samples are used as LimitedSignals that can be assumed to be zero before their start interval.
 type Sample interface {
 	LimitedSignal
 	Start() interval
 }
 
-// Periodicals are signals that repeat
-type PeriodicalSignal interface {
+// Periodical adds a Period method requirment.
+type Periodic interface {
 	Period() interval
 }
 
-// Periodicals are signals that repeat
-type Periodical interface {
+// PeriodicalSignals are signals that can be assumed to repeat
+type PeriodicSignal interface {
 	Signal
-	PeriodicalSignal
+	Periodic
 }
 
-// Periodicals are signals that repeat
-type LimitedPeriodicalSignal interface {
+// LimitedPeriodicalSignal are Signals that repeat and coe to an end.
+type LimitedPeriodicSignal interface {
 	Signal
 	limiter
-	PeriodicalSignal
+	Periodic
 }
-

@@ -74,7 +74,7 @@ func TestMulti(t *testing.T) {
 }
 
 func TestStack(t *testing.T) {
-	s := Stack{Sine{UnitTime * 5},Sine{UnitTime * 10}}
+	s := Stack{Sine{UnitTime * 5}, Sine{UnitTime * 10}}
 	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
 		fmt.Print(s.Level(t))
 	}
@@ -194,7 +194,7 @@ func TestLoadChannels(t *testing.T) {
 	}
 	fmt.Println(len(noises))
 }
-func TestCombineSounds(t *testing.T) {
+func TestStackPCMs(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
 	if err != nil {
 		panic(err)
@@ -202,12 +202,22 @@ func TestCombineSounds(t *testing.T) {
 	noise, err := Decode(stream)
 
 	defer stream.Close()
-	wavFile, err := os.Create("M1F1-uint8-AFsp-combined.wav")
+	wavFile, err := os.Create("StackPCMs.wav")
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile,Stack{noise[0], noise[1]}, noise[0].Duration(), 44100, 1)
+	Encode(wavFile, Stack{noise[0], noise[1]}, noise[0].Duration(), 44100, 1)
+}
+func TestMultiplexTones(t *testing.T) {
+	m := NewTone(UnitTime/1000, -6)
+	m1 := NewTone(UnitTime/100, -6)
+	wavFile, err := os.Create("MultiplexTones.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer wavFile.Close()
+	Encode(wavFile, Multiplex{m, m1}, 1*UnitTime, 44100, 1)
 }
 func TestSaveLoadSave(t *testing.T) {
 	m := NewTone(UnitTime/1000, -6)
@@ -215,7 +225,7 @@ func TestSaveLoadSave(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	Encode(wavFile,m, UnitTime, 44100, 2)
+	Encode(wavFile, m, UnitTime, 44100, 2)
 	wavFile.Close()
 	stream, err := os.Open("TestSaveLoad.wav")
 	if err != nil {
@@ -227,7 +237,7 @@ func TestSaveLoadSave(t *testing.T) {
 	}
 
 	stream.Close()
-	wavFile, err= os.Create("TestSaveLoadSave.wav")
+	wavFile, err = os.Create("TestSaveLoadSave.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -236,12 +246,10 @@ func TestSaveLoadSave(t *testing.T) {
 }
 
 func TestPiping(t *testing.T) {
-	wavFile, err:= os.Create("TestPiping.wav")
+	wavFile, err := os.Create("TestPiping.wav")
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
 	NewPCM(NewTone(UnitTime/200, -6), UnitTime, 8000, 1).Encode(wavFile)
 }
-
-

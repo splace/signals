@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"io"
 )
+
 func init() {
 	gob.Register(Multiplex{})
 }
@@ -34,7 +35,7 @@ func (c Multiplex) Level(t interval) (total level) {
 
 func (c Multiplex) Period() (period interval) {
 	if len(c) > 0 {
-		if s, ok := c[0].(Periodical); ok {
+		if s, ok := c[0].(PeriodicSignal); ok {
 			return s.Period()
 		}
 	}
@@ -43,15 +44,34 @@ func (c Multiplex) Period() (period interval) {
 
 func (c Multiplex) Duration() (min interval) {
 	for _, s := range c {
-		if sls, ok := s.(LimitedSignal); ok { 
-			if newmin:=sls.Duration();newmin<min{
-				min=newmin
+		if sls, ok := s.(limiter); ok {
+			if newmin := sls.Duration(); newmin < min || min==0 {
+				min = newmin
 			}
-		}
+		}	
 	}
-	return
+	return 
 }
-
+/*
+// this doesn't work because Note is still a limiter (multiplex) an has durarion zero
+func (c Multiplex) Duration() (min interval) {
+	var found bool
+	for _, s := range c {
+		if sls, ok := s.(limiter); ok {
+			if !found{
+				min=sls.Duration()
+				found=true
+			}else{
+				if newmin := sls.Duration(); newmin < min {
+					min = newmin
+				}
+			}
+		}	
+	}
+	if found {return}
+	return 0
+}
+*/
 func (c Multiplex) Save(p io.Writer) error {
 	return gob.NewEncoder(p).Encode(&c)
 }
@@ -60,8 +80,8 @@ func (c *Multiplex) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
-// helper: needed becasue can't use type literal with array source. 
-func NewMultiplex(c ...Signal) Multiplex{
+// helper: needed becasue can't use type literal with array source.
+func NewMultiplex(c ...Signal) Multiplex {
 	return Multiplex(c)
 }
 
@@ -71,4 +91,3 @@ func NewMultiplex(c ...Signal) Multiplex{
 func NewTone(period interval, dB float64) Multiplex {
 	return Multiplex{Sine{period}, NewConstant(dB)}
 }
-

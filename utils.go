@@ -2,7 +2,7 @@ package signals
 
 import "time"
 
-func Interval(d time.Duration) interval{
+func Interval(d time.Duration) interval {
 	return MultiplyInterval(d.Seconds(), UnitTime)
 }
 

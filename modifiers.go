@@ -1,5 +1,6 @@
 package signals
-import	"encoding/gob"
+
+import "encoding/gob"
 
 func init() {
 	gob.Register(Delayed{})
@@ -123,31 +124,30 @@ func (s Segmented) Level(t interval) level {
 	return s.Signal.Level(t-temp)/level(s.Width)*level(s.Width-temp)+s.Signal.Level(t+s.Width-temp)/level(s.Width)*level(temp)
 }
 */
-// TODO cache: store values and reuse if still within the same segment, 
+// TODO cache: store values and reuse if still within the same segment,
 
 // a Signal that has equal width uniform gradients as an approximation to another signal.
 type Segmented struct {
 	Signal
-	Width interval
-	i1,i2 interval
-	l1,l2 level
+	Width  interval
+	i1, i2 interval
+	l1, l2 level
 }
-func NewSegmented(s Signal,w interval) Segmented {
-	return Segmented{Signal:s,Width:w}
+
+func NewSegmented(s Signal, w interval) Segmented {
+	return Segmented{Signal: s, Width: w}
 }
 
 func (s Segmented) Level(t interval) level {
-	temp:=t%s.Width
-	if t-temp!=s.i1 || t-temp+s.Width!=s.i2{
-		s.i1=t-temp
-		s.i2=t-temp+s.Width
-		s.l1=s.Signal.Level(s.i1)
-		s.l2=s.Signal.Level(s.i2)
+	temp := t % s.Width
+	if t-temp != s.i1 || t-temp+s.Width != s.i2 {
+		s.i1 = t - temp
+		s.i2 = t - temp + s.Width
+		s.l1 = s.Signal.Level(s.i1)
+		s.l2 = s.Signal.Level(s.i2)
 	}
-	return s.l1/level(s.Width)*level(s.Width-temp)+s.l2/level(s.Width)*level(temp)
+	return s.l1/level(s.Width)*level(s.Width-temp) + s.l2/level(s.Width)*level(temp)
 }
-
-
 
 // Triggered brings forward in time a signal to make it cross a trigger level at zero time.
 // searches with a Resolution, from Delay+Resolution to MaxDelay, then from 0 to Delay.

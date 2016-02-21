@@ -5,7 +5,7 @@ Overview
 
 Signals are procedural, levels are calculated as needed, meaning changes in parameters, or arrangment, are immediately effective.
 
-PCMSignals are stored, at a particular precision, and can be used to cache an expensive precedural Signal. 
+PCMSignals are stored, at a particular precision, and can be used to cache an expensive precedural Signal.
 
 only 1-Dimensionsal variation, and for simplicity the terminolology used represents analogue variation in time.
 
@@ -33,7 +33,7 @@ LimitedPeriodicalSignal :- a signal that both repeats and ends.
 
 Notes
 
-PCMSignals are an evenly spaced array of levels, with different types that store at a particular precisions. 
+PCMSignals are an evenly spaced array of levels, with different types that store at a particular precisions.
 
 */
 package signals

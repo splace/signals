@@ -1,7 +1,6 @@
 package signals
 
-import	"encoding/gob"
-
+import "encoding/gob"
 
 func init() {
 	gob.Register(ADSREnvelope{})

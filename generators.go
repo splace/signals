@@ -1,9 +1,11 @@
 package signals
-import	"encoding/gob"
+
+import "encoding/gob"
 
 import (
 	"math"
 )
+
 func init() {
 	gob.Register(Sine{})
 	gob.Register(Constant{})
@@ -24,14 +26,14 @@ func (s Constant) Level(t interval) level {
 }
 
 func DB(vol float64) float64 {
-	return 6*math.Log2(vol)
+	return 6 * math.Log2(vol)
 }
 func Vol(DB float64) float64 {
-	return math.Pow(2,DB/6)
+	return math.Pow(2, DB/6)
 }
 
 func NewConstant(DB float64) Constant {
-	return Constant{level(MaxLevelfloat64*Vol(DB))}
+	return Constant{level(MaxLevelfloat64 * Vol(DB))}
 }
 
 type Sine struct {
@@ -51,7 +53,7 @@ type Pulse struct {
 }
 
 func (s Pulse) Level(t interval) level {
-	if t > s.Width || t<0 {
+	if t > s.Width || t < 0 {
 		return 0
 	} else {
 		return MaxLevel
@@ -61,7 +63,6 @@ func (s Pulse) Level(t interval) level {
 func (s Pulse) Duration() interval {
 	return s.Width
 }
-
 
 type Square struct {
 	Cycle interval
@@ -124,5 +125,3 @@ type Sigmoid struct {
 func (s Sigmoid) Level(t interval) level {
 	return level(MaxLevelfloat64 / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }
-
-

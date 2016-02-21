@@ -41,20 +41,3 @@ func main(){
 
 }
 
-/*  Hal3 Fri Feb 19 00:31:57 GMT 2016 go version go1.5.1 linux/amd64
-Fri Feb 19 00:32:07 GMT 2016 */
-/*  Hal3 Fri Feb 19 00:33:45 GMT 2016 go version go1.5.1 linux/amd64
-Fri Feb 19 00:33:50 GMT 2016 */
-/*  Hal3 Fri Feb 19 00:35:21 GMT 2016 go version go1.5.1 linux/amd64
-Fri Feb 19 00:35:26 GMT 2016 */
-/*  Hal3 Fri Feb 19 00:37:37 GMT 2016 go version go1.5.1 linux/amd64
-Fri Feb 19 00:37:42 GMT 2016 */
-/*  Hal3 Fri Feb 19 00:39:38 GMT 2016 go version go1.5.1 linux/amd64
-Fri Feb 19 00:39:43 GMT 2016 */
-/*  Hal3 Fri Feb 19 00:42:42 GMT 2016 go version go1.5.1 linux/amd64
-Fri Feb 19 00:42:42 GMT 2016 */
-/*  Hal3 Fri Feb 19 00:42:58 GMT 2016 go version go1.5.1 linux/amd64
-Fri Feb 19 00:42:59 GMT 2016 */
-/*  Hal3 Fri Feb 19 00:43:45 GMT 2016 go version go1.5.1 linux/amd64
-Fri Feb 19 00:43:50 GMT 2016 */
-
