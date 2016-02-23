@@ -23,13 +23,12 @@ Interfaces
 
 Function :- has method Call() which returns a y value from an x value parameter.
 
-LimitedFunction :- has a Duration() method that returns the x value after which the function can be assumed to return zero. ie ends.
+LimitedFunction :- has a MaxX() method that returns the x value after which the function can be assumed to return zero. ie ends.
 
-PCMFunction :- a LimitedFunction with additional method SamplePeriod() returning the x spacing of recorded ys.
+PeriodicFunction :- a Function with an additional method Period(), the repeat, (or sampling for PCM), delta x.   
 
-PeriodicFunction :- a Function with an additional method Period(), that returns the functions assumed repeat period delta x (Dx).
-
-LimitedPeriodicalFunction :- a function that both repeats and ends.
+PCMFunction :- a PeriodicLimitedFunction with additional method Encode(). 
+(NB Period() for PCMFunctions represents the sample spacing, since repeating stored functions are assumed not required, use a Looped moifier.)
 
 */
 package signals
