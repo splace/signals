@@ -89,7 +89,7 @@ type PCMFunction interface {
 }
 
 
-// PCM is the state and behaviour common to all PCMFunctions.
+// PCM is the state and behaviour common to all PCM.
 type PCM struct {
 	samplePeriod x
 	length       x
@@ -325,7 +325,7 @@ func Decode(wav io.Reader) ([]Function, error) {
 	samples := dataHeader.DataLen / uint32(format.Channels) / uint32(format.Bits/8)
 	var s uint32
 	for ; s < samples; s++ {
-		// deinterlace channels by reading directly into separate blocks
+		// deinterlace channels by reading directly into separate consecutive blocks
 		var c uint32
 		for ; c < uint32(format.Channels); c++ {
 			if n, err := wav.Read(sampleData[(c*samples+s)*uint32(format.Bits/8) : (c*samples+s+1)*uint32(format.Bits/8)]); err != nil || n != int(format.Bits/8) {
