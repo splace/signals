@@ -8,100 +8,100 @@ import (
 )
 
 func TestSquare(t *testing.T) {
-	s := Square{UnitTime}
-	for t := interval(0); t < 2*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := Square{UnitX}
+	for t := x(0); t < 2*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
 
 func TestPulse(t *testing.T) {
-	s := Pulse{UnitTime}
-	for t := interval(0); t < 2*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := Pulse{UnitX}
+	for t := x(0); t < 2*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
 func TestRamp(t *testing.T) {
-	s := RampUp{UnitTime}
-	for t := interval(0); t < 2*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := RampUp{UnitX}
+	for t := x(0); t < 2*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
-	s2 := RampDown{UnitTime}
-	for t := interval(0); t < 2*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s2.Level(t))
+	s2 := RampDown{UnitX}
+	for t := x(0); t < 2*UnitX; t += UnitX / 10 {
+		fmt.Print(s2.Call(t))
 	}
 	fmt.Println()
 }
 func TestSine(t *testing.T) {
-	s := Sine{UnitTime}
-	for t := interval(0); t < 2*UnitTime; t += UnitTime / 16 {
-		fmt.Print(s.Level(t))
+	s := Sine{UnitX}
+	for t := x(0); t < 2*UnitX; t += UnitX / 16 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
 func TestSigmoid(t *testing.T) {
-	s := Sigmoid{UnitTime}
-	for t := interval(-2 * UnitTime); t < 2*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := Sigmoid{UnitX}
+	for t := x(-2 * UnitX); t < 2*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
 
 func TestADSREnvelope(t *testing.T) {
-	s := NewADSREnvelope(UnitTime, UnitTime, UnitTime, MaxLevel/2, UnitTime)
-	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := NewADSREnvelope(UnitX, UnitX, UnitX, Maxy/2, UnitX)
+	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
 
 func TestReflect(t *testing.T) {
-	s := Reflected{NewADSREnvelope(UnitTime, UnitTime, UnitTime, MaxLevel/2, UnitTime)}
-	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := Reflected{NewADSREnvelope(UnitX, UnitX, UnitX, Maxy/2, UnitX)}
+	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
 
 func TestMulti(t *testing.T) {
-	s := Multiplex{Sine{UnitTime * 5}, Sine{UnitTime * 10}}
-	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := Multiplex{Sine{UnitX * 5}, Sine{UnitX * 10}}
+	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
 
 func TestStack(t *testing.T) {
-	s := Stack{Sine{UnitTime * 5}, Sine{UnitTime * 10}}
-	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := Stack{Sine{UnitX * 5}, Sine{UnitX * 10}}
+	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
 
 func TestTrigger(t *testing.T) {
-	s := Triggered{NewADSREnvelope(UnitTime, UnitTime, UnitTime, MaxLevel/2, UnitTime), MaxLevel / 3 * 2, true, UnitTime / 100, UnitTime * 10, 0, nil, 0, false}
-	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	s := Triggered{NewADSREnvelope(UnitX, UnitX, UnitX, Maxy/2, UnitX), Maxy / 3 * 2, true, UnitX / 100, UnitX * 10, 0, nil, 0, false}
+	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
-	fmt.Println(s.Delay)
-	//s.Trigger = MaxLevel / 3
+	fmt.Println(s.Shift)
+	//s.Trigger = Maxy / 3
 	s.Rising = false
-	for t := interval(0); t < 5*UnitTime; t += UnitTime / 10 {
-		fmt.Print(s.Level(t))
+	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
-	fmt.Println(s.Delay)
+	fmt.Println(s.Shift)
 	fmt.Println()
 }
 
 func TestNoise(t *testing.T) {
 	s := NewNoise()
-	for t := interval(0); t < 40*UnitTime; t += UnitTime {
-		fmt.Print(s.Level(t))
+	for t := x(0); t < 40*UnitX; t += UnitX {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 	var file *os.File
@@ -110,13 +110,13 @@ func TestNoise(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, s, UnitTime, 8000, 1)
+	Encode(file, s, UnitX, 8000, 1)
 	var file2 *os.File
 	if file2, err = os.Create("Noise2.wav"); err != nil {
 		panic(err)
 	}
 	defer file2.Close()
-	Encode(file2, s, UnitTime, 16000, 1)
+	Encode(file2, s, UnitX, 16000, 1)
 }
 
 func TestBitPulses(t *testing.T) {
@@ -125,9 +125,9 @@ func TestBitPulses(t *testing.T) {
 	if err != nil {
 		panic(i)
 	}
-	s := PulsePattern{*i, UnitTime}
-	for t := interval(0); t < 40*UnitTime; t += UnitTime {
-		fmt.Print(s.Level(t))
+	s := PulsePattern{*i, UnitX}
+	for t := x(0); t < 40*UnitX; t += UnitX {
+		fmt.Print(s.Call(t))
 	}
 	fmt.Println()
 }
@@ -139,7 +139,7 @@ func TestSaveLoad(t *testing.T) {
 		panic(err)
 	}
 	//m:=Multi{Sine{UnitTime / 1000},Constant{50}}
-	m := NewTone(UnitTime/1000, -6)
+	m := NewTone(UnitX/1000, -6)
 	if err := m.Save(file); err != nil {
 		panic("unable to save")
 	}
@@ -159,7 +159,7 @@ func TestSaveLoad(t *testing.T) {
 }
 
 func TestSaveWav(t *testing.T) {
-	m := NewTone(UnitTime/100, -6)
+	m := NewTone(UnitX/100, -6)
 
 	var file *os.File
 	var err error
@@ -167,7 +167,7 @@ func TestSaveWav(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, m, UnitTime, 8000, 1)
+	Encode(file, m, UnitX, 8000, 1)
 }
 func TestLoad(t *testing.T) {
 	stream, err := os.Open("middlec.wav")
@@ -207,25 +207,25 @@ func TestStackPCMs(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile, Stack{noise[0], noise[1]}, noise[0].(PCMSignal).Duration(), 44100, 1)
+	Encode(wavFile, Stack{noise[0], noise[1]}, noise[0].(PCMFunction).MaxX(), 44100, 1)
 }
 func TestMultiplexTones(t *testing.T) {
-	m := NewTone(UnitTime/1000, -6)
-	m1 := NewTone(UnitTime/100, -6)
+	m := NewTone(UnitX/1000, -6)
+	m1 := NewTone(UnitX/100, -6)
 	wavFile, err := os.Create("MultiplexTones.wav")
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile, Multiplex{m, m1}, 1*UnitTime, 44100, 1)
+	Encode(wavFile, Multiplex{m, m1}, 1*UnitX, 44100, 1)
 }
 func TestSaveLoadSave(t *testing.T) {
-	m := NewTone(UnitTime/1000, -6)
+	m := NewTone(UnitX/1000, -6)
 	wavFile, err := os.Create("TestSaveLoad.wav")
 	if err != nil {
 		panic(err)
 	}
-	Encode(wavFile, m, UnitTime, 44100, 2)
+	Encode(wavFile, m, UnitX, 44100, 2)
 	wavFile.Close()
 	stream, err := os.Open("TestSaveLoad.wav")
 	if err != nil {
@@ -242,7 +242,7 @@ func TestSaveLoadSave(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	noise[0].(PCMSignal).Encode(wavFile)
+	noise[0].(PCMFunction).Encode(wavFile)
 }
 
 func TestPiping(t *testing.T) {
@@ -251,8 +251,5 @@ func TestPiping(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	NewPCM(NewTone(UnitTime/200, -6), UnitTime, 8000, 1).Encode(wavFile)
+	NewPCM(NewTone(UnitX/200, -6), UnitX, 8000, 1).Encode(wavFile)
 }
-
-
-

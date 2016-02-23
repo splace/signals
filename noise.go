@@ -9,8 +9,8 @@ func init() {
 	gob.Register(Noise{})
 }
 
-// Noise is a deterministic random level Signal, white noise.
-// it has the same value at the same time, but random otherwise.
+// Noise is a deterministic random Function, white noise.
+// it always produces the same y value for the same x value, but random otherwise.
 // determinism allows caching even for this type
 type Noise struct {
 	generator rand.Rand
@@ -20,10 +20,10 @@ func NewNoise() Noise {
 	return Noise{*rand.New(rand.NewSource(rand.Int63()))} // give each noise, very probably, a different generator source
 }
 
-func (s Noise) Level(t interval) (l level) {
-	rand.Seed(int64(t))                   // default generator set to the same seed for the same time
-	s.generator.Seed(int64(rand.Int63())) // Noise sets its generator's seed to a random number from default generator, which is the same at a given t, so the same random numbers generated from it, for the same t, but different for different Noises.
-	l += level(s.generator.Int63())
-	l -= level(s.generator.Int63())
+func (s Noise) Call(t x) (l y) {
+	rand.Seed(int64(t))                   // default generator set to the same seed for the same x
+	s.generator.Seed(int64(rand.Int63())) // Noise sets its generator's seed to a random number from default generator, which is the same at a given x, so the same random numbers generated from it, for the same x, but different for different Noises.
+	l += y(s.generator.Int63())
+	l -= y(s.generator.Int63())
 	return
 }

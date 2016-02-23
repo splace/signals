@@ -3,7 +3,7 @@ package signals
 import "encoding/gob"
 
 func init() {
-	gob.Register(Delayed{})
+	gob.Register(Shifted{})
 	gob.Register(Spedup{})
 	gob.Register(SpedupProgressive{})
 	gob.Register(Looped{})
@@ -14,178 +14,178 @@ func init() {
 	gob.Register(Triggered{})
 }
 
-// a Signal that delays the time of another signal
-type Delayed struct {
-	Signal
-	Delay interval
+// a Function that delays the time of another function
+type Shifted struct {
+	Function
+	Shift x
 }
 
-func (s Delayed) Level(t interval) level {
-	return s.Signal.Level(t - s.Delay)
+func (s Shifted) Call(t x) y {
+	return s.Function.Call(t - s.Shift)
 }
 
-// a Signal that speeds up the time of another signal
+// a Function that speeds up the time of another function
 type Spedup struct {
-	Signal
+	Function
 	Factor float32
 }
 
-func (s Spedup) Level(t interval) level {
-	return s.Signal.Level(interval(float32(t) * s.Factor))
+func (s Spedup) Call(t x) y {
+	return s.Function.Call(x(float32(t) * s.Factor))
 }
 
 // TODO spedup tone should have period changed
 
 type SpedupProgressive struct {
-	Signal
-	Rate interval
+	Function
+	Rate x
 }
 
-func (s SpedupProgressive) Level(t interval) level {
-	return s.Signal.Level(t + t*t/s.Rate)
+func (s SpedupProgressive) Call(t x) y {
+	return s.Function.Call(t + t*t/s.Rate)
 }
 
-// a Signal that repeats another signal
+// a Function that repeats another function
 type Looped struct {
-	Signal
-	Length interval
+	Function
+	Length x
 }
 
-func (s Looped) Level(t interval) level {
-	return s.Signal.Level(t % s.Length)
+func (s Looped) Call(t x) y {
+	return s.Function.Call(t % s.Length)
 }
 
-func (s Looped) Period() interval {
+func (s Looped) Period() x {
 	return s.Length
 }
 
-// a Signal that produced level values that are the negative of another signals level values
+// a Function that produced y values that are the negative of another functions y values
 type Inverted struct {
-	Signal
+	Function
 }
 
-func (s Inverted) Level(t interval) level {
-	return -s.Signal.Level(t)
+func (s Inverted) Call(t x) y {
+	return -s.Function.Call(t)
 }
 
-// a Signal that returns levels that run time backwards of another signal
+// a Function that returns ys that run time backwards of another function
 type Reversed struct {
-	Signal
+	Function
 }
 
-func (s Reversed) level(t interval) level {
-	return s.Signal.Level(-t)
+func (s Reversed) y(t x) y {
+	return s.Function.Call(-t)
 }
 
-// a Signal that produces values that are flipped over, (Maxvalue<->zero) of another signal
+// a Function that produces values that are flipped over, (Maxvalue<->zero) of another function
 type Reflected struct {
-	Signal
+	Function
 }
 
-func (s Reflected) Level(t interval) level {
-	if r := s.Signal.Level(t); r < 0 {
-		return -MaxLevel - r
+func (s Reflected) Call(t x) y {
+	if r := s.Function.Call(t); r < 0 {
+		return -Maxy - r
 	} else {
-		return MaxLevel - r
+		return Maxy - r
 	}
 }
 
-// a Signal that stretches the time of another signal, in proportion to the value of a modulation signal
+// a Function that stretches the time of another function, in proportion to the value of a modulation function
 type Modulated struct {
-	Signal
-	Modulation Signal
-	Factor     interval
+	Function
+	Modulation Function
+	Factor     x
 }
 
-func (s Modulated) Level(t interval) level {
-	return s.Signal.Level(t + MultiplyInterval(float64(s.Modulation.Level(t))/MaxLevelfloat64, s.Factor))
+func (s Modulated) Call(t x) y {
+	return s.Function.Call(t + MultiplyX(float64(s.Modulation.Call(t))/Maxyfloat64, s.Factor))
 }
 
-// TODO if a modulation signal is periodic then the modulated will be, or, smaller of either?
+// TODO if a modulation function is periodic then the modulated will be, or, smaller of either?
 /*
-// a Signal that stretches the time of another signal, in proportion to the value of a modulation signal
+// a Function that stretches the time of another function, in proportion to the value of a modulation function
 type Modulated struct {
-	Signal
-	Modulation Signal
+	Function
+	Modulation Function
 	Factor     float64
 }
 
-func (s Modulated) Level(t interval) level {
-	return s.Signal.Level(interval(float64(t) * DB(float64(s.Modulation.Level(t))/MaxLevelfloat64*s.Factor))
+func (s Modulated) y(t x) y {
+	return s.Function.y(x(float64(t) * DB(float64(s.Modulation.y(t))/Maxyfloat64*s.Factor))
 }
-// a Signal that has equal width uniform gradients as an approximation to another signal
+// a Function that has equal width uniform gradients as an approximation to another function
 type Segmented struct {
-	Signal
-	Width   interval
+	Function
+	Width   x
 }
 
-func (s Segmented) Level(t interval) level {
+func (s Segmented) y(t x) y {
 	temp:=t%s.Width
-	return s.Signal.Level(t-temp)/level(s.Width)*level(s.Width-temp)+s.Signal.Level(t+s.Width-temp)/level(s.Width)*level(temp)
+	return s.Function.y(t-temp)/y(s.Width)*y(s.Width-temp)+s.Function.y(t+s.Width-temp)/y(s.Width)*y(temp)
 }
 */
 // TODO cache: store values and reuse if still within the same segment,
 
-// a Signal that has equal width uniform gradients as an approximation to another signal.
+// a Function that has equal width uniform gradients as an approximation to another function.
 type Segmented struct {
-	Signal
-	Width  interval
-	i1, i2 interval
-	l1, l2 level
+	Function
+	Width  x
+	i1, i2 x
+	l1, l2 y
 }
 
-func NewSegmented(s Signal, w interval) Segmented {
-	return Segmented{Signal: s, Width: w}
+func NewSegmented(s Function, w x) Segmented {
+	return Segmented{Function: s, Width: w}
 }
 
-func (s Segmented) Level(t interval) level {
+func (s Segmented) Call(t x) y {
 	temp := t % s.Width
 	if t-temp != s.i1 || t-temp+s.Width != s.i2 {
 		s.i1 = t - temp
 		s.i2 = t - temp + s.Width
-		s.l1 = s.Signal.Level(s.i1)
-		s.l2 = s.Signal.Level(s.i2)
+		s.l1 = s.Function.Call(s.i1)
+		s.l2 = s.Function.Call(s.i2)
 	}
-	return s.l1/level(s.Width)*level(s.Width-temp) + s.l2/level(s.Width)*level(temp)
+	return s.l1/y(s.Width)*y(s.Width-temp) + s.l2/y(s.Width)*y(temp)
 }
 
-// Triggered brings forward in time a signal to make it cross a trigger level at zero time.
-// searches with a Resolution, from Delay+Resolution to MaxDelay, then from 0 to Delay.
+// Triggered shifts forward function to make it cross a trigger y at zero x.
+// searches with a Resolution, from Shift+Resolution to MaxShift, then from 0 to Shift.
 // Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round.
 // Rising can be alternated to find either way crossing
 type Triggered struct {
-	Signal
-	Trigger        level
+	Function
+	Trigger        y
 	Rising         bool
-	Resolution     interval
-	MaxDelay       interval
-	Delay          interval
-	searched       Signal
-	locatedTrigger level
+	Resolution     x
+	MaxShift       x
+	Shift          x
+	searched       Function
+	locatedTrigger y
 	locatedRising  bool
 }
 
-func (s *Triggered) Level(t interval) level {
-	if s.Trigger != s.locatedTrigger || s.searched != s.Signal || s.locatedRising != s.Rising {
-		s.searched = s.Signal
+func (s *Triggered) Call(t x) y {
+	if s.Trigger != s.locatedTrigger || s.searched != s.Function || s.locatedRising != s.Rising {
+		s.searched = s.Function
 		s.locatedTrigger = s.Trigger
 		s.locatedRising = s.Rising
-		if s.Rising && s.Signal.Level(s.Delay) > s.Trigger || !s.Rising && s.Signal.Level(s.Delay) < s.Trigger {
-			s.Delay += s.Resolution
+		if s.Rising && s.Function.Call(s.Shift) > s.Trigger || !s.Rising && s.Function.Call(s.Shift) < s.Trigger {
+			s.Shift += s.Resolution
 		}
-		for t := s.Delay; t <= s.MaxDelay; t += s.Resolution {
-			if s.Rising && s.Signal.Level(t) > s.Trigger || !s.Rising && s.Signal.Level(t) < s.Trigger {
-				s.Delay = t
-				return s.Signal.Level(t)
+		for t := s.Shift; t <= s.MaxShift; t += s.Resolution {
+			if s.Rising && s.Function.Call(t) > s.Trigger || !s.Rising && s.Function.Call(t) < s.Trigger {
+				s.Shift = t
+				return s.Function.Call(t)
 			}
 		}
-		for t := interval(0); t < s.Delay; t += s.Resolution {
-			if s.Rising && s.Signal.Level(t) > s.Trigger || !s.Rising && s.Signal.Level(t) < s.Trigger {
-				s.Delay = t
-				return s.Signal.Level(t)
+		for t := x(0); t < s.Shift; t += s.Resolution {
+			if s.Rising && s.Function.Call(t) > s.Trigger || !s.Rising && s.Function.Call(t) < s.Trigger {
+				s.Shift = t
+				return s.Function.Call(t)
 			}
 		}
-		s.Delay = 0
+		s.Shift = 0
 	}
-	return s.Signal.Level(t + s.Delay)
+	return s.Function.Call(t + s.Shift)
 }

@@ -1,35 +1,35 @@
 /*
-Package signals generates and manipulates signals:- https://en.wikipedia.org/wiki/Signal_processing.
+Package signals generates and manipulates abstract signals:- https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signals_and_Systems.
 
 Overview
 
-Signals are procedural, levels are calculated as needed, meaning changes in parameters, or arrangment, are immediately effective.
+Functions are procedural, y's are calculated as needed, meaning changes in parameters, or arrangment, are immediately effective.
 
-PCMSignals are stored, at a particular precision, and can be used to cache an expensive precedural Signal.
-
-only 1-Dimensionsal variation, and for simplicity the terminolology used represents analogue variation in time.
+PCMFunctions are stored, at a particular interval and precision, and can be used to cache an expensive precedural Function.
 
 intended to be abstract, and a base package for import, then used with specific real-world quantities.
 
-Signals can be encode/decoded as go code binary (gob), or wav files (signals saved as wav are loaded back as PCMSignals) 
+Functions can be encode/decoded as go code binary (gob), making for a basic interpreted signal language.
+
+or they can be, lossily, stored in wav files (functions saved as wav are loaded back as PCMFunctions)
 
 Fundamental Types
 
-level :- can have a value from -MaxLevel to +MaxLevel
+x :- 'usually' can be used as if infinite (+ve and -ve), with Unitx somewhere near the center of its precision range.
 
-interval :- 'usually' can be used as if infinite (+ve and -ve), with UnitTime somewhere near the center of its precision range.
+y :- can have a value from -Maxy to +Maxy
 
 Interfaces
 
-Signal :- has method Level() which returns a Level value from an Interval value parameter.
+Function :- has method Call() which returns a y value from an x value parameter.
 
-LimitedSignal :- has a Duration() method that returns the interval after which the signal can be assumed to return zero. ie ends.
+LimitedFunction :- has a Duration() method that returns the x value after which the function can be assumed to return zero. ie ends.
 
-PCMSignal :- a LimitedSignal with with additional method SamplePeriod() returning the interval spacing of recorded levels.
+PCMFunction :- a LimitedFunction with additional method SamplePeriod() returning the x spacing of recorded ys.
 
-Periodical :- a Signal with an additional method Period(), that returns the signals assumed repeat period Interval.
+PeriodicFunction :- a Function with an additional method Period(), that returns the functions assumed repeat period delta x (Dx).
 
-LimitedPeriodicalSignal :- a signal that both repeats and ends.
+LimitedPeriodicalFunction :- a function that both repeats and ends.
 
 */
 package signals
