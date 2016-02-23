@@ -6,7 +6,7 @@ Overview: (see godoc reference below)
 
 Installation:
 
-     go get github.com/splace/functions   
+     go get github.com/splace/signals   
 
 Example:
 ```go
@@ -16,17 +16,18 @@ import (
 	"os"
 )
 
-import . "github.com/splace/functions"
+import . "../../signals"
 
 func main() {
-	m := NewTone(UnitTime/100, -6)
-	file, err := os.Create(fmt.Sprintf("Sine%+v.wav", m))  // file named after go code of function
+	m := NewTone(UnitX/100, -6)
+	file, err := os.Create(fmt.Sprintf("Sine%+v.wav", m)) // file named after go code of generating Function
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, m, 1*UnitTime, 8000, 2)
+	Encode(file, m, 1*UnitX, 8000, 2)
 }
+
 ```
 Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signed PCM (s16), WAV file 
 
