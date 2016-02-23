@@ -79,7 +79,7 @@ type PeriodicLimitedFunction interface {
 	Periodic
 }
 
-// PeakingLimitedFunctions are Functions that can be assumed is zero after a MaxX() and dont exceed a MaxY(). 
+// PeakingLimitedFunctions are Functions that can be assumed is zero after a MaxX() and dont exceed a MaxY().
 type PeakingLimitedFunction interface {
 	LimitedFunction
 	peaker
@@ -91,4 +91,3 @@ type PeakingPeriodicLimitedFunction interface {
 	Periodic
 	peaker
 }
-

@@ -3,6 +3,7 @@ package signals
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -72,14 +73,6 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 	}
 }
 
-type ErrWavParse struct {
-	description string
-}
-
-func (e ErrWavParse) Error() string {
-	return fmt.Sprintf("WAVE Parse,%s", e.description)
-}
-
 // PCMFunction is a Pulse-code modulated Function's behaviour
 type PCMFunction interface {
 	LimitedFunction
@@ -87,7 +80,6 @@ type PCMFunction interface {
 	peaker
 	Encode(w io.Writer)
 }
-
 
 // PCM is the state and behaviour common to all PCM.
 type PCM struct {
@@ -122,20 +114,19 @@ func NewPCM(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunct
 }
 
 // encode a LimitedFunction with the precision and sampleRate of a given PCMFunction
-func EncodeLike(w io.Writer,p LimitedFunction,s PCMFunction){
-	switch f:=s.(type){
+func EncodeLike(w io.Writer, p LimitedFunction, s PCMFunction) {
+	switch f := s.(type) {
 	case PCM8bit:
-		NewPCM(p,p.MaxX(),uint32(UnitX/f.Period()),1).Encode(w)		
+		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 1).Encode(w)
 	case PCM16bit:
-		NewPCM(p,p.MaxX(),uint32(UnitX/f.Period()),2).Encode(w)		
+		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 2).Encode(w)
 	case PCM24bit:
-		NewPCM(p,p.MaxX(),uint32(UnitX/f.Period()),3).Encode(w)		
+		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 3).Encode(w)
 	case PCM32bit:
-		NewPCM(p,p.MaxX(),uint32(UnitX/f.Period()),4).Encode(w)		
+		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 4).Encode(w)
 	}
 	return
 }
-
 
 // 8 bit PCMFunction
 // unlike the other precisions of PCM, that use signed data, 8bit uses un-signed, the default OpenAL and wave file representation.
@@ -155,7 +146,7 @@ func (s PCM8bit) call(b byte) y {
 	return y(b-128) * (Maxy >> 7)
 }
 func (s PCM8bit) encode(y y) byte {
-	return byte(y>>(yBits-8)+128)
+	return byte(y>>(yBits-8) + 128)
 }
 
 func (s PCM8bit) Encode(w io.Writer) {
@@ -172,14 +163,14 @@ func (s PCM16bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-3 {
 		return 0
 	}
-	return s.call(s.data[index],s.data[index+1])
+	return s.call(s.data[index], s.data[index+1])
 }
 
-func (s PCM16bit) call(b1,b2 byte) y {
+func (s PCM16bit) call(b1, b2 byte) y {
 	return y(int16(b1)|int16(b2)<<8) * (Maxy >> 15)
 }
-func (s PCM16bit) encode(y y) (byte,byte) {
-	return byte(y>>(yBits-8)),byte(y>>(yBits-16) & 0xFF)
+func (s PCM16bit) encode(y y) (byte, byte) {
+	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF)
 }
 
 func (s PCM16bit) Encode(w io.Writer) {
@@ -196,13 +187,13 @@ func (s PCM24bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-4 {
 		return 0
 	}
-	return s.call(s.data[index],s.data[index+1],s.data[index+2]) 
+	return s.call(s.data[index], s.data[index+1], s.data[index+2])
 }
-func (s PCM24bit) call(b1,b2,b3 byte) y {
+func (s PCM24bit) call(b1, b2, b3 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) * (Maxy >> 23)
 }
-func (s PCM24bit) encode(y y) (byte,byte,byte) {
-	return byte(y>>(yBits-8)),byte(y>>(yBits-16) & 0xFF),byte(y>>(yBits-24) & 0xFF)
+func (s PCM24bit) encode(y y) (byte, byte, byte) {
+	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF)
 }
 
 func (s PCM24bit) Encode(w io.Writer) {
@@ -219,17 +210,25 @@ func (s PCM32bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-5 {
 		return 0
 	}
-	return s.call(s.data[index],s.data[index+1],s.data[index+2],s.data[index+3]) 
+	return s.call(s.data[index], s.data[index+1], s.data[index+2], s.data[index+3])
 }
-func (s PCM32bit) call(b1,b2,b3,b4 byte) y {
+func (s PCM32bit) call(b1, b2, b3, b4 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) * (Maxy >> 31)
 }
-func (s PCM32bit) encode(y y) (byte,byte,byte,byte) {
-	return byte(y>>(yBits-8)),byte(y>>(yBits-16) & 0xFF),byte(y>>(yBits-24) & 0xFF),byte(y>>(yBits-32) & 0xFF)
+func (s PCM32bit) encode(y y) (byte, byte, byte, byte) {
+	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF), byte(y >> (yBits - 32) & 0xFF)
 }
 
 func (s PCM32bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(UnitX/s.Period()), 4)
+}
+
+type ErrWavParse struct {
+	description string
+}
+
+func (e ErrWavParse) Error() string {
+	return fmt.Sprintf("WAVE Parse,%s", e.description)
 }
 
 // RIFF file header holder
@@ -281,10 +280,10 @@ func Decode(wav io.Reader) ([]Function, error) {
 		return nil, ErrWavParse{"Format chunk incomplete."}
 	}
 	if format.Code != 1 {
-		return nil, ErrWavParse{"not PCM format."}
+		return nil, errors.New("only PCM supported.")
 	}
 	if format.Channels == 0 || format.Channels > 2 {
-		return nil, ErrWavParse{"not mono or stereo."}
+		return nil, errors.New("only mono or stereo PCM supported.")
 	}
 	if format.Bits%8 != 0 {
 		return nil, ErrWavParse{"not whole byte samples size!"}
@@ -359,5 +358,3 @@ func Decode(wav io.Reader) ([]Function, error) {
 	}
 	return functions, nil
 }
-
-
