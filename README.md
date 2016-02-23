@@ -16,7 +16,7 @@ import (
 	"os"
 )
 
-import . "../../signals"
+import . "github.com/splace/signals"
 
 func main() {
 	m := NewTone(UnitX/100, -6)
