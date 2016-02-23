@@ -93,7 +93,7 @@ type PCMFunction interface {
 type PCM struct {
 	samplePeriod x
 	length       x
-	peak         y
+	Peak         y
 	data         []uint8
 }
 
@@ -106,7 +106,7 @@ func (p PCM) MaxX() x {
 }
 
 func (p PCM) PeakY() y {
-	return p.peak
+	return p.Peak
 }
 
 // make a PCMFunction type, from a Function, using particular parameters,
@@ -358,7 +358,6 @@ func Decode(wav io.Reader) ([]Function, error) {
 
 	}
 	return functions, nil
-}/*  Hal3 Mon Feb 22 22:20:23 GMT 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Desktop/signals [build failed]
-Mon Feb 22 22:20:23 GMT 2016 */
+}
+
 

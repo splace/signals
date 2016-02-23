@@ -15,7 +15,7 @@ or they can be, lossily, stored in wav files (functions saved as wav are loaded 
 
 Fundamental Types
 
-x :- 'usually' can be used as if infinite (+ve and -ve), with Unitx somewhere near the center of its precision range.
+x :- 'usually' can be used as if infinite (+ve and -ve), with UnitX somewhere near the center of its precision range.
 
 y :- can have a value from -Maxy to +Maxy
 
@@ -28,7 +28,7 @@ LimitedFunction :- has a MaxX() method that returns the x value after which the 
 PeriodicFunction :- a Function with an additional method Period(), the repeat, (or sampling for PCM), delta x.   
 
 PCMFunction :- a PeriodicLimitedFunction with additional method Encode(). 
-(NB Period() for PCMFunctions represents the sample spacing, since repeating stored functions are assumed not required, use a Looped moifier.)
+(NB Period() for PCMFunctions represents the sample spacing, since repeating stored functions are assumed not required, use a Looped modifier.)
 
 */
 package signals
