@@ -31,7 +31,7 @@ func main() {
 ```
 Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signed PCM (s16), WAV file 
 
-[Sine[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/functions/blob/master/examples/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
+[Sine[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/signals/blob/master/examples/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
 
 Features:
 
@@ -43,5 +43,5 @@ combiners:- Stack,Sum,Multiplex
 
 docs: 
      
-[![GoDoc](https://godoc.org/github.com/splace/functions?status.svg)](https://godoc.org/github.com/splace/functions)
+[![GoDoc](https://godoc.org/github.com/splace/signals?status.svg)](https://godoc.org/github.com/splace/signals)
 
