@@ -1,5 +1,6 @@
 // convert a stereo wav file into a mono by adding sounds together.
 // usage: 2mono.<<o|exe>> <<stereo.wav>> <<mono.wav>>
+// doesn't need anything that is 'sound' specific, just treats as abstract PCM data.
 package main
 
 import . "../../../signals"
@@ -9,11 +10,6 @@ import (
 	"log"
 )
 
-/*hal3 /tmp $ ./go_compiled.a M1F1-uint8-AFsp.wav o.wav
-simon@hal3 /tmp $ ./go_compiled.a o.wav b.wav
-2016/02/20 04:23:29 WAVE Parse,read incomplete File:o.wav
-simon@hal3 /tmp $ 
-*/
 
 type messageLog struct{
 	*log.Logger

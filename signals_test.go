@@ -253,3 +253,4 @@ func TestPiping(t *testing.T) {
 	defer wavFile.Close()
 	NewPCM(NewTone(UnitX/200, -6), UnitX, 8000, 1).Encode(wavFile)
 }
+

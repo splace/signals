@@ -103,13 +103,13 @@ func (p PCM) PeakY() y {
 
 // make a PCMFunction type, from a Function, using particular parameters,
 func NewPCM(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunction {
-	in, out := io.Pipe()
+	out, in := io.Pipe()
 	go func() {
-		Encode(out, s, length, sampleRate, sampleBytes)
-		out.Close()
+		Encode(in, s, length, sampleRate, sampleBytes)
+		in.Close()
 	}()
-	channels, _ := Decode(in)
-	in.Close()
+	channels, _ := Decode(out)
+	out.Close()
 	return channels[0].(PCMFunction)
 }
 
@@ -254,9 +254,9 @@ type PCMformat struct {
 	Bits        uint16
 }
 
-// Decode a stream into an array of Functions.
-// one Function for each channel in the encoding.
-func Decode(wav io.Reader) ([]Function, error) {
+// Decode a stream into an array of LimitedFunctions.
+// one LimitedFunction for each channel in the encoding.
+func Decode(wav io.Reader) ([]LimitedFunction, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
 	var format PCMformat
@@ -333,7 +333,7 @@ func Decode(wav io.Reader) ([]Function, error) {
 
 		}
 	}
-	functions := make([]Function, format.Channels)
+	functions := make([]LimitedFunction, format.Channels)
 
 	var c uint32
 	if format.Bits == 8 {

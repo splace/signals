@@ -18,7 +18,7 @@ type ADSREnvelope struct {
 	end          x
 }
 
-func NewADSREnvelope(attack, decay, sustain x, sustainy y, release x) ADSREnvelope {
+func NewADSREnvelope(attack, decay, sustain x, sustainy y, release x) LimitedFunction {
 	// TODO release attack or decay of zero!
 	return ADSREnvelope{attack, Maxy / y(attack), (Maxy - sustainy) / y(decay), attack + decay, sustainy, attack + decay + sustain, sustainy / y(release), attack + decay + sustain + release}
 }
@@ -37,4 +37,8 @@ func (s ADSREnvelope) Call(t x) y {
 	} else {
 		return 0
 	}
+}
+
+func (s ADSREnvelope) MaxX() x {
+	return s.end
 }

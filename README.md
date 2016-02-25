@@ -1,4 +1,4 @@
-# functions
+# Signals
 
 Status: (Beta :- stabilising API)
 
@@ -39,7 +39,7 @@ generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,N
 
 modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmented
 
-combiners:- Stack,Sum,Multiplex
+combiners:- Stack,Compose,Multiplex
 
 docs: 
      

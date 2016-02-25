@@ -11,7 +11,7 @@ intended to be abstract, and a base package for import, then used with specific 
 
 Functions can be encode/decoded as go code binary (gob), making for a basic interpreted signal language.
 
-or they can be, lossily, stored in wav files (functions saved as wav are loaded back as PCMFunctions)
+or they can, lossily, be stored in wav files (functions saved as wav are loaded back as PCMFunctions)
 
 Fundamental Types
 
