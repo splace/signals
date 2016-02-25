@@ -124,9 +124,9 @@ func (s Segmented) y(t x) y {
 	return s.Function.y(t-temp)/y(s.Width)*y(s.Width-temp)+s.Function.y(t+s.Width-temp)/y(s.Width)*y(temp)
 }
 */
-// TODO cache: store values and reuse if still within the same segment,
 
 // a Function that has equal width uniform gradients as an approximation to another function.
+// (sebsequent calls within the same segment, are generated from cached end values, so doesn't call embedded Function)
 type Segmented struct {
 	Function
 	Width  x
@@ -149,7 +149,7 @@ func (s Segmented) Call(t x) y {
 	return s.l1/y(s.Width)*y(s.Width-temp) + s.l2/y(s.Width)*y(temp)
 }
 
-// Triggered shifts forward function to make it cross a trigger y at zero x.
+// Triggered shifts a Function's x to make it cross a trigger y at zero x.
 // searches with a Resolution, from Shift+Resolution to MaxShift, then from 0 to Shift.
 // Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round.
 // Rising can be alternated to find either way crossing
