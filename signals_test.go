@@ -106,13 +106,13 @@ func TestNoise(t *testing.T) {
 	fmt.Println()
 	var file *os.File
 	var err error
-	if file, err = os.Create("Noise.wav"); err != nil {
+	if file, err = os.Create("./test output/Noise.wav"); err != nil {
 		panic(err)
 	}
 	defer file.Close()
 	Encode(file, s, UnitX, 8000, 1)
 	var file2 *os.File
-	if file2, err = os.Create("Noise2.wav"); err != nil {
+	if file2, err = os.Create("./test output/Noise2.wav"); err != nil {
 		panic(err)
 	}
 	defer file2.Close()
@@ -135,7 +135,7 @@ func TestBitPulses(t *testing.T) {
 func TestSaveLoad(t *testing.T) {
 	var file *os.File
 	var err error
-	if file, err = os.Create("multi.gob"); err != nil {
+	if file, err = os.Create("./test output/multi.gob"); err != nil {
 		panic(err)
 	}
 	//m:=Multi{Sine{UnitTime / 1000},Constant{50}}
@@ -202,7 +202,7 @@ func TestStackPCMs(t *testing.T) {
 	noise, err := Decode(stream)
 
 	defer stream.Close()
-	wavFile, err := os.Create("StackPCMs.wav")
+	wavFile, err := os.Create("./test output/StackPCMs.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -212,7 +212,7 @@ func TestStackPCMs(t *testing.T) {
 func TestMultiplexTones(t *testing.T) {
 	m := NewTone(UnitX/1000, -6)
 	m1 := NewTone(UnitX/100, -6)
-	wavFile, err := os.Create("MultiplexTones.wav")
+	wavFile, err := os.Create("./test output/MultiplexTones.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -221,7 +221,7 @@ func TestMultiplexTones(t *testing.T) {
 }
 func TestSaveLoadSave(t *testing.T) {
 	m := NewTone(UnitX/1000, -6)
-	wavFile, err := os.Create("TestSaveLoad.wav")
+	wavFile, err := os.Create("./test output/TestSaveLoad.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -237,7 +237,7 @@ func TestSaveLoadSave(t *testing.T) {
 	}
 
 	stream.Close()
-	wavFile, err = os.Create("TestSaveLoadSave.wav")
+	wavFile, err = os.Create("./test output/TestSaveLoadSave.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -246,7 +246,7 @@ func TestSaveLoadSave(t *testing.T) {
 }
 
 func TestPiping(t *testing.T) {
-	wavFile, err := os.Create("TestPiping.wav")
+	wavFile, err := os.Create("./test output/TestPiping.wav")
 	if err != nil {
 		panic(err)
 	}
