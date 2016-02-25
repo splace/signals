@@ -5,6 +5,7 @@ import (
 	"math/big"
 	"os"
 	"testing"
+	"image/color"
 )
 
 func TestSquare(t *testing.T) {
@@ -262,6 +263,7 @@ func TestImaging(t *testing.T) {
 		panic(err)
 	}
 	noise, err := Decode(stream)
+	aboveColour = color.RGBA{0,0,255,255}
 
 	defer stream.Close()
 //	Save("./test output/M1F1-uint8-AFsp.wav",NewFunctionImage(Multiplex{noise[0], Pulse{UnitX*4}},3200,300))   // first second
