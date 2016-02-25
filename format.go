@@ -113,7 +113,7 @@ func NewPCM(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunct
 	return channels[0].(PCMFunction)
 }
 
-// encode a LimitedFunction with the precision and sampleRate of a given PeriodicLimitedFunction, like the PCM types.
+// encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and the precision of the specific PCM type, if thats what it is, otherwise defaults to 16bit.
 func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
 	switch f := s.(type) {
 	case PCM8bit:
@@ -124,6 +124,8 @@ func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
 		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 3).Encode(w)
 	case PCM32bit:
 		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 4).Encode(w)
+	default:
+		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 2).Encode(w)
 	}
 	return
 }

@@ -86,6 +86,7 @@ func (c Multiplex) Duration() (min x) {
 	return 0
 }
 */
+
 func (c Multiplex) Save(p io.Writer) error {
 	return gob.NewEncoder(p).Encode(&c)
 }
