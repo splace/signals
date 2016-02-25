@@ -41,6 +41,13 @@ modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmente
 
 combiners:- Stack,Compose,Multiplex
 
+extras:-	FunctionImage 
+
+
+Extras examples:
+
+[Sine[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/signals/blob/master/examples/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
+
 docs: 
      
 [![GoDoc](https://godoc.org/github.com/splace/signals?status.svg)](https://godoc.org/github.com/splace/signals)
