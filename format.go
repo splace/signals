@@ -81,7 +81,7 @@ type PCMFunction interface {
 	Encode(w io.Writer)
 }
 
-// PCM is the state and behaviour common to all PCM.
+// PCM is the state and behaviour common to all PCM. It not a Function, but is Periodic, specific PCM<<precison>> types enbed this, and are Function's.
 type PCM struct {
 	samplePeriod x
 	length       x
@@ -113,8 +113,8 @@ func NewPCM(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunct
 	return channels[0].(PCMFunction)
 }
 
-// encode a LimitedFunction with the precision and sampleRate of a given PCMFunction
-func EncodeLike(w io.Writer, p LimitedFunction, s PCMFunction) {
+// encode a LimitedFunction with the precision and sampleRate of a given PeriodicLimitedFunction, like the PCM types.
+func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
 	switch f := s.(type) {
 	case PCM8bit:
 		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 1).Encode(w)
