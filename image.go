@@ -9,16 +9,14 @@ import (
 	"os"
 )
 
-// Images in this package dont have/need a colormodel
-// so they are broader, and so can be just cast to, (image.Image isa Image)
-// helper types are provided to mix-in colormodel and so implement image.Image.
+// Image doesn't have/need a colormodel, so is more general than an image.Image.
+// when embedded in helper types, to provided a particular colormodel, they then implement image.Image.
 type Image interface {
 	Bounds() image.Rectangle
 	At(x, y int) color.Color
 }
 
-//var aboveColour,belowColour = color.RGBA{0,0,0,0},color.RGBA{255,255,255,255}
-var aboveColour,belowColour = color.RGBA{255,255,255,255},color.RGBA{0,0,0,0}  // upsidedown, as a QAD way to flip image
+var aboveColour,belowColour = color.RGBA{0,0,0,0},color.RGBA{255,255,255,255}
 
 type FunctionImage struct{
 	LimitedFunction
@@ -30,6 +28,7 @@ func (i FunctionImage) Bounds() image.Rectangle{
 	return i.size
 }
 
+// make an image.Image of a LimitedSignal, scaled to maxx x maxy pixels.
 func NewFunctionImage(s LimitedFunction,maxx,maxy int) FunctionImage{
 	return FunctionImage{s,image.Rect(0,-maxy,maxx,maxy),Maxy/y(maxy)}
 }
