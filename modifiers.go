@@ -14,7 +14,7 @@ func init() {
 	gob.Register(Triggered{})
 }
 
-// a Function that delays the time of another function
+// a Function that shifts the x of another function
 type Shifted struct {
 	Function
 	Shift x
@@ -24,7 +24,7 @@ func (s Shifted) Call(t x) y {
 	return s.Function.Call(t - s.Shift)
 }
 
-// a Function that speeds up the time of another function
+// a Function that scales the x of another function
 type Spedup struct {
 	Function
 	Factor float32
@@ -34,7 +34,24 @@ func (s Spedup) Call(t x) y {
 	return s.Function.Call(x(float32(t) * s.Factor))
 }
 
-// TODO spedup tone should have period changed
+/*
+// TODO spedup tone should have MaxX and period changed
+// a Function that scales the x of another function
+type Squeeze struct {
+	LimitedFunction
+	Factor float32
+}
+
+func (s Squeeze) Call(t x) y {
+	return s.LimitedFunction.Call(x(float32(t) * s.Factor))
+}
+
+func (s Squeeze) MaxX() x {
+	return x(float32(s.LimitedFunction.MaxX())*s.Factor)
+}
+
+*/
+
 
 type SpedupProgressive struct {
 	Function
@@ -59,7 +76,7 @@ func (s Looped) Period() x {
 	return s.Length
 }
 
-// a Function that produced y values that are the negative of another functions y values
+// a Function that produceds y values that are the negative of another functions y values
 type Inverted struct {
 	Function
 }
@@ -68,7 +85,7 @@ func (s Inverted) Call(t x) y {
 	return -s.Function.Call(t)
 }
 
-// a Function that returns ys that run time backwards of another function
+// a Function that returns y's that are for the -ve x of another function
 type Reversed struct {
 	Function
 }
@@ -77,7 +94,7 @@ func (s Reversed) y(t x) y {
 	return s.Function.Call(-t)
 }
 
-// a Function that produces values that are flipped over, (Maxvalue<->zero) of another function
+// a Function that produces values that are flipped over, (Maxy<->zero) of another function
 type Reflected struct {
 	Function
 }
@@ -90,7 +107,7 @@ func (s Reflected) Call(t x) y {
 	}
 }
 
-// a Function that stretches the time of another function, in proportion to the value of a modulation function
+// a Function that stretches the x values of another function, in proportion to the value of a modulation function
 type Modulated struct {
 	Function
 	Modulation Function

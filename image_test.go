@@ -4,10 +4,17 @@ import (
 	"os"
 	"testing"
 	"image/color"
+	"image/jpeg" // register de/encoding
+	"image/png"  // register de/encoding
 )
 
 func TestImagingSine(t *testing.T) {
-	Save("./test output/Sine",NewFunctionImage(Multiplex{Sine{UnitX}, Pulse{UnitX}},800,600))
+	file, err := os.Create("./test output/Sine.png")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	png.Encode(file, Plan9PalettedImage{NewFunctionImage(Multiplex{Sine{UnitX}, Pulse{UnitX}},800,600)})
 }
 func TestImaging(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
@@ -18,8 +25,13 @@ func TestImaging(t *testing.T) {
 	aboveColour = color.RGBA{0,0,255,255}
 
 	defer stream.Close()
-//	Save("./test output/M1F1-uint8-AFsp.wav",NewFunctionImage(Multiplex{noise[0], Pulse{UnitX*4}},3200,300))   // first second
-	Save("./test output/M1F1-uint8-AFsp.wav",NewFunctionImage(noise[0],int(noise[0].MaxX()/UnitX*800),600))    // 800 pixels per second width
+	file, err := os.Create("./test output/M1F1-uint8-AFsp.jpeg")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+//	png.Encode(wb, Plan9PalettedImage{NewFunctionImage(Pulse{UnitX*4}},3200,300)})   // first second
+	jpeg.Encode(file, Plan9PalettedImage{NewFunctionImage(noise[0],int(noise[0].MaxX()/UnitX*800),600)},nil)    // 800 pixels per second width
 }
 
 

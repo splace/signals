@@ -4,9 +4,6 @@ import (
 	"image"
 	"image/color"
 	"image/color/palette"
-	"image/jpeg" // register de/encoding
-	"image/png"  // register de/encoding
-	"os"
 )
 
 // Image doesn't have/need a colormodel, so is more general than an image.Image.
@@ -61,25 +58,4 @@ type Plan9PalettedImage struct {
 }
 
 func (i Plan9PalettedImage) ColorModel() color.Model { return color.Palette(palette.Plan9) }
-
-var Save = savePNG
-
-func savePNG(name string, i Image) {
-	wb, err := os.Create(name + ".png")
-	if err != nil {
-		panic(err)
-	}
-	defer wb.Close()
-	png.Encode(wb, Plan9PalettedImage{i}) 
-}
-
-func saveJPG(name string, i Image) {
-	wb, err := os.Create(name + ".jpg")
-	if err != nil {
-		panic(err)
-	}
-	defer wb.Close()
-	jpeg.Encode(wb, RGBAImage{i}, nil)
-}
-
 
