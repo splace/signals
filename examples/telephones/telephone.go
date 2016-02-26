@@ -1,7 +1,7 @@
 package main
 
 import (
-	. "../../../signals"
+	. "../../../signals" // github.com/splace/signals  //
 	"os"
 )
 

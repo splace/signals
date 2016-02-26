@@ -2,10 +2,12 @@ package signals
 
 import "time"
 
+// allows using x without direct access 
 func X(d time.Duration) x {
 	return MultiplyX(d.Seconds(), UnitX)
 }
 
+// allows using x without direct access 
 func MultiplyX(m interface{}, d x) x {
 	switch mt := m.(type) {
 	case int:
