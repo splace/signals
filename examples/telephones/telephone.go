@@ -34,7 +34,7 @@ Notes
 
 func main(){
 	Save("BusyTone.wav",Multiplex{Looped{Pulse{375*ms},750*ms}, Sine{UnitX / 400}})
-	Save("EngagedTone.wav",Looped{Multiplex{Sum{Multiplex{Pulse{400*ms},NewConstant(-6)},Shifted{Pulse{225*ms},750*ms}}, Sine{UnitX / 400}}, 1500*ms})
+	Save("EngagedTone.wav",Looped{Multiplex{Compose{Multiplex{Pulse{400*ms},NewConstant(-6)},Shifted{Pulse{225*ms},750*ms}}, Sine{UnitX / 400}}, 1500*ms})
 	Save("RingingTone.wav",Looped{Multiplex{Pulse{UnitX}, Looped{Pulse{400*ms}, 600*ms}, Stack{Sine{UnitX/450},Sine{UnitX/400}}}, UnitX * 3})
 	Save("NumberUnobtainableTone.wav",Sine{UnitX / 400})
 	Save("dialTone.wav",Stack{Sine{UnitX/450},Sine{UnitX/350}})

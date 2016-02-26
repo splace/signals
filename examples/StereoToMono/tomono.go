@@ -1,9 +1,10 @@
 // convert a stereo wav file into a mono by adding sounds together.
 // usage: 2mono.<<o|exe>> <<stereo.wav>> <<mono.wav>>
 // doesn't need anything that is 'sound' specific, just treats as abstract PCM data.
+// Note: experiment with a fancy bespoke logger
 package main
 
-import . "../../../signals"
+import . "../../../signals"  // github.com/splace/signals //
 import (
 	"os"
 	"flag"
