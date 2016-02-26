@@ -30,7 +30,7 @@ func (i FunctionImage) Bounds() image.Rectangle{
 
 // make an image.Image of a LimitedSignal, scaled to maxx x maxy pixels.
 func NewFunctionImage(s LimitedFunction,maxx,maxy int) FunctionImage{
-	return FunctionImage{s,image.Rect(0,-maxy,maxx,maxy),Maxy/y(maxy)}
+	return FunctionImage{s,image.Rect(0,-maxy/2,maxx,maxy/2),Maxy/y(maxy/2)}
 }
 
 

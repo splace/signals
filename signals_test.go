@@ -255,7 +255,7 @@ func TestPiping(t *testing.T) {
 	NewPCM(NewTone(UnitX/200, -6), UnitX, 8000, 1).Encode(wavFile)
 }
 func TestImagingSine(t *testing.T) {
-	Save("./test output/Sine",NewFunctionImage(Multiplex{Sine{UnitX}, Pulse{UnitX}},800,300))
+	Save("./test output/Sine",NewFunctionImage(Multiplex{Sine{UnitX}, Pulse{UnitX}},800,600))
 }
 func TestImaging(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
@@ -267,7 +267,7 @@ func TestImaging(t *testing.T) {
 
 	defer stream.Close()
 //	Save("./test output/M1F1-uint8-AFsp.wav",NewFunctionImage(Multiplex{noise[0], Pulse{UnitX*4}},3200,300))   // first second
-	Save("./test output/M1F1-uint8-AFsp.wav",NewFunctionImage(noise[0],int(noise[0].MaxX()/UnitX*800),300))    // 800 pixels per second width
+	Save("./test output/M1F1-uint8-AFsp.wav",NewFunctionImage(noise[0],int(noise[0].MaxX()/UnitX*800),600))    // 800 pixels per second width
 }
 
 
