@@ -6,13 +6,11 @@ import (
 	"image/color/palette"
 )
 
-
-var aboveColour,belowColour = color.RGBA{0,0,0,0},color.RGBA{255,255,255,255}
-
 // Depiction of a LimitedFunction   
 type Depiction struct{
 	LimitedFunction
 	size image.Rectangle
+	belowColour,aboveColour  color.Color
 	yScale y  // optimisation; small, a cache because this can't change for the same size, which is not exposed. 
 }
 
@@ -21,15 +19,15 @@ func (i Depiction) Bounds() image.Rectangle{
 }
 
 // makes an image of a LimitedSignal, scaled to maxx x maxy pixels.
-func NewDepiction(s LimitedFunction,maxx,maxy int) Depiction{
-	return Depiction{s,image.Rect(0,-maxy/2,maxx,maxy/2),Maxy/y(maxy/2)}
+func NewDepiction(s LimitedFunction,maxx,maxy int, c1,c2 color.Color) Depiction{
+	return Depiction{s,image.Rect(0,-maxy/2,maxx,maxy/2), c1,c2,Maxy/y(maxy/2)}
 }
 
 func (i Depiction) At(xp, yp int) color.Color{
 	if i.Call( x(xp) * i.MaxX() / x(i.size.Max.X)-x(i.size.Min.X))<= i.yScale*y(yp)-y(i.size.Min.Y) { 
-		return aboveColour
+		return i.aboveColour
 	}
-	return belowColour		
+	return i.belowColour		
 }
 
 
@@ -60,7 +58,4 @@ type Plan9PalettedImage struct {
 }
 
 func (i Plan9PalettedImage) ColorModel() color.Model { return color.Palette(palette.Plan9) }
-/*  Hal3 Fri Feb 26 21:39:58 GMT 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Fri Feb 26 21:39:59 GMT 2016 */
 
