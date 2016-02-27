@@ -44,7 +44,7 @@ combiners:- Stack,Compose,Multiplex
 extras(plugins):-	FunctionImage(image.go) 
 
 
-Extras examples: image of a few seconds of some human speech from a PCM wav file, stereo with different people left/right and drawn red/blue.
+Extras examples: a few seconds of some human speech with different people left/right, made from a FunctionImage for each channel of the stereo and drawn red/blue transparent, using the image/Draw package.
 
 ![speech saved as wav](https://github.com/splace/signals/blob/master/test%20output/out.jpeg)
 
