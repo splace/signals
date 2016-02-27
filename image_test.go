@@ -3,9 +3,11 @@ package signals
 import (
 	"os"
 	"testing"
+	"image"
 	"image/color"
 	"image/jpeg" // register de/encoding
 	"image/png"  // register de/encoding
+	"image/draw"
 )
 
 func TestImagingSine(t *testing.T) {
@@ -14,7 +16,7 @@ func TestImagingSine(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	png.Encode(file, Plan9PalettedImage{NewFunctionImage(Multiplex{Sine{UnitX}, Pulse{UnitX}},800,600)})
+	png.Encode(file, Plan9PalettedImage{NewDepiction(Multiplex{Sine{UnitX}, Pulse{UnitX}},800,600)})
 }
 func TestImaging(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
@@ -31,25 +33,31 @@ func TestImaging(t *testing.T) {
 	}
 	defer file.Close()
 //	png.Encode(wb, Plan9PalettedImage{NewFunctionImage(Pulse{UnitX*4}},3200,300)})   // first second
-	jpeg.Encode(file, Plan9PalettedImage{NewFunctionImage(noise[0],int(noise[0].MaxX()/UnitX*800),600)},nil)    // 800 pixels per second width
+	jpeg.Encode(file, Plan9PalettedImage{NewDepiction(noise[0],int(noise[0].MaxX()/UnitX*800),600)},nil)    // 800 pixels per second width
 }
-
-func TestStereoImaging(t *testing.T) {
-	stream, err := os.Open("drmapan.wav")
+func TestI(t *testing.T) {
+	stream, err := os.Open("M1F1-uint8-AFsp.wav")
 	if err != nil {
 		panic(err)
 	}
-	channels, err := Decode(stream)
-	aboveColour = color.RGBA{0,0,255,255}
-
+	noise, err := Decode(stream)
 	defer stream.Close()
-	file, err := os.Create("./test output/drmapan.jpeg")
+	file, err := os.Create("./test output/out.jpeg")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
-//	png.Encode(wb, Plan9PalettedImage{NewFunctionImage(Pulse{UnitX*4}},3200,300)})   // first second
-	jpeg.Encode(file, Plan9PalettedImage{NewFunctionImage(channels[0],int(channels[0].MaxX()/UnitX*800),600)},nil)    // 800 pixels per second width
+	m := image.NewRGBA(image.Rect(0, -300, 800, 300))
+	aboveColour = color.RGBA{0,0,0,0}
+	belowColour = color.RGBA{0,0,255,255}
+	src:= Plan9PalettedImage{NewDepiction(noise[0],800,600)}
+	draw.Draw(m, m.Bounds(),src, src.Bounds().Min, draw.Over)
+	aboveColour = color.RGBA{0,0,0,0}
+	belowColour = color.RGBA{255,0,0,255}
+	src2:= Plan9PalettedImage{NewDepiction(noise[1],800,600)}
+	draw.Draw(m, m.Bounds(),src2, image.Pt(src2.Bounds().Min.X,src2.Bounds().Min.Y+50), draw.Over)
+	jpeg.Encode(file, m,nil)
 }
+
 
 

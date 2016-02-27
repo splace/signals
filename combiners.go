@@ -144,7 +144,7 @@ func (c *Compose) Load(p io.Reader) error {
 }
 
 // helper: needed becasue can't use type literal with array source.
-func NewSum(c ...Function) Compose {
+func NewCompositor(c ...Function) Compose {
 	return Compose(c)
 }
 

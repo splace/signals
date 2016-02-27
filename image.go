@@ -6,56 +6,61 @@ import (
 	"image/color/palette"
 )
 
-// Image doesn't have/need a colormodel, so is more general than an image.Image.
-// when embedded in helper types, to provided a particular colormodel, they then implement image.Image.
-type Image interface {
-	Bounds() image.Rectangle
-	At(x, y int) color.Color
-}
 
 var aboveColour,belowColour = color.RGBA{0,0,0,0},color.RGBA{255,255,255,255}
 
-type FunctionImage struct{
+// Depiction of a LimitedFunction   
+type Depiction struct{
 	LimitedFunction
 	size image.Rectangle
-	yScale y  // cache because cant change for the same size 
+	yScale y  // optimisation; small, a cache because this can't change for the same size, which is not exposed. 
 }
 
-func (i FunctionImage) Bounds() image.Rectangle{
+func (i Depiction) Bounds() image.Rectangle{
 	return i.size
 }
 
-// make an image.Image of a LimitedSignal, scaled to maxx x maxy pixels.
-func NewFunctionImage(s LimitedFunction,maxx,maxy int) FunctionImage{
-	return FunctionImage{s,image.Rect(0,-maxy/2,maxx,maxy/2),Maxy/y(maxy/2)}
+// makes an image of a LimitedSignal, scaled to maxx x maxy pixels.
+func NewDepiction(s LimitedFunction,maxx,maxy int) Depiction{
+	return Depiction{s,image.Rect(0,-maxy/2,maxx,maxy/2),Maxy/y(maxy/2)}
 }
 
-
-func (i FunctionImage) At(xp, yp int) color.Color{
+func (i Depiction) At(xp, yp int) color.Color{
 	if i.Call( x(xp) * i.MaxX() / x(i.size.Max.X)-x(i.size.Min.X))<= i.yScale*y(yp)-y(i.size.Min.Y) { 
 		return aboveColour
 	}
 	return belowColour		
 }
 
-// wrapper to add colormodel, for Image to conform to image.Image interface
+
+// an depiction is an image.Image without a colormodel, so is more general.
+// embedded in helper wrapper to implement image.Image.
+type depiction interface {
+	Bounds() image.Rectangle
+	At(x, y int) color.Color
+}
+
+// RGBA depiction wrapper
 type RGBAImage struct {
-	Image
+	depiction
 }
 
 func (i RGBAImage) ColorModel() color.Model { return color.RGBAModel }
 
-// wrapper for Image to make it conform to image.Image interface, but allowing down grade to gray, for saving for example.
+// gray depiction wrapper.
 type GrayImage struct {
-	Image
+	depiction
 }
 
 func (i GrayImage) ColorModel() color.Model { return color.GrayModel }
 
-// wrapper for Image to make it conform to image.Image interface, but allowing down grade to plan9 paletted, for saving for example.
+// plan9 paletted, depiction wrapper.
 type Plan9PalettedImage struct {
-	Image
+	depiction
 }
 
 func (i Plan9PalettedImage) ColorModel() color.Model { return color.Palette(palette.Plan9) }
+/*  Hal3 Fri Feb 26 21:39:58 GMT 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Fri Feb 26 21:39:59 GMT 2016 */
 
