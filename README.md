@@ -44,9 +44,9 @@ combiners:- Stack,Compose,Multiplex
 extras(plugins):-	FunctionImage(image.go) 
 
 
-Extras examples: image of a few seconds of some human speech from a PCM wav file
+Extras examples: image of a few seconds of some human speech from a PCM wav file, stereo with different people left/right and drawn red/blue. (offset by 50px)
 
-![speech saved as wav](https://github.com/splace/signals/blob/master/test%20output/M1F1-uint8-AFsp.jpeg)
+![speech saved as wav](https://github.com/splace/signals/blob/master/test%20output/out.jpeg)
 
 
 docs: 
