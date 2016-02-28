@@ -58,7 +58,7 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 			buf := bytes.NewBuffer(make([]byte, 4))
 			for ; i < samples; i++ {
 				binaryWrite(buf, int32(s.Call(x(i)*samplePeriod)>>(yBits-32)))
-				w.Write(buf.Bytes()[1:])
+				w.Write(buf.Bytes()[1:])  // write only first 3 bytes
 			}
 		}
 

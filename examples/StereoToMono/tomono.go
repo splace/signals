@@ -55,7 +55,7 @@ func main() {
 	}else{
 		myLog.Fatal( "2 file names required.")
 	}
-	myLog.message="Decode"
+	myLog.message="Decode:"+files[0]
 	noise:=myLog.errFatal(Decode(in)).([]Function)
 	if len(noise)!=2{
 		myLog.Fatal("Need a stereo input file.")
