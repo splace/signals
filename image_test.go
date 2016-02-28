@@ -78,9 +78,10 @@ func TestI(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	m := newcomposable(image.NewPaletted(image.Rect(0, -300, 800, 300),palette.WebSafe))
-	m.draw(WebSafePalettedImage{NewDepiction(noise[0],800,600,color.RGBA{255,0,0,255},color.RGBA{0,0,0,0})})
-	m.drawOver(WebSafePalettedImage{NewDepiction(noise[1],800,600, color.RGBA{0,255,255,127},color.RGBA{0,0,0,0})})
+	m := newcomposable(image.NewPaletted(image.Rect(0, -150, 800, 150),palette.WebSafe))
+	// offset centre of 600px image, to fit 300px width. 
+	m.drawOffset(WebSafePalettedImage{NewDepiction(noise[0],800,600,color.RGBA{255,0,0,255},color.RGBA{0,0,0,0})},image.Point{0,150})
+	m.drawOverOffset(WebSafePalettedImage{NewDepiction(noise[1],800,600, color.RGBA{0,255,255,127},color.RGBA{0,0,0,0})},image.Point{0,150})
 	jpeg.Encode(file, m,nil)
 }
 
