@@ -41,10 +41,10 @@ modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmente
 
 combiners:- Stack,Compose,Multiplex
 
-extras(plugins):-	FunctionImage(image.go) 
+extras(plugins):- Depiction
 
 
-Extras examples: a few seconds of some human speech with different people left/right, made from a FunctionImage for each channel of the stereo and drawn red/blue transparent, using the image/Draw package.
+Extras examples: a few seconds of some human speech with different people left/right, made from separate Depiction's, one for each channel and composited together (red/blue transparent), using the image/Draw package.
 
 ![speech saved as wav](https://github.com/splace/signals/blob/master/test%20output/out.jpeg)
 
