@@ -58,4 +58,10 @@ type Plan9PalettedImage struct {
 }
 
 func (i Plan9PalettedImage) ColorModel() color.Model { return color.Palette(palette.Plan9) }
+// plan9 paletted, depiction wrapper.
+type WebSafePalettedImage struct {
+	depiction
+}
+
+func (i WebSafePalettedImage) ColorModel() color.Model { return color.Palette(palette.WebSafe) }
 
