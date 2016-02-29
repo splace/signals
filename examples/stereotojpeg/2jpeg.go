@@ -2,7 +2,7 @@
 // usage: 2jpeg.<<o|exe>> <<stereo.wav>>
 package main
 
-import . "../../../signals" // "github.com/splace/signals"  //
+import . "github.com/splace/signals"  //"../../../signals" // 
 import (
 	"flag"
 	"image"

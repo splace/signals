@@ -1,6 +1,6 @@
 package main
 
-import . "../../signals"
+import . "github.com/splace/signals"  //  "../../signals" //
 import (
 	"fmt"
 	"os"
