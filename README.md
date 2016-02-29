@@ -44,7 +44,7 @@ combiners:- Stack,Compose,Multiplex
 extras(plugins):- Depiction
 
 
-Extras examples: a few seconds of some human speech with different people left/right, made from separate Depiction's, one for each channel, composited together (red/blue transparent), using the image/Draw package.
+Extras examples: Depiction of Stack{Sine{UnitX/100}, Sine{UnitX/50}}, red/black,(3200px.600px) for 4 * UnitX. (see ![image tests](https://github.com/splace/signals/blob/master/image_test.go) 
 
 ![speech saved as wav](https://github.com/splace/signals/blob/master/test%20output/out.jpeg)
 
