@@ -26,15 +26,17 @@ func TestImaging(t *testing.T) {
 	}
 	noise, err := Decode(stream)
 	defer stream.Close()
-	file, err := os.Create("./test output/M1F1-uint8-AFsp.jpeg")
+	file, err := os.Create("./test output/outp.jpeg")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 //	png.Encode(wb, Plan9PalettedImage{NewFunctionImage(Pulse{UnitX*4}},3200,300)})   // first second
-	jpeg.Encode(file, Plan9PalettedImage{NewDepiction(noise[0],int(noise[0].MaxX()/UnitX*800),600,color.RGBA{255,255,255,255},color.RGBA{0,0,0,0})},nil)    // 800 pixels per second width
+	jpeg.Encode(file, Plan9PalettedImage{Depiction{noise[0],image.Rect(0,-300,int(noise[0].MaxX()*800/UnitX),300),800,color.RGBA{255,255,255,255},color.RGBA{0,0,0,0}}},nil)    // 800 pixels per second width
 }
 
+
+// composable comes with helper functions to simplify image/draw package.
 type composable struct{
 	draw.Image
 }
@@ -66,14 +68,14 @@ func (i *composable) drawOverOffset(isrc image.Image,pt image.Point){
 	draw.Draw(i, i.Bounds(),isrc, isrc.Bounds().Min.Add(pt), draw.Over)
 } 
 
-func TestI(t *testing.T) {
+func TestComposable(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
 	if err != nil {
 		panic(err)
 	}
 	noise, err := Decode(stream)
 	defer stream.Close()
-	file, err := os.Create("./test output/out.jpeg")
+	file, err := os.Create("./test output/outsp.jpeg")
 	if err != nil {
 		panic(err)
 	}
@@ -85,5 +87,23 @@ func TestI(t *testing.T) {
 	jpeg.Encode(file, m,nil)
 }
 
+func TestSegmented(t *testing.T) {
+	s := Stack{Sine{UnitX/100}, Sine{UnitX/50}}
+	file, err := os.Create("./test output/out.jpeg")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
 
+	ds:=Depiction{s,image.Rect(0,-150,800,150),3200,color.RGBA{255,0,0,255},color.RGBA{0,0,0,0}}
+
+	m := newcomposable(image.NewPaletted(ds.Bounds(),palette.WebSafe))
+	m.draw(WebSafePalettedImage{ds})
+	jpeg.Encode(file, m,nil)
+}
+
+
+
+/*  hal3 Mon 29 Feb 05:45:15 GMT 2016 go version go1.5.1 linux/386
+Mon 29 Feb 05:45:15 GMT 2016 */
 

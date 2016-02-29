@@ -6,26 +6,25 @@ import (
 	"image/color/palette"
 )
 
-// Depiction is a image.Image of a LimitedFunction   
+// Depiction is a Depictor of a LimitedFunction   
 type Depiction struct{
-	LimitedFunction
+	Function
 	size image.Rectangle
+	pixelsPerUnitX int
 	belowColour,aboveColour  color.Color
-	yScaleCache y  //small optimisation;  a cache because this can't change for the same size, which is not exposed. 
 }
 
 // makes an image of a LimitedSignal, scaled to maxx x maxy pixels.
-func NewDepiction(s LimitedFunction,maxx,maxy int, c1,c2 color.Color) Depiction{
-	return Depiction{s,image.Rect(0,-maxy/2,maxx,maxy/2), c1,c2,Maxy/y(maxy/2)}
+func NewDepiction(s LimitedFunction, pxMaxX,pxMaxY int, c1,c2 color.Color) Depiction{
+	return Depiction{s,image.Rect(0,-pxMaxY/2,pxMaxX,pxMaxY/2),int(int64(pxMaxX)*int64(UnitX)/int64(s.MaxX())),c1,c2}
 }
 
 func (i Depiction) Bounds() image.Rectangle{
 	return i.size
 }
 
-
 func (i Depiction) At(xp, yp int) color.Color{
-	if i.Call( x(xp) * i.MaxX() / x(i.size.Max.X)-x(i.size.Min.X))<= i.yScaleCache*y(yp)-y(i.size.Min.Y) { 
+	if i.Call( x(xp)*UnitX/x(i.pixelsPerUnitX)-x(i.size.Min.X))<= Maxy/y(i.size.Max.Y)*y(yp)-y(i.size.Min.Y) { 
 		return i.aboveColour
 	}
 	return i.belowColour		

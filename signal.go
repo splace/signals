@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-// TODO cache
-
 // function types can represent an analogue y as it varies with x
 type Function interface {
 	Call(x) y
