@@ -1,5 +1,6 @@
 ```
-Usage <<flags>> <<inFile.wav>> <<outfile>>
+Usage:
+tomono.(exe|bin) <<flags>> <<inFile.wav>> <<outfile>>
   -bytes precision
     	precision in bytes per sample. (requires format option set) (default 2)
   -chans string
