@@ -39,7 +39,7 @@ func MultiplyX(m interface{}, d x) x {
 	}
 }
 
-// series of converts to promote slicea of interfaces. 
+// series of converters to promote slice of interfaces. 
 
 // converts []LimitedFunction to []Function 
 func LimitedFunctionsToSliceFunction(s ...LimitedFunction) []Function{
@@ -49,7 +49,7 @@ func LimitedFunctionsToSliceFunction(s ...LimitedFunction) []Function{
 	}
 	return out
 } 
-// converts []LimitedFunction to []Function 
+// converts []PeriodicLimitedFunction to []Function 
 func PeriodicLimitedFunctionsToSliceFunction(s ...PeriodicLimitedFunction) []Function{
 	out:=make([]Function,len(s))
 	for i:=range(out){
@@ -58,8 +58,16 @@ func PeriodicLimitedFunctionsToSliceFunction(s ...PeriodicLimitedFunction) []Fun
 	return out
 } 
 
+// converts []PeriodicFunction to []Function 
+func PeriodicFunctionsToSliceFunction(s ...PeriodicFunction) []Function{
+	out:=make([]Function,len(s))
+	for i:=range(out){
+		out[i]=s[i].(Function)
+	}
+	return out
+} 
 
-// converts []LimitedFunction to []Function 
+// converts []PeriodicLimitedFunction to []LimitedFunction 
 func PeriodicLimitedFunctionsToSliceLimitedFunction(s ...PeriodicLimitedFunction) []LimitedFunction{
 	out:=make([]LimitedFunction,len(s))
 	for i:=range(out){
@@ -68,7 +76,7 @@ func PeriodicLimitedFunctionsToSliceLimitedFunction(s ...PeriodicLimitedFunction
 	return out
 } 
 
-// converts []LimitedFunction to []Function 
+// converts []PCMFunction to []Function 
 func PCMFunctionsToSliceFunction(s ...PCMFunction) []Function{
 	out:=make([]Function,len(s))
 	for i:=range(out){
@@ -76,7 +84,7 @@ func PCMFunctionsToSliceFunction(s ...PCMFunction) []Function{
 	}
 	return out
 } 
-// converts []LimitedFunction to []Function 
+// converts []PCMFunction to []LimitedFunction 
 func PCMFunctionsToSliceLimitedFunction(s ...PCMFunction) []LimitedFunction{
 	out:=make([]LimitedFunction,len(s))
 	for i:=range(out){
@@ -85,7 +93,7 @@ func PCMFunctionsToSliceLimitedFunction(s ...PCMFunction) []LimitedFunction{
 	return out
 } 
 
-// converts []LimitedFunction to []Function 
+// converts []PCMFunction to []PeriodicLimitedFunction 
 func PCMFunctionsToSlicePeriodicLimitedFunction(s ...PCMFunction) []PeriodicLimitedFunction{
 	out:=make([]PeriodicLimitedFunction,len(s))
 	for i:=range(out){
@@ -94,5 +102,13 @@ func PCMFunctionsToSlicePeriodicLimitedFunction(s ...PCMFunction) []PeriodicLimi
 	return out
 } 
 
+// converts []PCMFunction to []PeriodicFunction 
+func PCMFunctionsToSlicePeriodicFunction(s ...PCMFunction) []PeriodicFunction{
+	out:=make([]PeriodicFunction,len(s))
+	for i:=range(out){
+		out[i]=s[i].(PeriodicFunction)
+	}
+	return out
+} 
 
 

@@ -88,12 +88,11 @@ func main() {
 	}
 	myLog.message="Decode:"+files[0]
 	PCMFunctions:=myLog.errFatal(Decode(in)).([]PCMFunction)
-	if len(PCMFunctions)!=2{
-		myLog.Fatal("Need a stereo input file.")
-	}
 	if *format{
 		if *stack{
+			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
+			myLog.message="Encode"
 			Encode(out,NewStack(PCMFunctionsToSliceFunction(PCMFunctions...)...),PCMFunctions[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 			out.Close()
 		}else{
@@ -103,17 +102,20 @@ func main() {
 				chs[int(myLog.errFatal(strconv.ParseUint(c, 10, 16)).(uint64))]=struct{}{}
 			}
 			prefixes:=strings.Split(namePrefix,",")
-			myLog.message="File Access"
 			for i,n:=range(PCMFunctions){
 				if _, ok := chs[i]; !ok{continue}
+				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
+				myLog.message="Encode"
 				Encode(out,n,n.MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 				out.Close()
 			}
 		}
 	}else{
 		if *stack{
+			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
+			myLog.message="Encode"
 			EncodeLike(out,NewStack(PCMFunctionsToSliceFunction(PCMFunctions...)...),PCMFunctions[0])		
 			out.Close()
 		}else{
@@ -123,10 +125,11 @@ func main() {
 				chs[int(myLog.errFatal(strconv.ParseUint(c, 10, 16)).(uint64))-1]=struct{}{}
 			}
 			prefixes:=strings.Split(namePrefix,",")
-			myLog.message="File Access"
 			for i,n:=range(PCMFunctions){
 				if _, ok := chs[i]; !ok{continue}
+				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
+				myLog.message="Encode"
 				n.Encode(out)		
 				out.Close()
 			}
