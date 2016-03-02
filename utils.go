@@ -38,3 +38,61 @@ func MultiplyX(m interface{}, d x) x {
 		return d
 	}
 }
+
+// series of converts to promote slicea of interfaces. 
+
+// converts []LimitedFunction to []Function 
+func LimitedFunctionsToSliceFunction(s ...LimitedFunction) []Function{
+	out:=make([]Function,len(s))
+	for i:=range(out){
+		out[i]=s[i].(Function)
+	}
+	return out
+} 
+// converts []LimitedFunction to []Function 
+func PeriodicLimitedFunctionsToSliceFunction(s ...PeriodicLimitedFunction) []Function{
+	out:=make([]Function,len(s))
+	for i:=range(out){
+		out[i]=s[i].(Function)
+	}
+	return out
+} 
+
+
+// converts []LimitedFunction to []Function 
+func PeriodicLimitedFunctionsToSliceLimitedFunction(s ...PeriodicLimitedFunction) []LimitedFunction{
+	out:=make([]LimitedFunction,len(s))
+	for i:=range(out){
+		out[i]=s[i].(LimitedFunction)
+	}
+	return out
+} 
+
+// converts []LimitedFunction to []Function 
+func PCMFunctionsToSliceFunction(s ...PCMFunction) []Function{
+	out:=make([]Function,len(s))
+	for i:=range(out){
+		out[i]=s[i].(Function)
+	}
+	return out
+} 
+// converts []LimitedFunction to []Function 
+func PCMFunctionsToSliceLimitedFunction(s ...PCMFunction) []LimitedFunction{
+	out:=make([]LimitedFunction,len(s))
+	for i:=range(out){
+		out[i]=s[i].(LimitedFunction)
+	}
+	return out
+} 
+
+// converts []LimitedFunction to []Function 
+func PCMFunctionsToSlicePeriodicLimitedFunction(s ...PCMFunction) []PeriodicLimitedFunction{
+	out:=make([]PeriodicLimitedFunction,len(s))
+	for i:=range(out){
+		out[i]=s[i].(PeriodicLimitedFunction)
+	}
+	return out
+} 
+
+
+

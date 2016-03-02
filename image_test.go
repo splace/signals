@@ -87,7 +87,7 @@ func TestComposable(t *testing.T) {
 	jpeg.Encode(file, m,nil)
 }
 
-func TestSegmented(t *testing.T) {
+func TestStackimage(t *testing.T) {
 	s := Stack{Sine{UnitX/100}, Sine{UnitX/50}}
 	file, err := os.Create("./test output/out.jpeg")
 	if err != nil {
@@ -103,7 +103,20 @@ func TestSegmented(t *testing.T) {
 }
 
 
+func TestMultiplexImage(t *testing.T) {
+	s := Multiplex{Sine{UnitX/100}, Sine{UnitX/50}}
+	file, err := os.Create("./test output/multiplex.jpeg")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
 
-/*  hal3 Mon 29 Feb 05:45:15 GMT 2016 go version go1.5.1 linux/386
-Mon 29 Feb 05:45:15 GMT 2016 */
+	ds:=Depiction{s,image.Rect(0,-150,800,150),3200,color.RGBA{255,0,0,255},color.RGBA{0,0,0,0}}
+
+	m := newcomposable(image.NewPaletted(ds.Bounds(),palette.WebSafe))
+	m.draw(WebSafePalettedImage{ds})
+	jpeg.Encode(file, m,nil)
+}
+
+
 

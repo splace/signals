@@ -257,8 +257,8 @@ type PCMformat struct {
 }
 
 // Decode a stream into an array of LimitedFunctions.
-// one LimitedFunction for each channel in the encoding.
-func Decode(wav io.Reader) ([]LimitedFunction, error) {
+// one Function for each channel in the encoding.
+func Decode(wav io.Reader) ([]PCMFunction, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
 	var format PCMformat
@@ -335,7 +335,7 @@ func Decode(wav io.Reader) ([]LimitedFunction, error) {
 
 		}
 	}
-	functions := make([]LimitedFunction, format.Channels)
+	functions := make([]PCMFunction, format.Channels)
 
 	var c uint32
 	if format.Bits == 8 {
