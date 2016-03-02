@@ -1,3 +1,5 @@
+Extract or Combine channels, from a wave file, to mono wave file(s). 
+
 ```
 Usage:
 tomono.(exe|bin) <<flags>> <<inFile.wav>> <<outfile>>
@@ -8,7 +10,7 @@ tomono.(exe|bin) <<flags>> <<inFile.wav>> <<outfile>>
   -db uint
     	adjust volume in dB (-6 to halve.) stacked channels could clip without.
   -format
-    	don't use input sample rate and precision for output, use command-line options
+    	don't use input sample rate and precision for output, use command-line flags.
   -help
     	display help/usage.
   -prefix string
