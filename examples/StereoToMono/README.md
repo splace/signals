@@ -1,5 +1,6 @@
-Usage flags <<inFile.wav>> <<outfile>>:
- -bytes precision
+```
+Usage <<flags>> <<inFile.wav>> <<outfile>>
+  -bytes precision
     	precision in bytes per sample. (requires format option set) (default 2)
   -chans string
     	extract/recombine listed channel number(s) only. (default "0,1")
@@ -15,4 +16,4 @@ Usage flags <<inFile.wav>> <<outfile>>:
     	samples per second.(requires format option set) (default 44100)
   -stack
     	recombine all channels into a mono file.
-
+```
