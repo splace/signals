@@ -61,11 +61,11 @@ PANIC 	Reports an error that caused all database sessions to abort.
 */
 
 func main() {
-    format := flag.Bool("format", false, "don't use input sample rate and precision for output, use command-line options")
+    format := flag.Bool("format", false, "don't use input sample rate and precision for output, use flag(s)")
 	stack := flag.Bool("stack", false, "recombine all channels into a mono file.")
     help := flag.Bool("help", false, "display help/usage.")
 	var dB uint
-	flag.UintVar(&dB,"db", 0, "adjust recombined volume in dB (-6 to halve.) stacked channels could clip without.")
+	flag.UintVar(&dB,"db", 0, "adjust volume in dB (-6 to halve.) stacked channels could clip without.")
 	var channels,namePrefix string
 	flag.StringVar(&channels,"chans","1,2","extract/recombine listed channel number(s) only. ('1,2' for first 2 channels)" )
 	flag.StringVar(&namePrefix,"prefix", "L-,R-,C-,LFE-,LB-,RB-", "add individual prefixes to extracted mono file(s) names.")
