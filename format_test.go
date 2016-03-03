@@ -2,17 +2,12 @@ package signals
 
 import (
 	"fmt"
-	"math/big"
 	"os"
 	"testing"
 )
 
-func TestNoise(t *testing.T) {
+func TestNoiseSave(t *testing.T) {
 	s := NewNoise()
-	for t := x(0); t < 40*UnitX; t += UnitX {
-		fmt.Print(s.Call(t))
-	}
-	fmt.Println()
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/Noise.wav"); err != nil {
@@ -28,18 +23,6 @@ func TestNoise(t *testing.T) {
 	Encode(file2, s, UnitX, 16000, 1)
 }
 
-func TestBitPulses(t *testing.T) {
-	i := new(big.Int)
-	_, err := fmt.Sscanf("01110111011101110111011101110111", "%b", i)
-	if err != nil {
-		panic(i)
-	}
-	s := PulsePattern{*i, UnitX}
-	for t := x(0); t < 40*UnitX; t += UnitX {
-		fmt.Print(s.Call(t))
-	}
-	fmt.Println()
-}
 
 func TestSaveLoad(t *testing.T) {
 	var file *os.File
@@ -47,7 +30,6 @@ func TestSaveLoad(t *testing.T) {
 	if file, err = os.Create("./test output/multi.gob"); err != nil {
 		panic(err)
 	}
-	//m:=Multi{Sine{UnitTime / 1000},Constant{50}}
 	m := NewTone(UnitX/1000, -6)
 	if err := m.Save(file); err != nil {
 		panic("unable to save")
@@ -63,7 +45,9 @@ func TestSaveLoad(t *testing.T) {
 	if err := m1.Load(file); err != nil {
 		panic("unable to load")
 	}
-	fmt.Printf("%#v\n", m1)
+	if fmt.Sprintf("%#v", m1)!=fmt.Sprintf("%#v", m) {
+		t.Errorf("%#v != %#v", m, m1)
+	}
 
 }
 
@@ -88,7 +72,9 @@ func TestLoad(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(len(noises))
+	if len(noises)!=1 {
+		t.Error("Not Single channel", len(noises),stream.Name())
+	}
 }
 
 func TestLoadChannels(t *testing.T) {
@@ -101,8 +87,11 @@ func TestLoadChannels(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(len(noises))
+	if len(noises)!=2 {
+		t.Error("Not Double channel", len(noises),stream.Name())
+	}
 }
+
 func TestStackPCMs(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
 	if err != nil {
@@ -162,4 +151,5 @@ func TestPiping(t *testing.T) {
 	defer wavFile.Close()
 	NewPCM(NewTone(UnitX/200, -6), UnitX, 8000, 1).Encode(wavFile)
 }
+
 

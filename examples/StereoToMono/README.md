@@ -8,7 +8,7 @@ tomono.(exe|bin) <<flags>> <<inFile.wav>> <<outfile>>
   -chans string
     	extract/recombine listed channel number(s) only. ('1,2' for first 2 channels) (default "1,2")
   -db int
-    	adjust volume in dB (-6 to halve.) stacked channels could clip without.
+    	reduce volume in dB (-6 to halve.) stacked channels could clip without.
   -format
     	don't use input sample rate and precision for output, use command-line flags.
   -help

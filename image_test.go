@@ -36,7 +36,7 @@ func TestImaging(t *testing.T) {
 }
 
 
-// composable comes with helper functions to simplify image/draw package.
+// composable is a draw.Image that comes with helper functions to simplify Draw function.
 type composable struct{
 	draw.Image
 }

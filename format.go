@@ -81,7 +81,7 @@ type PCMFunction interface {
 	Encode(w io.Writer)
 }
 
-// PCM is the state and behaviour common to all PCM. It not a Function, but is Periodic, specific PCM<<precison>> types enbed this, and are Function's.
+// PCM is the state and behaviour common to all PCM. Its not a Function, but is Periodic, specific PCM<<precison>> types enbed this, and are Function's.
 type PCM struct {
 	samplePeriod x
 	length       x
@@ -113,7 +113,7 @@ func NewPCM(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunct
 	return channels[0].(PCMFunction)
 }
 
-// encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and the precision of the specific PCM type, if thats what it is, otherwise defaults to 16bit.
+// encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and its precision if its a PCM type, otherwise defaults to 16bit.
 func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
 	switch f := s.(type) {
 	case PCM8bit:
@@ -141,10 +141,10 @@ func (s PCM8bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-1 {
 		return 0
 	}
-	return s.call(s.data[index])
+	return s.decode(s.data[index])
 }
 
-func (s PCM8bit) call(b byte) y {
+func (s PCM8bit) decode(b byte) y {
 	return y(b-128) * (Maxy >> 7)
 }
 func (s PCM8bit) encode(y y) byte {
@@ -165,10 +165,10 @@ func (s PCM16bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-3 {
 		return 0
 	}
-	return s.call(s.data[index], s.data[index+1])
+	return s.decode(s.data[index], s.data[index+1])
 }
 
-func (s PCM16bit) call(b1, b2 byte) y {
+func (s PCM16bit) decode(b1, b2 byte) y {
 	return y(int16(b1)|int16(b2)<<8) * (Maxy >> 15)
 }
 func (s PCM16bit) encode(y y) (byte, byte) {
@@ -189,9 +189,9 @@ func (s PCM24bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-4 {
 		return 0
 	}
-	return s.call(s.data[index], s.data[index+1], s.data[index+2])
+	return s.decode(s.data[index], s.data[index+1], s.data[index+2])
 }
-func (s PCM24bit) call(b1, b2, b3 byte) y {
+func (s PCM24bit) decode(b1, b2, b3 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) * (Maxy >> 23)
 }
 func (s PCM24bit) encode(y y) (byte, byte, byte) {
@@ -212,9 +212,9 @@ func (s PCM32bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-5 {
 		return 0
 	}
-	return s.call(s.data[index], s.data[index+1], s.data[index+2], s.data[index+3])
+	return s.decode(s.data[index], s.data[index+1], s.data[index+2], s.data[index+3])
 }
-func (s PCM32bit) call(b1, b2, b3, b4 byte) y {
+func (s PCM32bit) decode(b1, b2, b3, b4 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) * (Maxy >> 31)
 }
 func (s PCM32bit) encode(y y) (byte, byte, byte, byte) {
@@ -296,7 +296,7 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	//	ByteRate    uint32
 	//	SampleBytes uint16
 
-	// need to skip any non-"data" chucks
+	// skip any non-"data" chucks
 	if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
 		return nil, ErrWavParse{"Chunk header incomplete."}
 	}
