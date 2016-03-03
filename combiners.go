@@ -96,8 +96,8 @@ func (c *Multiplex) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
-// make from another slice.
-// need to use an type promoter utility to use with slices of narrower interfaces.
+// helper to enable generation from another slice.
+// will generally need to use an type promoter utility.
 func NewMultiplex(c ...Function) Multiplex {
 	return Multiplex(c)
 }
@@ -146,8 +146,8 @@ func (c *Compose) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
-// make from another slice.
-// need to use an type promoter utility to use with slices of narrower interfaces.
+// helper to enable generation from another slice.
+// will generally need to use an type promoter utility.
 func NewCompositor(c ...Function) Compose {
 	return Compose(c)
 }
@@ -197,8 +197,8 @@ func (c *Stack) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
-// make from another slice.
-// need to use an type promoter utility to use with slices of narrower interfaces.
+// helper to enable generation from another slice.
+// will generally need to use an type promoter utility.
 func NewStack(c ...Function) Stack {
 	return Stack(c)
 }
