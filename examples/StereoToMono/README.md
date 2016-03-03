@@ -3,7 +3,7 @@ Extract or Combine channels, from a wave file, to mono wave file(s).
 ```
 Usage:
 tomono.(exe|bin) <<flags>> <<inFile.wav>> <<outfile>>
- -bytes precision
+  -bytes precision
     	precision in bytes per sample. (requires format flag set) (default 2)
   -chans string
     	extract/recombine listed channel number(s) only. ('1,2' for first 2 channels) (default "1,2")
@@ -21,3 +21,5 @@ tomono.(exe|bin) <<flags>> <<inFile.wav>> <<outfile>>
     	combine channels into a mono file.
 
 ```
+
+file extensions: .bin (linux/64) .exe (windows/64) .elf (arm/32) . (darwin/64)

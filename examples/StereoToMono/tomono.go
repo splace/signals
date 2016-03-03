@@ -5,8 +5,8 @@ Usage :
     	precision in bytes per sample. (requires format option set) (default 2)
   -chans string
     	extract/recombine listed channel number(s) only. (default "0,1")
-  -db int
-    	volume change in dB (-6 to halve.) stacked channels could clip without.
+  -db uint
+    	reduce volume in dB (6 to halve.) stacked channels could clip without.
   -format
     	don't use input sample rate and precision for output, use command-line options
   -help
@@ -20,7 +20,7 @@ Usage :
 */
 package main
 
-import .  "../../../signals"  //"github.com/splace/signals" //
+import .  "github.com/splace/signals" //"../../../signals"  //
 import (
 	"os"
 	"flag"
@@ -64,8 +64,8 @@ func main() {
     format := flag.Bool("format", false, "don't use input sample rate and precision for output, use flag(s)")
 	stack := flag.Bool("stack", false, "recombine all channels into a mono file.")
     help := flag.Bool("help", false, "display help/usage.")
-	var dB int
-	flag.IntVar(&dB,"db", 0, "volume change in dB (-6 to halve.) stacked channels could clip without.")
+	var dB uint
+	flag.UintVar(&dB,"db", 0, "reduce volume in dB (6 to halve.) stacked channels could clip without.")
 	var channels,namePrefix string
 	flag.StringVar(&channels,"chans","1,2","extract/recombine listed channel number(s) only. ('1,2' for first 2 channels)" )
 	flag.StringVar(&namePrefix,"prefix", "L-,R-,C-,LFE-,LB-,RB-", "add individual prefixes to extracted mono file(s) names.")
@@ -93,7 +93,7 @@ func main() {
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			Encode(out,Multiplex{NewStack(PCMFunctionsToSliceFunction(PCMFunctions...)...),NewConstant(float64(dB))},PCMFunctions[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+			Encode(out,Multiplex{NewStack(PCMFunctionsToSliceFunction(PCMFunctions...)...),NewConstant(float64(-dB))},PCMFunctions[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -107,7 +107,7 @@ func main() {
 				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
 				myLog.message="Encode"
-				Encode(out,Multiplex{n,NewConstant(float64(dB))},n.MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+				Encode(out,Multiplex{n,NewConstant(float64(-dB))},n.MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 				out.Close()
 			}
 		}
@@ -116,7 +116,7 @@ func main() {
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			EncodeLike(out,Multiplex{NewStack(PCMFunctionsToSliceFunction(PCMFunctions...)...),NewConstant(float64(dB))},PCMFunctions[0])		
+			EncodeLike(out,Multiplex{NewStack(PCMFunctionsToSliceFunction(PCMFunctions...)...),NewConstant(float64(-dB))},PCMFunctions[0])		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -130,7 +130,7 @@ func main() {
 				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
 				myLog.message="Encode"
-				EncodeLike(out,Multiplex{n,NewConstant(float64(dB))},PCMFunctions[0])	
+				EncodeLike(out,Multiplex{n,NewConstant(float64(-dB))},PCMFunctions[0])	
 				out.Close()
 			}
 		}
