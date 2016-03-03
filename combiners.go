@@ -96,7 +96,8 @@ func (c *Multiplex) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
-// helper: needed becasue can't use type literal with array source.
+// make from another slice.
+// need to use an type promoter utility to use with slices of narrower interfaces.
 func NewMultiplex(c ...Function) Multiplex {
 	return Multiplex(c)
 }
@@ -145,7 +146,8 @@ func (c *Compose) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
-// helper: needed becasue can't use type literal with array source.
+// make from another slice.
+// need to use an type promoter utility to use with slices of narrower interfaces.
 func NewCompositor(c ...Function) Compose {
 	return Compose(c)
 }
@@ -195,7 +197,8 @@ func (c *Stack) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
-// helper: needed becasue can't use type literal with array source.
+// make from another slice.
+// need to use an type promoter utility to use with slices of narrower interfaces.
 func NewStack(c ...Function) Stack {
 	return Stack(c)
 }
