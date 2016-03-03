@@ -97,7 +97,7 @@ func (c *Multiplex) Load(p io.Reader) error {
 }
 
 // helper to enable generation from another slice.
-// will generally need to use an type promoter utility.
+// will generally need to use an slice interface promoter utility.
 func NewMultiplex(c ...Function) Multiplex {
 	return Multiplex(c)
 }
@@ -147,7 +147,7 @@ func (c *Compose) Load(p io.Reader) error {
 }
 
 // helper to enable generation from another slice.
-// will generally need to use an type promoter utility.
+// will generally need to use an slice interface promoter utility.
 func NewCompositor(c ...Function) Compose {
 	return Compose(c)
 }
@@ -198,7 +198,7 @@ func (c *Stack) Load(p io.Reader) error {
 }
 
 // helper to enable generation from another slice.
-// will generally need to use an type promoter utility.
+// will generally need to use an slice interface promoter utility.
 func NewStack(c ...Function) Stack {
 	return Stack(c)
 }
