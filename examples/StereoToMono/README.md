@@ -22,4 +22,3 @@ tomono.(exe|bin) <<flags>> <<inFile.wav>> <<outfile>>
 
 ```
 
-file extensions: .bin (linux/64) .exe (windows/64) .elf (arm/32) . (darwin/64)
