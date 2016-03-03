@@ -1,10 +1,8 @@
 package signals
 
-import "time"
-
-// allows using x without direct access 
-func X(d time.Duration) x {
-	return MultiplyX(d.Seconds(), UnitX)
+// scale x to internal units 
+func X(d interface{}) x {
+	return MultiplyX(d, UnitX)
 }
 
 // allows using x without direct access 
@@ -110,5 +108,4 @@ func PCMFunctionsToSlicePeriodicFunction(s ...PCMFunction) []PeriodicFunction{
 	}
 	return out
 } 
-
 
