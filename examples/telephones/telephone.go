@@ -11,11 +11,10 @@ func Save(file string,s Function){
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile,s,UnitX*4,44100,2)
+	Encode(wavFile,s,X(4),44100,2)
 
 }
 
-const ms=UnitX/1000
 /*
 ``On'' and ``off'' Dxs are in ms. The frequency is 400 Hz, except where noted.
    	  	On 	Off 	On 	Off 	Notes 	Audio sample
@@ -33,11 +32,11 @@ Notes
 */
 
 func main(){
-	Save("BusyTone.wav",Multiplex{Looped{Pulse{375*ms},750*ms}, Sine{UnitX / 400}})
-	Save("EngagedTone.wav",Looped{Multiplex{Compose{Multiplex{Pulse{400*ms},NewConstant(-6)},Shifted{Pulse{225*ms},750*ms}}, Sine{UnitX / 400}}, 1500*ms})
-	Save("RingingTone.wav",Looped{Multiplex{Pulse{UnitX}, Looped{Pulse{400*ms}, 600*ms}, Stack{Sine{UnitX/450},Sine{UnitX/400}}}, UnitX * 3})
-	Save("NumberUnobtainableTone.wav",Sine{UnitX / 400})
-	Save("dialTone.wav",Stack{Sine{UnitX/450},Sine{UnitX/350}})
+	Save("BusyTone.wav",Multiplex{Looped{Pulse{X(0.375)},X(0.750)}, Sine{X(1.0 / 400)}})
+	Save("EngagedTone.wav",Looped{Multiplex{Compose{Multiplex{Pulse{X(.4)},NewConstant(-6)},Shifted{Pulse{X(.225)},X(.75)}}, Sine{X(1.0/400)}}, X(1.5)})
+	Save("RingingTone.wav",Looped{Multiplex{Pulse{X(1)}, Looped{Pulse{X(.4)}, X(.6)}, Stack{Sine{X(1.0/450)},Sine{X(1.0/400)}}}, X(3)})
+	Save("NumberUnobtainableTone.wav",Sine{X(1.0/400)})
+	Save("dialTone.wav",Stack{Sine{X(1.0/450)},Sine{X(1.0/350)}})
 
 }
 

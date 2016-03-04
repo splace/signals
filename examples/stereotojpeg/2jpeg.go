@@ -28,7 +28,7 @@ func main() {
 	in=myLog.errFatal(os.Open(files[0])).(*os.File)
 	myLog.message = "Decode:" + files[0]
 	defer in.Close()
-	noise := myLog.errFatal(Decode(in)).([]LimitedFunction)
+	noise := myLog.errFatal(Decode(in)).([]PCMFunction)
 	if len(noise) != 2 {
 		myLog.Fatal("Need a stereo input file.")
 	}
