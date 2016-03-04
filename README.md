@@ -36,7 +36,7 @@ Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signe
 
 Features:
 
-generators:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM<<bits>>bit
+sources:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM<<bits>>bit
 
 modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmented
 
