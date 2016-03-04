@@ -36,13 +36,13 @@ Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signe
 
 Features:
 
-generators:- Sine,Square,Pulse,Heavyside,Bittrain,ADSR,RampUp,RampDown,Sigmoid,Noise,PCM<<bits>>bit
+generators:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM<<bits>>bit
 
 modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmented
 
 combiners:- Stack,Compose,Multiplex
 
-extras(plugins):- Depiction
+extras(non-core):- Depiction,ADSR,Noise
 
 
 Extras examples: Depiction of Stack{Sine{UnitX/100}, Sine{UnitX/50}}, red/black,(3200px.600px) for 4 * UnitX. (see ![image tests](https://github.com/splace/signals/blob/master/image_test.go) 
