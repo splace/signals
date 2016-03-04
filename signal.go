@@ -8,7 +8,7 @@ import (
 
 // function types can represent an analogue y as it varies with x
 type Function interface {
-	Call(x) y
+	call(x) y
 }
 
 // x is from -infinity to +infinity, can be considered a time Dx.
@@ -17,27 +17,27 @@ type x time.Duration
 
 // formatted representation of an x.
 func (i x) String() string {
-	return fmt.Sprintf("%9.2f", float32(i)/float32(UnitX))
+	return fmt.Sprintf("%9.2f", float32(i)/float32(unitX))
 }
 
 // use time.Second as sensible middle of resolution range of int64.
-const UnitX = x(time.Second)
+const unitX = x(time.Second)
 
 // the y type is a value between +Maxy and -Maxy.
 type y int64
 
-const maxy y = math.MaxInt64
+const maxY y = math.MaxInt64
 const yBits = 64
 const halfyBits = yBits / 2
 
 //const Halfy=2<<(HalfyBits-1)
 
 // float64 has less resolution than int64 at maxy, so need this to scale float64 sourced functions to never overflow int64
-const Maxyfloat64 float64 = float64(maxy - 512)
+const Maxyfloat64 float64 = float64(maxY - 512)
 
 // formatted representation of a y as percentage.
 func (l y) String() string {
-	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(maxy))
+	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(maxY))
 }
 
 // Periodic's have a Period method requirment.
@@ -160,60 +160,4 @@ func PCMFunctionsToSlicePeriodicFunction(s ...PCMFunction) []PeriodicFunction {
 		out[i] = s[i].(PeriodicFunction)
 	}
 	return out
-}/*  Hal3 Fri Mar 4 20:27:57 GMT 2016 go version go1.5.1 linux/amd64
-=== RUN   TestNoiseSave
---- PASS: TestNoiseSave (0.90s)
-=== RUN   TestSaveLoad
---- PASS: TestSaveLoad (0.01s)
-=== RUN   TestSaveWav
---- PASS: TestSaveWav (0.00s)
-=== RUN   TestLoad
---- PASS: TestLoad (0.02s)
-=== RUN   TestLoadChannels
---- PASS: TestLoadChannels (0.07s)
-=== RUN   TestStackPCMs
---- PASS: TestStackPCMs (0.08s)
-=== RUN   TestMultiplexTones
---- PASS: TestMultiplexTones (0.04s)
-=== RUN   TestSaveLoadSave
---- PASS: TestSaveLoadSave (0.06s)
-=== RUN   TestPiping
---- PASS: TestPiping (0.01s)
-=== RUN   TestImagingSine
---- PASS: TestImagingSine (0.29s)
-=== RUN   TestImaging
---- PASS: TestImaging (0.33s)
-=== RUN   TestComposable
---- PASS: TestComposable (1.62s)
-=== RUN   TestStackimage
---- PASS: TestStackimage (1.08s)
-=== RUN   TestMultiplexImage
---- PASS: TestMultiplexImage (1.02s)
-=== RUN   ExampleSquare
---- PASS: ExampleSquare (0.00s)
-=== RUN   ExamplePulse
---- PASS: ExamplePulse (0.00s)
-=== RUN   ExampleRamp
---- PASS: ExampleRamp (0.00s)
-=== RUN   ExampleSine
---- PASS: ExampleSine (0.00s)
-=== RUN   ExampleSigmoid
---- PASS: ExampleSigmoid (0.00s)
-=== RUN   ExampleADSREnvelope
---- PASS: ExampleADSREnvelope (0.00s)
-=== RUN   ExampleReflect
---- PASS: ExampleReflect (0.00s)
-=== RUN   ExampleMultiplex
---- PASS: ExampleMultiplex (0.00s)
-=== RUN   ExampleStack
---- PASS: ExampleStack (0.00s)
-=== RUN   ExampleTrigger
---- PASS: ExampleTrigger (0.00s)
-=== RUN   ExampleNoise
---- PASS: ExampleNoise (0.00s)
-=== RUN   ExampleBitPulses
---- PASS: ExampleBitPulses (0.00s)
-PASS
-ok  	_/home/simon/Dropbox/github/working/signals	5.587s
-Fri Mar 4 20:28:04 GMT 2016 */
-
+}

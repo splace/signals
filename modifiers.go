@@ -20,8 +20,8 @@ type Shifted struct {
 	Shift x
 }
 
-func (s Shifted) Call(t x) y {
-	return s.Function.Call(t - s.Shift)
+func (s Shifted) call(t x) y {
+	return s.Function.call(t - s.Shift)
 }
 
 // a Function that scales the x of another function
@@ -30,8 +30,8 @@ type Spedup struct {
 	Factor float32
 }
 
-func (s Spedup) Call(t x) y {
-	return s.Function.Call(x(float32(t) * s.Factor))
+func (s Spedup) call(t x) y {
+	return s.Function.call(x(float32(t) * s.Factor))
 }
 
 /*
@@ -57,8 +57,8 @@ type SpedupProgressive struct {
 	Rate x
 }
 
-func (s SpedupProgressive) Call(t x) y {
-	return s.Function.Call(t + t*t/s.Rate)
+func (s SpedupProgressive) call(t x) y {
+	return s.Function.call(t + t*t/s.Rate)
 }
 
 // a Function that repeats another function
@@ -67,8 +67,8 @@ type Looped struct {
 	Length x
 }
 
-func (s Looped) Call(t x) y {
-	return s.Function.Call(t % s.Length)
+func (s Looped) call(t x) y {
+	return s.Function.call(t % s.Length)
 }
 
 func (s Looped) Period() x {
@@ -80,8 +80,8 @@ type Inverted struct {
 	Function
 }
 
-func (s Inverted) Call(t x) y {
-	return -s.Function.Call(t)
+func (s Inverted) call(t x) y {
+	return -s.Function.call(t)
 }
 
 // a Function that returns y's that are for the -ve x of another function
@@ -90,7 +90,7 @@ type Reversed struct {
 }
 
 func (s Reversed) y(t x) y {
-	return s.Function.Call(-t)
+	return s.Function.call(-t)
 }
 
 // a Function that produces values that are flipped over, (Maxy<->zero) of another function
@@ -98,11 +98,11 @@ type Reflected struct {
 	Function
 }
 
-func (s Reflected) Call(t x) y {
-	if r := s.Function.Call(t); r < 0 {
-		return -maxy - r
+func (s Reflected) call(t x) y {
+	if r := s.Function.call(t); r < 0 {
+		return -maxY - r
 	} else {
-		return maxy - r
+		return maxY - r
 	}
 }
 
@@ -113,8 +113,8 @@ type Modulated struct {
 	Factor     x
 }
 
-func (s Modulated) Call(t x) y {
-	return s.Function.Call(t + MultiplyX(float64(s.Modulation.Call(t))/Maxyfloat64, s.Factor))
+func (s Modulated) call(t x) y {
+	return s.Function.call(t + MultiplyX(float64(s.Modulation.call(t))/Maxyfloat64, s.Factor))
 }
 
 // TODO if a modulation function is periodic then the modulated will be, or, smaller of either?
@@ -154,13 +154,13 @@ func NewSegmented(s Function, w x) Segmented {
 	return Segmented{Function: s, Width: w}
 }
 
-func (s Segmented) Call(t x) y {
+func (s Segmented) call(t x) y {
 	temp := t % s.Width
 	if t-temp != s.i1 || t-temp+s.Width != s.i2 {
 		s.i1 = t - temp
 		s.i2 = t - temp + s.Width
-		s.l1 = s.Function.Call(s.i1)
-		s.l2 = s.Function.Call(s.i2)
+		s.l1 = s.Function.call(s.i1)
+		s.l2 = s.Function.call(s.i2)
 	}
 	return s.l1/y(s.Width)*y(s.Width-temp) + s.l2/y(s.Width)*y(temp)
 }
@@ -181,27 +181,27 @@ type Triggered struct {
 	locatedRising  bool
 }
 
-func (s *Triggered) Call(t x) y {
+func (s *Triggered) call(t x) y {
 	if s.Trigger != s.locatedTrigger || s.searched != s.Function || s.locatedRising != s.Rising {
 		s.searched = s.Function
 		s.locatedTrigger = s.Trigger
 		s.locatedRising = s.Rising
-		if s.Rising && s.Function.Call(s.Shift) > s.Trigger || !s.Rising && s.Function.Call(s.Shift) < s.Trigger {
+		if s.Rising && s.Function.call(s.Shift) > s.Trigger || !s.Rising && s.Function.call(s.Shift) < s.Trigger {
 			s.Shift += s.Resolution
 		}
 		for t := s.Shift; t <= s.MaxShift; t += s.Resolution {
-			if s.Rising && s.Function.Call(t) > s.Trigger || !s.Rising && s.Function.Call(t) < s.Trigger {
+			if s.Rising && s.Function.call(t) > s.Trigger || !s.Rising && s.Function.call(t) < s.Trigger {
 				s.Shift = t
-				return s.Function.Call(t)
+				return s.Function.call(t)
 			}
 		}
 		for t := x(0); t < s.Shift; t += s.Resolution {
-			if s.Rising && s.Function.Call(t) > s.Trigger || !s.Rising && s.Function.Call(t) < s.Trigger {
+			if s.Rising && s.Function.call(t) > s.Trigger || !s.Rising && s.Function.call(t) < s.Trigger {
 				s.Shift = t
-				return s.Function.Call(t)
+				return s.Function.call(t)
 			}
 		}
 		s.Shift = 0
 	}
-	return s.Function.Call(t + s.Shift)
+	return s.Function.call(t + s.Shift)
 }

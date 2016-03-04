@@ -25,15 +25,15 @@ func NewTone(period x, dB float64) Multiplex {
 // as with 'AND' logic, all sources have to be Maxy (at a particular momemt) for Multiplex to be Maxy, whereas, ANY function at zero will generate a Multiplex of zero.
 type Multiplex []Function
 
-func (c Multiplex) Call(t x) (total y) {
-	total = maxy
+func (c Multiplex) call(t x) (total y) {
+	total = maxY
 	for _, s := range c {
-		l := s.Call(t)
+		l := s.call(t)
 		switch l {
 		case 0:
 			total = 0
 			break
-		case maxy:
+		case maxY:
 			continue
 		default:
 			//total = (total / Halfy) * (l / Halfy)*2
@@ -108,9 +108,9 @@ func NewMultiplex(c ...Function) Multiplex {
 // as with 'OR' logic, all sources have to be zero (at a particular momemt) for Compose to be zero.
 type Compose []Function
 
-func (c Compose) Call(t x) (total y) {
+func (c Compose) call(t x) (total y) {
 	for _, s := range c {
-		total += s.Call(t)
+		total += s.call(t)
 	}
 	return
 }
@@ -159,9 +159,9 @@ func NewCompositor(c ...Function) Compose {
 // as with 'OR' logic, all sources have to be zero (at a particular momemt) for Stack to be zero.
 type Stack []Function
 
-func (c Stack) Call(t x) (total y) {
+func (c Stack) call(t x) (total y) {
 	for _, s := range c {
-		total += s.Call(t) / y(len(c))
+		total += s.call(t) / y(len(c))
 	}
 	return
 }

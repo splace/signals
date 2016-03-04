@@ -23,7 +23,7 @@ type Depiction struct {
 
 // makes a Depiction of a LimitedSignal, scaled to pxMaxx x pxMaxy pixels and sets its colours.
 func NewDepiction(s LimitedFunction, pxMaxX, pxMaxY int, c1, c2 color.Color) Depiction {
-	return Depiction{s, image.Rect(0, -pxMaxY/2, pxMaxX, pxMaxY/2), int(int64(pxMaxX) * int64(UnitX) / int64(s.MaxX())), c1, c2}
+	return Depiction{s, image.Rect(0, -pxMaxY/2, pxMaxX, pxMaxY/2), int(int64(pxMaxX) * int64(unitX) / int64(s.MaxX())), c1, c2}
 }
 
 func (i Depiction) Bounds() image.Rectangle {
@@ -31,7 +31,7 @@ func (i Depiction) Bounds() image.Rectangle {
 }
 
 func (i Depiction) At(xp, yp int) color.Color {
-	if i.Call(x(xp)*UnitX/x(i.pixelsPerUnitX)-x(i.size.Min.X)) <= maxy/y(i.size.Max.Y)*y(yp)-y(i.size.Min.Y) {
+	if i.call(x(xp)*unitX/x(i.pixelsPerUnitX)-x(i.size.Min.X)) <= maxY/y(i.size.Max.Y)*y(yp)-y(i.size.Min.Y) {
 		return i.aboveColour
 	}
 	return i.belowColour

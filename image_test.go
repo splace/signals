@@ -17,7 +17,7 @@ func TestImagingSine(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	png.Encode(file, Plan9PalettedImage{NewDepiction(Multiplex{Sine{UnitX}, Pulse{UnitX}}, 800, 600, color.RGBA{255, 255, 255, 255}, color.RGBA{0, 0, 0, 0})})
+	png.Encode(file, Plan9PalettedImage{NewDepiction(Multiplex{Sine{unitX}, Pulse{unitX}}, 800, 600, color.RGBA{255, 255, 255, 255}, color.RGBA{0, 0, 0, 0})})
 }
 func TestImaging(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
@@ -32,7 +32,7 @@ func TestImaging(t *testing.T) {
 	}
 	defer file.Close()
 	//	png.Encode(wb, Plan9PalettedImage{NewFunctionImage(Pulse{UnitX*4}},3200,300)})   // first second
-	jpeg.Encode(file, Plan9PalettedImage{Depiction{noise[0], image.Rect(0, -300, int(noise[0].MaxX()*800/UnitX), 300), 800, color.RGBA{255, 255, 255, 255}, color.RGBA{0, 0, 0, 0}}}, nil) // 800 pixels per second width
+	jpeg.Encode(file, Plan9PalettedImage{Depiction{noise[0], image.Rect(0, -300, int(noise[0].MaxX()*800/unitX), 300), 800, color.RGBA{255, 255, 255, 255}, color.RGBA{0, 0, 0, 0}}}, nil) // 800 pixels per second width
 }
 
 // composable is a draw.Image that comes with helper functions to simplify Draw function.
@@ -88,7 +88,7 @@ func TestComposable(t *testing.T) {
 }
 
 func TestStackimage(t *testing.T) {
-	s := Stack{Sine{UnitX / 100}, Sine{UnitX / 50}}
+	s := Stack{Sine{unitX / 100}, Sine{unitX / 50}}
 	file, err := os.Create("./test output/out.jpeg")
 	if err != nil {
 		panic(err)
@@ -103,7 +103,7 @@ func TestStackimage(t *testing.T) {
 }
 
 func TestMultiplexImage(t *testing.T) {
-	s := Multiplex{Sine{UnitX / 100}, Sine{UnitX / 50}}
+	s := Multiplex{Sine{unitX / 100}, Sine{unitX / 50}}
 	file, err := os.Create("./test output/multiplex.jpeg")
 	if err != nil {
 		panic(err)

@@ -21,7 +21,7 @@ type Constant struct {
 	Constant y
 }
 
-func (s Constant) Call(t x) y {
+func (s Constant) call(t x) y {
 	return s.Constant
 }
 
@@ -40,7 +40,7 @@ type Sine struct {
 	Cycle x
 }
 
-func (s Sine) Call(t x) y {
+func (s Sine) call(t x) y {
 	return y(math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) * Maxyfloat64)
 }
 
@@ -52,11 +52,11 @@ type Pulse struct {
 	Width x
 }
 
-func (s Pulse) Call(t x) y {
+func (s Pulse) call(t x) y {
 	if t > s.Width || t < 0 {
 		return 0
 	} else {
-		return maxy
+		return maxY
 	}
 }
 
@@ -68,11 +68,11 @@ type Square struct {
 	Cycle x
 }
 
-func (s Square) Call(t x) y {
+func (s Square) call(t x) y {
 	if t%s.Cycle >= s.Cycle/2 {
-		return -maxy
+		return -maxY
 	} else {
-		return maxy
+		return maxY
 	}
 }
 
@@ -84,13 +84,13 @@ type RampUp struct {
 	Period x
 }
 
-func (s RampUp) Call(t x) y {
+func (s RampUp) call(t x) y {
 	if t < 0 {
 		return 0
 	} else if t > s.Period {
-		return maxy
+		return maxY
 	} else {
-		return y(x(maxy) / s.Period * t)
+		return y(x(maxY) / s.Period * t)
 	}
 }
 
@@ -98,30 +98,30 @@ type RampDown struct {
 	Period x
 }
 
-func (s RampDown) Call(t x) y {
+func (s RampDown) call(t x) y {
 	if t < 0 {
-		return maxy
+		return maxY
 	} else if t > s.Period {
 		return 0
 	} else {
-		return y(x(maxy) / s.Period * (s.Period - t))
+		return y(x(maxY) / s.Period * (s.Period - t))
 	}
 }
 
 type Heavyside struct {
 }
 
-func (s Heavyside) Call(t x) y {
+func (s Heavyside) call(t x) y {
 	if t < 0 {
 		return 0
 	}
-	return maxy
+	return maxY
 }
 
 type Sigmoid struct {
 	Steepness x
 }
 
-func (s Sigmoid) Call(t x) y {
+func (s Sigmoid) call(t x) y {
 	return y(Maxyfloat64 / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }

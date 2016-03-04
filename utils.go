@@ -2,7 +2,7 @@ package signals
 
 // convert to internal x representation, 1 -> UnitX
 func Y(d interface{}) y {
-	return MultiplyY(d, maxy)
+	return MultiplyY(d, maxY)
 }
 
 // multiply anything by an x quantity
@@ -39,7 +39,7 @@ func MultiplyY(m interface{}, d y) y {
 
 // convert to internal x representation, 1 -> UnitX
 func X(d interface{}) x {
-	return MultiplyX(d, UnitX)
+	return MultiplyX(d, unitX)
 }
 
 // multiply anything by an x quantity

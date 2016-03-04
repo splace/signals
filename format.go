@@ -49,7 +49,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
 		}
 	}
-	samplePeriod := MultiplyX(1/float32(sampleRate), UnitX)
+	samplePeriod := MultiplyX(1/float32(sampleRate), unitX)
 	samples := uint32(length/samplePeriod) + 1
 	fmt.Fprint(w, "RIFF")
 	binaryWrite(w, samples*uint32(sampleBytes)+36)
@@ -71,7 +71,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				w.WriteByte(PCM8bitEncode(s.Call(x(i) * samplePeriod)))
+				w.WriteByte(PCM8bitEncode(s.call(x(i) * samplePeriod)))
 			}
 		}
 	case 2:
@@ -79,7 +79,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				write2Bytes(PCM16bitEncode(s.Call(x(i) * samplePeriod)))
+				write2Bytes(PCM16bitEncode(s.call(x(i) * samplePeriod)))
 			}
 		}
 	case 3:
@@ -87,7 +87,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				write3Bytes(PCM24bitEncode(s.Call(x(i) * samplePeriod)))
+				write3Bytes(PCM24bitEncode(s.call(x(i) * samplePeriod)))
 			}
 		}
 
@@ -96,7 +96,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				write4Bytes(PCM32bitEncode(s.Call(x(i) * samplePeriod)))
+				write4Bytes(PCM32bitEncode(s.call(x(i) * samplePeriod)))
 			}
 		}
 	}
@@ -146,15 +146,15 @@ func NewPCM(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunct
 func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
 	switch f := s.(type) {
 	case PCM8bit:
-		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 1).Encode(w)
+		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 1).Encode(w)
 	case PCM16bit:
-		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 2).Encode(w)
+		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
 	case PCM24bit:
-		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 3).Encode(w)
+		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 3).Encode(w)
 	case PCM32bit:
-		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 4).Encode(w)
+		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 4).Encode(w)
 	default:
-		NewPCM(p, p.MaxX(), uint32(UnitX/f.Period()), 2).Encode(w)
+		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
 	}
 	return
 }
@@ -165,7 +165,7 @@ type PCM8bit struct {
 	PCM
 }
 
-func (s PCM8bit) Call(offset x) y {
+func (s PCM8bit) call(offset x) y {
 	index := int(offset / s.samplePeriod)
 	if index < 0 || index >= len(s.data)-1 {
 		return 0
@@ -174,14 +174,14 @@ func (s PCM8bit) Call(offset x) y {
 }
 
 func PCM8bitDecode(b byte) y {
-	return y(b-128) * (maxy >> 7)
+	return y(b-128) * (maxY >> 7)
 }
 func PCM8bitEncode(y y) byte {
 	return byte(y>>(yBits-8) + 128)
 }
 
 func (s PCM8bit) Encode(w io.Writer) {
-	Encode(w, s, s.MaxX(), uint32(UnitX/s.Period()), 1)
+	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 1)
 }
 
 // 16 bit PCM Function
@@ -189,7 +189,7 @@ type PCM16bit struct {
 	PCM
 }
 
-func (s PCM16bit) Call(offset x) y {
+func (s PCM16bit) call(offset x) y {
 	index := int(offset/s.samplePeriod) * 2
 	if index < 0 || index >= len(s.data)-3 {
 		return 0
@@ -198,14 +198,14 @@ func (s PCM16bit) Call(offset x) y {
 }
 
 func PCM16bitDecode(b1, b2 byte) y {
-	return y(int16(b1)|int16(b2)<<8) * (maxy >> 15)
+	return y(int16(b1)|int16(b2)<<8) * (maxY >> 15)
 }
 func PCM16bitEncode(y y) (byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF)
 }
 
 func (s PCM16bit) Encode(w io.Writer) {
-	Encode(w, s, s.MaxX(), uint32(UnitX/s.Period()), 2)
+	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 2)
 }
 
 // 24 bit PCM Function
@@ -213,7 +213,7 @@ type PCM24bit struct {
 	PCM
 }
 
-func (s PCM24bit) Call(offset x) y {
+func (s PCM24bit) call(offset x) y {
 	index := int(offset/s.samplePeriod) * 3
 	if index < 0 || index >= len(s.data)-4 {
 		return 0
@@ -221,14 +221,14 @@ func (s PCM24bit) Call(offset x) y {
 	return PCM24bitDecode(s.data[index], s.data[index+1], s.data[index+2])
 }
 func PCM24bitDecode(b1, b2, b3 byte) y {
-	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) * (maxy >> 23)
+	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) * (maxY >> 23)
 }
 func PCM24bitEncode(y y) (byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF)
 }
 
 func (s PCM24bit) Encode(w io.Writer) {
-	Encode(w, s, s.MaxX(), uint32(UnitX/s.Period()), 3)
+	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 3)
 }
 
 // 32 bit PCM Function
@@ -236,7 +236,7 @@ type PCM32bit struct {
 	PCM
 }
 
-func (s PCM32bit) Call(offset x) y {
+func (s PCM32bit) call(offset x) y {
 	index := int(offset/s.samplePeriod) * 4
 	if index < 0 || index >= len(s.data)-5 {
 		return 0
@@ -244,14 +244,14 @@ func (s PCM32bit) Call(offset x) y {
 	return PCM32bitDecode(s.data[index], s.data[index+1], s.data[index+2], s.data[index+3])
 }
 func PCM32bitDecode(b1, b2, b3, b4 byte) y {
-	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) * (maxy >> 31)
+	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) * (maxY >> 31)
 }
 func PCM32bitEncode(y y) (byte, byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF), byte(y >> (yBits - 32) & 0xFF)
 }
 
 func (s PCM32bit) Encode(w io.Writer) {
-	Encode(w, s, s.MaxX(), uint32(UnitX/s.Period()), 4)
+	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 4)
 }
 
 type ErrWavParse struct {
@@ -378,21 +378,21 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	var c uint32
 	if format.Bits == 8 {
 		for ; c < uint32(format.Channels); c++ {
-			functions[c] = PCM8bit{PCM{UnitX / x(format.SampleRate), UnitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples : (c+1)*samples]}}
+			functions[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples : (c+1)*samples]}}
 		}
 	} else if format.Bits == 16 {
 		for ; c < uint32(format.Channels); c++ {
-			functions[c] = PCM16bit{PCM{UnitX / x(format.SampleRate), UnitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*2 : (c+1)*samples*2]}}
+			functions[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*2 : (c+1)*samples*2]}}
 		}
 
 	} else if format.Bits == 24 {
 		for ; c < uint32(format.Channels); c++ {
-			functions[c] = PCM24bit{PCM{UnitX / x(format.SampleRate), UnitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*3 : (c+1)*samples*3]}}
+			functions[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*3 : (c+1)*samples*3]}}
 		}
 
 	} else if format.Bits == 32 {
 		for ; c < uint32(format.Channels); c++ {
-			functions[c] = PCM32bit{PCM{UnitX / x(format.SampleRate), UnitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*4 : (c+1)*samples*4]}}
+			functions[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*4 : (c+1)*samples*4]}}
 		}
 
 	}

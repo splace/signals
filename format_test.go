@@ -14,13 +14,13 @@ func TestNoiseSave(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, s, UnitX, 8000, 1)
+	Encode(file, s, unitX, 8000, 1)
 	var file2 *os.File
 	if file2, err = os.Create("./test output/Noise2.wav"); err != nil {
 		panic(err)
 	}
 	defer file2.Close()
-	Encode(file2, s, UnitX, 16000, 1)
+	Encode(file2, s, unitX, 16000, 1)
 }
 
 func TestSaveLoad(t *testing.T) {
@@ -29,7 +29,7 @@ func TestSaveLoad(t *testing.T) {
 	if file, err = os.Create("./test output/multi.gob"); err != nil {
 		panic(err)
 	}
-	m := NewTone(UnitX/1000, -6)
+	m := NewTone(unitX/1000, -6)
 	if err := m.Save(file); err != nil {
 		panic("unable to save")
 	}
@@ -51,7 +51,7 @@ func TestSaveLoad(t *testing.T) {
 }
 
 func TestSaveWav(t *testing.T) {
-	m := NewTone(UnitX/100, -6)
+	m := NewTone(unitX/100, -6)
 
 	var file *os.File
 	var err error
@@ -59,7 +59,7 @@ func TestSaveWav(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, m, UnitX, 8000, 1)
+	Encode(file, m, unitX, 8000, 1)
 }
 func TestLoad(t *testing.T) {
 	stream, err := os.Open("middlec.wav")
@@ -107,22 +107,22 @@ func TestStackPCMs(t *testing.T) {
 	Encode(wavFile, Stack{noise[0], noise[1]}, noise[0].(PCMFunction).MaxX(), 44100, 1)
 }
 func TestMultiplexTones(t *testing.T) {
-	m := NewTone(UnitX/1000, -6)
-	m1 := NewTone(UnitX/100, -6)
+	m := NewTone(unitX/1000, -6)
+	m1 := NewTone(unitX/100, -6)
 	wavFile, err := os.Create("./test output/MultiplexTones.wav")
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile, Multiplex{m, m1}, 1*UnitX, 44100, 1)
+	Encode(wavFile, Multiplex{m, m1}, 1*unitX, 44100, 1)
 }
 func TestSaveLoadSave(t *testing.T) {
-	m := NewTone(UnitX/1000, -6)
+	m := NewTone(unitX/1000, -6)
 	wavFile, err := os.Create("./test output/TestSaveLoad.wav")
 	if err != nil {
 		panic(err)
 	}
-	Encode(wavFile, m, UnitX, 44100, 2)
+	Encode(wavFile, m, unitX, 44100, 2)
 	wavFile.Close()
 	stream, err := os.Open("./test output/TestSaveLoad.wav")
 	if err != nil {
@@ -148,5 +148,5 @@ func TestPiping(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	NewPCM(NewTone(UnitX/200, -6), UnitX, 8000, 1).Encode(wavFile)
+	NewPCM(NewTone(unitX/200, -6), unitX, 8000, 1).Encode(wavFile)
 }
