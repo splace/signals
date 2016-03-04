@@ -23,7 +23,6 @@ func TestNoiseSave(t *testing.T) {
 	Encode(file2, s, UnitX, 16000, 1)
 }
 
-
 func TestSaveLoad(t *testing.T) {
 	var file *os.File
 	var err error
@@ -45,7 +44,7 @@ func TestSaveLoad(t *testing.T) {
 	if err := m1.Load(file); err != nil {
 		panic("unable to load")
 	}
-	if fmt.Sprintf("%#v", m1)!=fmt.Sprintf("%#v", m) {
+	if fmt.Sprintf("%#v", m1) != fmt.Sprintf("%#v", m) {
 		t.Errorf("%#v != %#v", m, m1)
 	}
 
@@ -72,8 +71,8 @@ func TestLoad(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if len(noises)!=1 {
-		t.Error("Not Single channel", len(noises),stream.Name())
+	if len(noises) != 1 {
+		t.Error("Not Single channel", len(noises), stream.Name())
 	}
 }
 
@@ -87,8 +86,8 @@ func TestLoadChannels(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	if len(noises)!=2 {
-		t.Error("Not Double channel", len(noises),stream.Name())
+	if len(noises) != 2 {
+		t.Error("Not Double channel", len(noises), stream.Name())
 	}
 }
 
@@ -151,5 +150,3 @@ func TestPiping(t *testing.T) {
 	defer wavFile.Close()
 	NewPCM(NewTone(UnitX/200, -6), UnitX, 8000, 1).Encode(wavFile)
 }
-
-

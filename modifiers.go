@@ -52,7 +52,6 @@ func (s Squeeze) MaxX() x {
 
 */
 
-
 type SpedupProgressive struct {
 	Function
 	Rate x

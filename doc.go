@@ -25,6 +25,6 @@ x :- 'usually' can be used as if infinite (+ve and -ve), with UnitX somewhere ne
 
 y :- can have a value from -Maxy to +Maxy
 
-Note: x and y are package local to allow changes to how they are represented internally to be flexible, some access is provided through functions. 
+Note: x and y are package local to allow changes to how they are represented internally to be flexible, some access is provided through functions.
 */
 package signals

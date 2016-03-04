@@ -1,14 +1,14 @@
 package signals
 
 import (
-	"os"
-	"testing"
 	"image"
 	"image/color"
 	"image/color/palette"
+	"image/draw"
 	"image/jpeg" // register de/encoding
 	"image/png"  // register de/encoding
-	"image/draw"
+	"os"
+	"testing"
 )
 
 func TestImagingSine(t *testing.T) {
@@ -17,7 +17,7 @@ func TestImagingSine(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	png.Encode(file, Plan9PalettedImage{NewDepiction(Multiplex{Sine{UnitX}, Pulse{UnitX}},800,600,color.RGBA{255,255,255,255},color.RGBA{0,0,0,0})})
+	png.Encode(file, Plan9PalettedImage{NewDepiction(Multiplex{Sine{UnitX}, Pulse{UnitX}}, 800, 600, color.RGBA{255, 255, 255, 255}, color.RGBA{0, 0, 0, 0})})
 }
 func TestImaging(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
@@ -31,42 +31,42 @@ func TestImaging(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-//	png.Encode(wb, Plan9PalettedImage{NewFunctionImage(Pulse{UnitX*4}},3200,300)})   // first second
-	jpeg.Encode(file, Plan9PalettedImage{Depiction{noise[0],image.Rect(0,-300,int(noise[0].MaxX()*800/UnitX),300),800,color.RGBA{255,255,255,255},color.RGBA{0,0,0,0}}},nil)    // 800 pixels per second width
+	//	png.Encode(wb, Plan9PalettedImage{NewFunctionImage(Pulse{UnitX*4}},3200,300)})   // first second
+	jpeg.Encode(file, Plan9PalettedImage{Depiction{noise[0], image.Rect(0, -300, int(noise[0].MaxX()*800/UnitX), 300), 800, color.RGBA{255, 255, 255, 255}, color.RGBA{0, 0, 0, 0}}}, nil) // 800 pixels per second width
 }
-
 
 // composable is a draw.Image that comes with helper functions to simplify Draw function.
-type composable struct{
+type composable struct {
 	draw.Image
 }
-func newcomposable(d draw.Image) *composable{
+
+func newcomposable(d draw.Image) *composable {
 	return &composable{d}
 }
 
-func (i *composable) draw(isrc image.Image){
-	draw.Draw(i, i.Bounds(),isrc, isrc.Bounds().Min, draw.Src)
-} 
+func (i *composable) draw(isrc image.Image) {
+	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min, draw.Src)
+}
 
-func (i *composable) drawAt(isrc image.Image,pt image.Point){
-	draw.Draw(i, i.Bounds(),isrc, pt, draw.Src)
-} 
+func (i *composable) drawAt(isrc image.Image, pt image.Point) {
+	draw.Draw(i, i.Bounds(), isrc, pt, draw.Src)
+}
 
-func (i *composable) drawOffset(isrc image.Image,pt image.Point){
-	draw.Draw(i, i.Bounds(),isrc, isrc.Bounds().Min.Add(pt), draw.Src)
-} 
+func (i *composable) drawOffset(isrc image.Image, pt image.Point) {
+	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min.Add(pt), draw.Src)
+}
 
-func (i *composable) drawOver(isrc image.Image){
-	draw.Draw(i, i.Bounds(),isrc, isrc.Bounds().Min, draw.Over)
-} 
+func (i *composable) drawOver(isrc image.Image) {
+	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min, draw.Over)
+}
 
-func (i *composable) drawOverAt(isrc image.Image,pt image.Point){
-	draw.Draw(i, i.Bounds(),isrc, pt, draw.Over)
-} 
+func (i *composable) drawOverAt(isrc image.Image, pt image.Point) {
+	draw.Draw(i, i.Bounds(), isrc, pt, draw.Over)
+}
 
-func (i *composable) drawOverOffset(isrc image.Image,pt image.Point){
-	draw.Draw(i, i.Bounds(),isrc, isrc.Bounds().Min.Add(pt), draw.Over)
-} 
+func (i *composable) drawOverOffset(isrc image.Image, pt image.Point) {
+	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min.Add(pt), draw.Over)
+}
 
 func TestComposable(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
@@ -80,43 +80,39 @@ func TestComposable(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	m := newcomposable(image.NewPaletted(image.Rect(0, -150, 800, 150),palette.WebSafe))
-	// offset centre of 600px image, to fit 300px width. 
-	m.drawOffset(WebSafePalettedImage{NewDepiction(noise[0],800,600,color.RGBA{255,0,0,255},color.RGBA{0,0,0,0})},image.Point{0,150})
-	m.drawOverOffset(WebSafePalettedImage{NewDepiction(noise[1],800,600, color.RGBA{0,255,255,127},color.RGBA{0,0,0,0})},image.Point{0,150})
-	jpeg.Encode(file, m,nil)
+	m := newcomposable(image.NewPaletted(image.Rect(0, -150, 800, 150), palette.WebSafe))
+	// offset centre of 600px image, to fit 300px width.
+	m.drawOffset(WebSafePalettedImage{NewDepiction(noise[0], 800, 600, color.RGBA{255, 0, 0, 255}, color.RGBA{0, 0, 0, 0})}, image.Point{0, 150})
+	m.drawOverOffset(WebSafePalettedImage{NewDepiction(noise[1], 800, 600, color.RGBA{0, 255, 255, 127}, color.RGBA{0, 0, 0, 0})}, image.Point{0, 150})
+	jpeg.Encode(file, m, nil)
 }
 
 func TestStackimage(t *testing.T) {
-	s := Stack{Sine{UnitX/100}, Sine{UnitX/50}}
+	s := Stack{Sine{UnitX / 100}, Sine{UnitX / 50}}
 	file, err := os.Create("./test output/out.jpeg")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	ds:=Depiction{s,image.Rect(0,-150,800,150),3200,color.RGBA{255,0,0,255},color.RGBA{0,0,0,0}}
+	ds := Depiction{s, image.Rect(0, -150, 800, 150), 3200, color.RGBA{255, 0, 0, 255}, color.RGBA{0, 0, 0, 0}}
 
-	m := newcomposable(image.NewPaletted(ds.Bounds(),palette.WebSafe))
+	m := newcomposable(image.NewPaletted(ds.Bounds(), palette.WebSafe))
 	m.draw(WebSafePalettedImage{ds})
-	jpeg.Encode(file, m,nil)
+	jpeg.Encode(file, m, nil)
 }
 
-
 func TestMultiplexImage(t *testing.T) {
-	s := Multiplex{Sine{UnitX/100}, Sine{UnitX/50}}
+	s := Multiplex{Sine{UnitX / 100}, Sine{UnitX / 50}}
 	file, err := os.Create("./test output/multiplex.jpeg")
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
-	ds:=Depiction{s,image.Rect(0,-150,800,150),3200,color.RGBA{255,0,0,255},color.RGBA{0,0,0,0}}
+	ds := Depiction{s, image.Rect(0, -150, 800, 150), 3200, color.RGBA{255, 0, 0, 255}, color.RGBA{0, 0, 0, 0}}
 
-	m := newcomposable(image.NewPaletted(ds.Bounds(),palette.WebSafe))
+	m := newcomposable(image.NewPaletted(ds.Bounds(), palette.WebSafe))
 	m.draw(WebSafePalettedImage{ds})
-	jpeg.Encode(file, m,nil)
+	jpeg.Encode(file, m, nil)
 }
-
-
-

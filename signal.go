@@ -15,10 +15,12 @@ type Function interface {
 // y's at -v'e xs are considered kind of imaginary, and not used, unless a Delay makes them +ve.
 type x time.Duration
 
+// formatted representation of an x.
 func (i x) String() string {
-	return fmt.Sprintf("%9.2fs", float32(i)/float32(UnitX))
+	return fmt.Sprintf("%9.2f", float32(i)/float32(UnitX))
 }
 
+// use time.Second as sensible middle of resolution range of int64.
 const UnitX = x(time.Second)
 
 // the y type is a value between +Maxy and -Maxy.
@@ -26,7 +28,7 @@ type y int64
 
 const Maxy y = math.MaxInt64
 const yBits = 64
-const HalfyBits = yBits / 2
+const halfyBits = yBits / 2
 
 //const Halfy=2<<(HalfyBits-1)
 
@@ -83,4 +85,79 @@ type PeakingPeriodicLimitedFunction interface {
 	LimitedFunction
 	Periodic
 	peaker
+}
+
+// Converters to promote slices of interfaces, needed when using variadic parameters called using a slice since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
+// for example: without these you couldn't use a slice of LimitedFunction's in a variadic call to a func requiring Function's. (when you can use separate LimitedFunction's in the same call.)
+
+// converts []LimitedFunction to []Function
+func LimitedFunctionsToSliceFunction(s ...LimitedFunction) []Function {
+	out := make([]Function, len(s))
+	for i := range out {
+		out[i] = s[i].(Function)
+	}
+	return out
+}
+
+// converts []PeriodicLimitedFunction to []Function
+func PeriodicLimitedFunctionsToSliceFunction(s ...PeriodicLimitedFunction) []Function {
+	out := make([]Function, len(s))
+	for i := range out {
+		out[i] = s[i].(Function)
+	}
+	return out
+}
+
+// converts []PeriodicFunction to []Function
+func PeriodicFunctionsToSliceFunction(s ...PeriodicFunction) []Function {
+	out := make([]Function, len(s))
+	for i := range out {
+		out[i] = s[i].(Function)
+	}
+	return out
+}
+
+// converts []PeriodicLimitedFunction to []LimitedFunction
+func PeriodicLimitedFunctionsToSliceLimitedFunction(s ...PeriodicLimitedFunction) []LimitedFunction {
+	out := make([]LimitedFunction, len(s))
+	for i := range out {
+		out[i] = s[i].(LimitedFunction)
+	}
+	return out
+}
+
+// converts []PCMFunction to []Function
+func PCMFunctionsToSliceFunction(s ...PCMFunction) []Function {
+	out := make([]Function, len(s))
+	for i := range out {
+		out[i] = s[i].(Function)
+	}
+	return out
+}
+
+// converts []PCMFunction to []LimitedFunction
+func PCMFunctionsToSliceLimitedFunction(s ...PCMFunction) []LimitedFunction {
+	out := make([]LimitedFunction, len(s))
+	for i := range out {
+		out[i] = s[i].(LimitedFunction)
+	}
+	return out
+}
+
+// converts []PCMFunction to []PeriodicLimitedFunction
+func PCMFunctionsToSlicePeriodicLimitedFunction(s ...PCMFunction) []PeriodicLimitedFunction {
+	out := make([]PeriodicLimitedFunction, len(s))
+	for i := range out {
+		out[i] = s[i].(PeriodicLimitedFunction)
+	}
+	return out
+}
+
+// converts []PCMFunction to []PeriodicFunction
+func PCMFunctionsToSlicePeriodicFunction(s ...PCMFunction) []PeriodicFunction {
+	out := make([]PeriodicFunction, len(s))
+	for i := range out {
+		out[i] = s[i].(PeriodicFunction)
+	}
+	return out
 }

@@ -37,7 +37,7 @@ func (c Multiplex) Call(t x) (total y) {
 			continue
 		default:
 			//total = (total / Halfy) * (l / Halfy)*2
-			total = (total >> HalfyBits) * (l >> HalfyBits) * 2
+			total = (total >> halfyBits) * (l >> halfyBits) * 2
 		}
 	}
 	return

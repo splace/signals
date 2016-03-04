@@ -1,11 +1,11 @@
 package signals
 
-// scale x to internal units 
+// convert to internal x representation, 1 -> UnitX 
 func X(d interface{}) x {
 	return MultiplyX(d, UnitX)
 }
 
-// allows using x without direct access 
+// multiply anything by an x quantity
 func MultiplyX(m interface{}, d x) x {
 	switch mt := m.(type) {
 	case int:
@@ -37,75 +37,4 @@ func MultiplyX(m interface{}, d x) x {
 	}
 }
 
-// series of converters to promote slice of interfaces. 
-
-// converts []LimitedFunction to []Function 
-func LimitedFunctionsToSliceFunction(s ...LimitedFunction) []Function{
-	out:=make([]Function,len(s))
-	for i:=range(out){
-		out[i]=s[i].(Function)
-	}
-	return out
-} 
-// converts []PeriodicLimitedFunction to []Function 
-func PeriodicLimitedFunctionsToSliceFunction(s ...PeriodicLimitedFunction) []Function{
-	out:=make([]Function,len(s))
-	for i:=range(out){
-		out[i]=s[i].(Function)
-	}
-	return out
-} 
-
-// converts []PeriodicFunction to []Function 
-func PeriodicFunctionsToSliceFunction(s ...PeriodicFunction) []Function{
-	out:=make([]Function,len(s))
-	for i:=range(out){
-		out[i]=s[i].(Function)
-	}
-	return out
-} 
-
-// converts []PeriodicLimitedFunction to []LimitedFunction 
-func PeriodicLimitedFunctionsToSliceLimitedFunction(s ...PeriodicLimitedFunction) []LimitedFunction{
-	out:=make([]LimitedFunction,len(s))
-	for i:=range(out){
-		out[i]=s[i].(LimitedFunction)
-	}
-	return out
-} 
-
-// converts []PCMFunction to []Function 
-func PCMFunctionsToSliceFunction(s ...PCMFunction) []Function{
-	out:=make([]Function,len(s))
-	for i:=range(out){
-		out[i]=s[i].(Function)
-	}
-	return out
-} 
-// converts []PCMFunction to []LimitedFunction 
-func PCMFunctionsToSliceLimitedFunction(s ...PCMFunction) []LimitedFunction{
-	out:=make([]LimitedFunction,len(s))
-	for i:=range(out){
-		out[i]=s[i].(LimitedFunction)
-	}
-	return out
-} 
-
-// converts []PCMFunction to []PeriodicLimitedFunction 
-func PCMFunctionsToSlicePeriodicLimitedFunction(s ...PCMFunction) []PeriodicLimitedFunction{
-	out:=make([]PeriodicLimitedFunction,len(s))
-	for i:=range(out){
-		out[i]=s[i].(PeriodicLimitedFunction)
-	}
-	return out
-} 
-
-// converts []PCMFunction to []PeriodicFunction 
-func PCMFunctionsToSlicePeriodicFunction(s ...PCMFunction) []PeriodicFunction{
-	out:=make([]PeriodicFunction,len(s))
-	for i:=range(out){
-		out[i]=s[i].(PeriodicFunction)
-	}
-	return out
-} 
 

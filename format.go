@@ -1,11 +1,11 @@
 package signals
 
 import (
+	"bufio"
 	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
-	"bufio"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,11 +13,10 @@ import (
 
 // Encode a function as PCM data, one channel, in a Riff wave container.
 func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes uint8) {
-	buf:=bufio.NewWriter(w)
+	buf := bufio.NewWriter(w)
 	encode(buf, s, length, sampleRate, sampleBytes)
 	buf.Flush()
 }
-
 
 func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleBytes uint8) {
 	binaryWrite := func(w io.Writer, d interface{}) {
@@ -26,30 +25,30 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 		}
 	}
 	var err error
- 	write2Bytes:=func(b1,b2 byte){
-  		err = w.WriteByte(b2)
-		err = w.WriteByte(b1)
-		if err!= nil{
-			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
-		}
- 	}	
- 	write3Bytes:=func(b1,b2,b3 byte){
- 		err = w.WriteByte(b3)
- 		err = w.WriteByte(b2)
- 		err = w.WriteByte(b1)
- 		if err!= nil{
-			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
-		}
-	}	
- 	write4Bytes:=func(b1,b2,b3,b4 byte){
-  		err = w.WriteByte(b4)
- 		err = w.WriteByte(b3)
+	write2Bytes := func(b1, b2 byte) {
 		err = w.WriteByte(b2)
- 		err = w.WriteByte(b1)
- 		if err!= nil{
+		err = w.WriteByte(b1)
+		if err != nil {
 			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
 		}
-	}	
+	}
+	write3Bytes := func(b1, b2, b3 byte) {
+		err = w.WriteByte(b3)
+		err = w.WriteByte(b2)
+		err = w.WriteByte(b1)
+		if err != nil {
+			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
+		}
+	}
+	write4Bytes := func(b1, b2, b3, b4 byte) {
+		err = w.WriteByte(b4)
+		err = w.WriteByte(b3)
+		err = w.WriteByte(b2)
+		err = w.WriteByte(b1)
+		if err != nil {
+			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
+		}
+	}
 	samplePeriod := MultiplyX(1/float32(sampleRate), UnitX)
 	samples := uint32(length/samplePeriod) + 1
 	fmt.Fprint(w, "RIFF")
@@ -72,7 +71,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				w.WriteByte(PCM8bitEncode(s.Call(x(i)*samplePeriod)))
+				w.WriteByte(PCM8bitEncode(s.Call(x(i) * samplePeriod)))
 			}
 		}
 	case 2:
@@ -80,7 +79,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				write2Bytes(PCM16bitEncode(s.Call(x(i)*samplePeriod)))
+				write2Bytes(PCM16bitEncode(s.Call(x(i) * samplePeriod)))
 			}
 		}
 	case 3:
@@ -88,7 +87,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				write3Bytes(PCM24bitEncode(s.Call(x(i)*samplePeriod)))
+				write3Bytes(PCM24bitEncode(s.Call(x(i) * samplePeriod)))
 			}
 		}
 
@@ -97,7 +96,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				write4Bytes(PCM32bitEncode(s.Call(x(i)*samplePeriod)))
+				write4Bytes(PCM32bitEncode(s.Call(x(i) * samplePeriod)))
 			}
 		}
 	}
@@ -126,7 +125,6 @@ func (p PCM) Period() x {
 func (p PCM) MaxX() x {
 	return p.length
 }
-
 
 func (p PCM) PeakY() y {
 	return p.Peak
@@ -353,8 +351,8 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	}
 
 	sampleData := make([]byte, dataHeader.DataLen)
-	peaks:=make([]y,format.Channels)
-	
+	peaks := make([]y, format.Channels)
+
 	samples := dataHeader.DataLen / uint32(format.Channels) / uint32(format.Bits/8)
 	var s uint32
 	for ; s < samples; s++ {
@@ -362,17 +360,17 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 		var c uint32
 		for ; c < uint32(format.Channels); c++ {
 			if n, err := wav.Read(sampleData[(c*samples+s)*uint32(format.Bits/8) : (c*samples+s+1)*uint32(format.Bits/8)]); err != nil || n != int(format.Bits/8) {
-				return nil, ErrWavParse{fmt.Sprintf("data incomplete %s of %s",s,samples)}
+				return nil, ErrWavParse{fmt.Sprintf("data incomplete %s of %s", s, samples)}
 			}
 			if format.Bits == 8 {
-				peaks[c]=PCM8bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)]) 
+				peaks[c] = PCM8bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)])
 			} else if format.Bits == 16 {
-				peaks[c]=PCM16bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)],sampleData[(c*samples+s)*uint32(format.Bits/8)+1]) 
+				peaks[c] = PCM16bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)], sampleData[(c*samples+s)*uint32(format.Bits/8)+1])
 			} else if format.Bits == 24 {
-				peaks[c]=PCM24bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)],sampleData[(c*samples+s)*uint32(format.Bits/8)+1],sampleData[(c*samples+s)*uint32(format.Bits/8)+2]) 
+				peaks[c] = PCM24bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)], sampleData[(c*samples+s)*uint32(format.Bits/8)+1], sampleData[(c*samples+s)*uint32(format.Bits/8)+2])
 			} else if format.Bits == 32 {
-				peaks[c]=PCM32bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)],sampleData[(c*samples+s)*uint32(format.Bits/8)+1],sampleData[(c*samples+s)*uint32(format.Bits/8)+3],sampleData[(c*samples+s)*uint32(format.Bits/8)+3]) 
-			}			
+				peaks[c] = PCM32bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)], sampleData[(c*samples+s)*uint32(format.Bits/8)+1], sampleData[(c*samples+s)*uint32(format.Bits/8)+3], sampleData[(c*samples+s)*uint32(format.Bits/8)+3])
+			}
 		}
 	}
 	functions := make([]PCMFunction, format.Channels)
@@ -400,9 +398,3 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	}
 	return functions, nil
 }
-
-
-
-
-
-
