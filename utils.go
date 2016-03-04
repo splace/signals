@@ -1,11 +1,11 @@
 package signals
 
-// convert to internal x representation, 1 -> UnitX
+// convert to internal y representation, 1 -> maxY
 func Y(d interface{}) y {
 	return MultiplyY(d, maxY)
 }
 
-// multiply anything by an x quantity
+// multiply anything by an y quantity
 func MultiplyY(m interface{}, d y) y {
 	switch mt := m.(type) {
 	case int:
