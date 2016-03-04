@@ -7,7 +7,7 @@ intended to be abstract, and a base package for import, then used with specific 
 
 Interfaces
 
-Function :- has method Call() which returns a 'y' value from an 'x' value parameter.
+Function :- has method call() which returns a 'y' value from an 'x' value parameter.
 Function's are generally procedural, calculated as needed, meaning changes in parameters, or arrangment, effect returned values of existing types.
 Function's can be encode/decoded as go code binary (gob), making for a basic interpreted signal language, or they can be, lossily, stored in wav files (Function's saved as wav are loaded back as PCMFunctions)
 
