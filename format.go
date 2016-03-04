@@ -1,11 +1,11 @@
 package signals
 
 import (
-	"bytes"
 	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
+	"bufio"
 	"io/ioutil"
 	"log"
 	"os"
@@ -13,11 +13,43 @@ import (
 
 // Encode a function as PCM data, one channel, in a Riff wave container.
 func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes uint8) {
+	buf:=bufio.NewWriter(w)
+	encode(buf, s, length, sampleRate, sampleBytes)
+	buf.Flush()
+}
+
+
+func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleBytes uint8) {
 	binaryWrite := func(w io.Writer, d interface{}) {
 		if err := binary.Write(w, binary.LittleEndian, d); err != nil {
 			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w, d))
 		}
 	}
+	var err error
+ 	write2Bytes:=func(b1,b2 byte){
+  		err = w.WriteByte(b2)
+		err = w.WriteByte(b1)
+		if err!= nil{
+			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
+		}
+ 	}	
+ 	write3Bytes:=func(b1,b2,b3 byte){
+ 		err = w.WriteByte(b3)
+ 		err = w.WriteByte(b2)
+ 		err = w.WriteByte(b1)
+ 		if err!= nil{
+			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
+		}
+	}	
+ 	write4Bytes:=func(b1,b2,b3,b4 byte){
+  		err = w.WriteByte(b4)
+ 		err = w.WriteByte(b3)
+		err = w.WriteByte(b2)
+ 		err = w.WriteByte(b1)
+ 		if err!= nil{
+			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
+		}
+	}	
 	samplePeriod := MultiplyX(1/float32(sampleRate), UnitX)
 	samples := uint32(length/samplePeriod) + 1
 	fmt.Fprint(w, "RIFF")
@@ -40,7 +72,7 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				binaryWrite(w, uint8(s.Call(x(i)*samplePeriod)>>(yBits-8)+128))
+				w.WriteByte(PCM8bitEncode(s.Call(x(i)*samplePeriod)))
 			}
 		}
 	case 2:
@@ -48,17 +80,15 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				binaryWrite(w, int16(s.Call(x(i)*samplePeriod)>>(yBits-16)))
+				write2Bytes(PCM16bitEncode(s.Call(x(i)*samplePeriod)))
 			}
 		}
 	case 3:
 		if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
-			buf := bytes.NewBuffer(make([]byte, 4))
 			for ; i < samples; i++ {
-				binaryWrite(buf, int32(s.Call(x(i)*samplePeriod)>>(yBits-32)))
-				w.Write(buf.Bytes()[1:])  // write only first 3 bytes
+				write3Bytes(PCM24bitEncode(s.Call(x(i)*samplePeriod)))
 			}
 		}
 
@@ -67,7 +97,7 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 			w.Write(pcm.data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
-				binaryWrite(w, int32(s.Call(x(i)*samplePeriod)>>(yBits-32)))
+				write4Bytes(PCM32bitEncode(s.Call(x(i)*samplePeriod)))
 			}
 		}
 	}
@@ -81,7 +111,7 @@ type PCMFunction interface {
 	Encode(w io.Writer)
 }
 
-// PCM is the state and behaviour common to all PCM. Its not a Function, but is Periodic, specific PCM<<precison>> types enbed this, and are Function's.
+// PCM is the state and behaviour common to all PCM. Its not a Function, but is a Periodic, specific PCM<<precison>> types embed this, and then are LimitedPeriodicFunction's.
 type PCM struct {
 	samplePeriod x
 	length       x
@@ -96,6 +126,7 @@ func (p PCM) Period() x {
 func (p PCM) MaxX() x {
 	return p.length
 }
+
 
 func (p PCM) PeakY() y {
 	return p.Peak
@@ -141,13 +172,13 @@ func (s PCM8bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-1 {
 		return 0
 	}
-	return s.decode(s.data[index])
+	return PCM8bitDecode(s.data[index])
 }
 
-func (s PCM8bit) decode(b byte) y {
+func PCM8bitDecode(b byte) y {
 	return y(b-128) * (Maxy >> 7)
 }
-func (s PCM8bit) encode(y y) byte {
+func PCM8bitEncode(y y) byte {
 	return byte(y>>(yBits-8) + 128)
 }
 
@@ -165,13 +196,13 @@ func (s PCM16bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-3 {
 		return 0
 	}
-	return s.decode(s.data[index], s.data[index+1])
+	return PCM16bitDecode(s.data[index], s.data[index+1])
 }
 
-func (s PCM16bit) decode(b1, b2 byte) y {
+func PCM16bitDecode(b1, b2 byte) y {
 	return y(int16(b1)|int16(b2)<<8) * (Maxy >> 15)
 }
-func (s PCM16bit) encode(y y) (byte, byte) {
+func PCM16bitEncode(y y) (byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF)
 }
 
@@ -189,12 +220,12 @@ func (s PCM24bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-4 {
 		return 0
 	}
-	return s.decode(s.data[index], s.data[index+1], s.data[index+2])
+	return PCM24bitDecode(s.data[index], s.data[index+1], s.data[index+2])
 }
-func (s PCM24bit) decode(b1, b2, b3 byte) y {
+func PCM24bitDecode(b1, b2, b3 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) * (Maxy >> 23)
 }
-func (s PCM24bit) encode(y y) (byte, byte, byte) {
+func PCM24bitEncode(y y) (byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF)
 }
 
@@ -212,12 +243,12 @@ func (s PCM32bit) Call(offset x) y {
 	if index < 0 || index >= len(s.data)-5 {
 		return 0
 	}
-	return s.decode(s.data[index], s.data[index+1], s.data[index+2], s.data[index+3])
+	return PCM32bitDecode(s.data[index], s.data[index+1], s.data[index+2], s.data[index+3])
 }
-func (s PCM32bit) decode(b1, b2, b3, b4 byte) y {
+func PCM32bitDecode(b1, b2, b3, b4 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) * (Maxy >> 31)
 }
-func (s PCM32bit) encode(y y) (byte, byte, byte, byte) {
+func PCM32bitEncode(y y) (byte, byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF), byte(y >> (yBits - 32) & 0xFF)
 }
 
@@ -322,7 +353,8 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	}
 
 	sampleData := make([]byte, dataHeader.DataLen)
-
+	peaks:=make([]y,format.Channels)
+	
 	samples := dataHeader.DataLen / uint32(format.Channels) / uint32(format.Bits/8)
 	var s uint32
 	for ; s < samples; s++ {
@@ -330,9 +362,17 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 		var c uint32
 		for ; c < uint32(format.Channels); c++ {
 			if n, err := wav.Read(sampleData[(c*samples+s)*uint32(format.Bits/8) : (c*samples+s+1)*uint32(format.Bits/8)]); err != nil || n != int(format.Bits/8) {
-				return nil, ErrWavParse{"data incomplete"}
+				return nil, ErrWavParse{fmt.Sprintf("data incomplete %s of %s",s,samples)}
 			}
-
+			if format.Bits == 8 {
+				peaks[c]=PCM8bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)]) 
+			} else if format.Bits == 16 {
+				peaks[c]=PCM16bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)],sampleData[(c*samples+s)*uint32(format.Bits/8)+1]) 
+			} else if format.Bits == 24 {
+				peaks[c]=PCM24bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)],sampleData[(c*samples+s)*uint32(format.Bits/8)+1],sampleData[(c*samples+s)*uint32(format.Bits/8)+2]) 
+			} else if format.Bits == 32 {
+				peaks[c]=PCM32bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)],sampleData[(c*samples+s)*uint32(format.Bits/8)+1],sampleData[(c*samples+s)*uint32(format.Bits/8)+3],sampleData[(c*samples+s)*uint32(format.Bits/8)+3]) 
+			}			
 		}
 	}
 	functions := make([]PCMFunction, format.Channels)
@@ -360,3 +400,9 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	}
 	return functions, nil
 }
+
+
+
+
+
+
