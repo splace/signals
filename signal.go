@@ -11,6 +11,13 @@ type Function interface {
 	call(x) y
 }
 
+// returns a PeriodicLimitedFunction (type multiplex) based on a sine wave,
+// with peak y set to Maxy adjusted by dB,
+// dB should always be negative.
+func NewTone(period x, dB float64) Multiplex {
+	return Multiplex{Sine{period}, NewConstant(dB)}
+}
+
 // x is from -infinity to +infinity, can be considered a time Dx.
 // y's at -v'e xs are considered kind of imaginary, and not used, unless a Delay makes them +ve.
 type x time.Duration
