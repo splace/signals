@@ -20,7 +20,7 @@ type ADSREnvelope struct {
 
 func NewADSREnvelope(attack, decay, sustain x, sustainy y, release x) ADSREnvelope {
 	// TODO release attack or decay of zero!
-	return ADSREnvelope{attack, Maxy / y(attack), (Maxy - sustainy) / y(decay), attack + decay, sustainy, attack + decay + sustain, sustainy / y(release), attack + decay + sustain + release}
+	return ADSREnvelope{attack, maxy / y(attack), (maxy - sustainy) / y(decay), attack + decay, sustainy, attack + decay + sustain, sustainy / y(release), attack + decay + sustain + release}
 }
 
 func (s ADSREnvelope) Call(t x) y {

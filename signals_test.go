@@ -56,7 +56,7 @@ func ExampleSigmoid() {
 }
 
 func ExampleADSREnvelope() {
-	s := NewADSREnvelope(UnitX, UnitX, UnitX, Maxy/2, UnitX)
+	s := NewADSREnvelope(UnitX, UnitX, UnitX, maxy/2, UnitX)
 	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
 		fmt.Print(s.Call(t))
 	}
@@ -65,7 +65,7 @@ func ExampleADSREnvelope() {
 }
 
 func ExampleReflect() {
-	s := Reflected{NewADSREnvelope(UnitX, UnitX, UnitX, Maxy/2, UnitX)}
+	s := Reflected{NewADSREnvelope(UnitX, UnitX, UnitX, maxy/2, UnitX)}
 	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
 		fmt.Print(s.Call(t))
 	}
@@ -91,7 +91,7 @@ func ExampleStack() {
 }
 
 func ExampleTrigger() {
-	s := Triggered{NewADSREnvelope(UnitX, UnitX, UnitX, Maxy/2, UnitX), Maxy / 3 * 2, true, UnitX / 100, UnitX * 10, 0, nil, 0, false}
+	s := Triggered{NewADSREnvelope(UnitX, UnitX, UnitX, maxy/2, UnitX), maxy / 3 * 2, true, UnitX / 100, UnitX * 10, 0, nil, 0, false}
 	for t := x(0); t < 5*UnitX; t += UnitX / 10 {
 		fmt.Print(s.Call(t))
 	}

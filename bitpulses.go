@@ -16,7 +16,7 @@ func (s PulsePattern) Call(t x) y {
 		return 0
 	} else {
 		if s.BitPattern.Bit(bp) == 1 {
-			return Maxy
+			return maxy
 		} else {
 			return 0
 		}

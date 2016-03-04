@@ -26,14 +26,14 @@ func NewTone(period x, dB float64) Multiplex {
 type Multiplex []Function
 
 func (c Multiplex) Call(t x) (total y) {
-	total = Maxy
+	total = maxy
 	for _, s := range c {
 		l := s.Call(t)
 		switch l {
 		case 0:
 			total = 0
 			break
-		case Maxy:
+		case maxy:
 			continue
 		default:
 			//total = (total / Halfy) * (l / Halfy)*2

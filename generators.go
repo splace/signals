@@ -56,7 +56,7 @@ func (s Pulse) Call(t x) y {
 	if t > s.Width || t < 0 {
 		return 0
 	} else {
-		return Maxy
+		return maxy
 	}
 }
 
@@ -70,9 +70,9 @@ type Square struct {
 
 func (s Square) Call(t x) y {
 	if t%s.Cycle >= s.Cycle/2 {
-		return -Maxy
+		return -maxy
 	} else {
-		return Maxy
+		return maxy
 	}
 }
 
@@ -88,9 +88,9 @@ func (s RampUp) Call(t x) y {
 	if t < 0 {
 		return 0
 	} else if t > s.Period {
-		return Maxy
+		return maxy
 	} else {
-		return y(x(Maxy) / s.Period * t)
+		return y(x(maxy) / s.Period * t)
 	}
 }
 
@@ -100,11 +100,11 @@ type RampDown struct {
 
 func (s RampDown) Call(t x) y {
 	if t < 0 {
-		return Maxy
+		return maxy
 	} else if t > s.Period {
 		return 0
 	} else {
-		return y(x(Maxy) / s.Period * (s.Period - t))
+		return y(x(maxy) / s.Period * (s.Period - t))
 	}
 }
 
@@ -115,7 +115,7 @@ func (s Heavyside) Call(t x) y {
 	if t < 0 {
 		return 0
 	}
-	return Maxy
+	return maxy
 }
 
 type Sigmoid struct {

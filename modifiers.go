@@ -100,9 +100,9 @@ type Reflected struct {
 
 func (s Reflected) Call(t x) y {
 	if r := s.Function.Call(t); r < 0 {
-		return -Maxy - r
+		return -maxy - r
 	} else {
-		return Maxy - r
+		return maxy - r
 	}
 }
 

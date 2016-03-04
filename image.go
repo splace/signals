@@ -31,7 +31,7 @@ func (i Depiction) Bounds() image.Rectangle {
 }
 
 func (i Depiction) At(xp, yp int) color.Color {
-	if i.Call(x(xp)*UnitX/x(i.pixelsPerUnitX)-x(i.size.Min.X)) <= Maxy/y(i.size.Max.Y)*y(yp)-y(i.size.Min.Y) {
+	if i.Call(x(xp)*UnitX/x(i.pixelsPerUnitX)-x(i.size.Min.X)) <= maxy/y(i.size.Max.Y)*y(yp)-y(i.size.Min.Y) {
 		return i.aboveColour
 	}
 	return i.belowColour
