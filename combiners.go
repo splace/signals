@@ -57,7 +57,7 @@ func (c Multiplex) Period() (period x) {
 func (c Multiplex) MaxX() (min x) {
 	min = -1
 	for _, s := range c {
-		if sls, ok := s.(limiter); ok {
+		if sls, ok := s.(LimitedFunction); ok {
 			if newmin := sls.MaxX(); newmin >= 0 && (min == -1 || newmin < min) {
 				min = newmin
 			}
@@ -129,7 +129,7 @@ func (c Compose) Period() (period x) {
 func (c Compose) MaxX() (max x) {
 	max = -1
 	for _, s := range c {
-		if sls, ok := s.(limiter); ok {
+		if sls, ok := s.(LimitedFunction); ok {
 			if newmax := sls.MaxX(); newmax > max {
 				max = newmax
 			}
@@ -180,7 +180,7 @@ func (c Stack) Period() (period x) {
 func (c Stack) MaxX() (max x) {
 	max = -1
 	for _, s := range c {
-		if sls, ok := s.(limiter); ok {
+		if sls, ok := s.(LimitedFunction); ok {
 			if newmax := sls.MaxX(); newmax > max {
 				max = newmax
 			}

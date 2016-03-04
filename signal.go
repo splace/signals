@@ -38,11 +38,6 @@ func (l y) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(Maxy))
 }
 
-// limiter adds a MaxX method requirement.
-type limiter interface {
-	MaxX() x
-}
-
 // Periodic's have a Period method requirment.
 type Periodic interface {
 	Period() x
@@ -56,7 +51,7 @@ type peaker interface {
 // LimitedFunctions are used as Functions that can be assumed is zero after MaxX
 type LimitedFunction interface {
 	Function
-	limiter
+	MaxX() x
 }
 
 // Samples are LimitedFunctions that can be assumed to be zero before their MinX.
