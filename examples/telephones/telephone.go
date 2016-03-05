@@ -5,13 +5,18 @@ import (
 	"os"
 )
 
-func Save(file string,s Function){
+func Save(file string,s PeriodicFunction){
 	wavFile, err := os.Create(file)
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile,s,X(4),44100,2)
+	// one cycle or at least a seconds worth
+	if s.Period()>X(1){
+		Encode(wavFile,s,s.Period(),44100,2)
+	}else{
+		Encode(wavFile,s,s.Period()*(X(1)/s.Period()),44100,2)
+	}
 
 }
 
@@ -39,4 +44,6 @@ func main(){
 	Save("dialTone.wav",Stack{Sine{X(1.0/450)},Sine{X(1.0/350)}})
 
 }
+/*  hal3 Sat 5 Mar 02:21:24 GMT 2016 go version go1.5.1 linux/386
+Sat 5 Mar 02:21:25 GMT 2016 */
 
