@@ -11,7 +11,7 @@ func Save(file string,s PeriodicFunction){
 		panic(err)
 	}
 	defer wavFile.Close()
-	// whole number of cycles or at least a seconds worth
+	// one cycle or at least a seconds worth
 	if s.Period()>X(1){
 		Encode(wavFile,s,s.Period(),44100,2)
 	}else{
