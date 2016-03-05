@@ -622,6 +622,35 @@ func ExampleSegmented() {
 
 }
 
+func ExampleSegmented_MakeSawtooth() {
+	s := NewSegmented(Square{unitX},unitX/2)
+	for t := X(0); t < X(2); t += unitX / 10 {
+		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
+	}
+	fmt.Println()
+	 /* Output: 
+   100.00%                                                                  X
+    60.00%                                                     X
+    20.00%                                        X
+   -20.00%                            X
+   -60.00%               X
+  -100.00%  X
+   -60.00%               X
+   -20.00%                            X
+    20.00%                                        X
+    60.00%                                                     X
+   100.00%                                                                  X
+    60.00%                                                     X
+    20.00%                                        X
+   -20.00%                            X
+   -60.00%               X
+  -100.00%  X
+   -60.00%               X
+   -20.00%                            X
+    20.00%                                        X
+    60.00%                                                     X
+  */
+}
 
 func ExampleModulated() {
 	s := Modulated{Sine{unitX * 5}, Sine{unitX * 10},unitX}
@@ -684,4 +713,7 @@ func ExampleModulated() {
 
 
 
+/*  Hal3 Sat Mar 5 18:19:08 GMT 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Sat Mar 5 18:19:09 GMT 2016 */
 

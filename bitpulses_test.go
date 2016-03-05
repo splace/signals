@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ExampleBitPulses() {
+func ExamplePulsePattern() {
 	i := new(big.Int)
 	_, err := fmt.Sscanf("01110111011101110111011101110111", "%b", i)
 	if err != nil {
