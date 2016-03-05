@@ -7,26 +7,6 @@ import (
 	"io/ioutil"
 	)
 	
-func BenchmarkSignalsSine(b *testing.B) {
-	b.StopTimer()
-	s := Sine{unitX}
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		Encode(ioutil.Discard, s, unitX, 8000, 1)
-	}	
-
-}
-
-func BenchmarkSignalsSineSegmented(b *testing.B) {
-	b.StopTimer()
-	s := NewSegmented(Sine{unitX},unitX/2)
-	b.StartTimer()
-	for i := 0; i < b.N; i++ {
-		Encode(ioutil.Discard, s, unitX, 8000, 1)
-	}	
-
-}
-
 
 
 func ExampleSquare() {
@@ -463,19 +443,19 @@ func ExampleStack() {
   */}
 
 func ExampleTriggered() {
-	s := Triggered{NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX), maxY / 3 * 2, true, unitX / 100, unitX * 10, 0, nil, 0, false}
+	s := NewTriggered(NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX), maxY / 3 * 2, true, unitX / 100, unitX * 10)
 	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
-	fmt.Println(s.Shift)
+	fmt.Println(s.Found.Shift)
 	//s.Trigger = Maxy / 3
 	s.Rising = false
 	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
-	fmt.Println(s.Shift)
+	fmt.Println(s.Found.Shift)
 	fmt.Println()
 	 /* Output: 
     67.00%                                                        X
@@ -735,17 +715,97 @@ func ExampleModulated() {
     -4.67%                                 X
   */}
 
+func BenchmarkSignalsSine(b *testing.B) {
+	b.StopTimer()
+	s := Sine{unitX}
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		Encode(ioutil.Discard, s, unitX, 44100, 1)
+	}	
+
+}
+
+func BenchmarkSignalsSineSegmented(b *testing.B) {
+	b.StopTimer()
+	s := NewSegmented(Sine{unitX},unitX/2)
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		Encode(ioutil.Discard, s, unitX, 44100, 1)
+	}	
+
+}
 
 
-/*  Hal3 Sat Mar 5 19:40:15 GMT 2016 go version go1.5.1 linux/amd64
+/*  Hal3 Sat Mar 5 22:44:05 GMT 2016 go version go1.5.1 linux/amd64
+=== RUN   TestNoiseSave
+--- PASS: TestNoiseSave (0.82s)
+=== RUN   TestSaveLoad
+--- PASS: TestSaveLoad (0.00s)
+=== RUN   TestSaveWav
+--- PASS: TestSaveWav (0.00s)
+=== RUN   TestLoad
+--- PASS: TestLoad (0.01s)
+=== RUN   TestLoadChannels
+--- PASS: TestLoadChannels (0.08s)
+=== RUN   TestStackPCMs
+--- PASS: TestStackPCMs (0.08s)
+=== RUN   TestMultiplexTones
+--- PASS: TestMultiplexTones (0.02s)
+=== RUN   TestSaveLoadSave
+--- PASS: TestSaveLoadSave (0.04s)
+=== RUN   TestPiping
+--- PASS: TestPiping (0.00s)
+=== RUN   TestImagingSine
+--- PASS: TestImagingSine (0.27s)
+=== RUN   TestImaging
+--- PASS: TestImaging (0.31s)
+=== RUN   TestComposable
+--- PASS: TestComposable (1.46s)
+=== RUN   TestStackimage
+--- PASS: TestStackimage (0.91s)
+=== RUN   TestMultiplexImage
+--- PASS: TestMultiplexImage (0.90s)
+=== RUN   ExampleADSREnvelope
+--- PASS: ExampleADSREnvelope (0.00s)
+=== RUN   ExamplePulsePattern
+--- PASS: ExamplePulsePattern (0.00s)
+=== RUN   ExampleNoise
+--- PASS: ExampleNoise (0.00s)
+=== RUN   ExampleSquare
+--- PASS: ExampleSquare (0.00s)
+=== RUN   ExamplePulse
+--- PASS: ExamplePulse (0.00s)
+=== RUN   ExampleRampUpDown
+--- PASS: ExampleRampUpDown (0.00s)
+=== RUN   ExampleHeavyside
+--- PASS: ExampleHeavyside (0.00s)
+=== RUN   ExampleSine
+--- PASS: ExampleSine (0.00s)
+=== RUN   ExampleNewTone
+--- PASS: ExampleNewTone (0.00s)
+=== RUN   ExampleSigmoid
+--- PASS: ExampleSigmoid (0.00s)
+=== RUN   ExampleReflected
+--- PASS: ExampleReflected (0.00s)
+=== RUN   ExampleMultiplex
+--- PASS: ExampleMultiplex (0.00s)
+=== RUN   ExampleStack
+--- PASS: ExampleStack (0.00s)
+=== RUN   ExampleTriggered
+--- PASS: ExampleTriggered (0.00s)
+=== RUN   ExampleSegmented
+--- PASS: ExampleSegmented (0.00s)
+=== RUN   ExampleSegmented_makeSawtooth
+--- PASS: ExampleSegmented_makeSawtooth (0.00s)
+=== RUN   ExampleModulated
+--- PASS: ExampleModulated (0.00s)
 PASS
-BenchmarkSignalsSegmented-2	    3000	    574544 ns/op
-ok  	_/home/simon/Dropbox/github/working/signals	1.798s
-Sat Mar 5 19:40:18 GMT 2016 */
-/*  Hal3 Sat Mar 5 19:43:01 GMT 2016 go version go1.5.1 linux/amd64
+ok  	_/home/simon/Dropbox/github/working/signals	4.928s
+Sat Mar 5 22:44:11 GMT 2016 */
+/*  Hal3 Sat Mar 5 22:44:56 GMT 2016 go version go1.5.1 linux/amd64
 PASS
-BenchmarkSignalsSine-2         	    2000	    577722 ns/op
-BenchmarkSignalsSineSegmented-2	    1000	   1483830 ns/op
-ok  	_/home/simon/Dropbox/github/working/signals	2.861s
-Sat Mar 5 19:43:06 GMT 2016 */
+BenchmarkSignalsSine-2         	     500	   3148458 ns/op
+BenchmarkSignalsSineSegmented-2	     500	   3874923 ns/op
+ok  	_/home/simon/Dropbox/github/working/signals	4.236s
+Sat Mar 5 22:45:02 GMT 2016 */
 

@@ -90,7 +90,7 @@ type Reversed struct {
 	Function
 }
 
-func (s Reversed) y(t x) y {
+func (s Reversed) call(t x) y {
 	return s.Function.call(-t)
 }
 
@@ -142,28 +142,34 @@ func (s Segmented) y(t x) y {
 }
 */
 
-// a Function that has equal width uniform gradients as an approximation to another function.
-// (sebsequent calls within the same segment, are generated from cached end values, so doesn't call embedded Function)
+// Segmented is a Function that has equal width uniform gradients as an approximation to another function.
 type Segmented struct {
 	Function
 	Width  x
-	i1, i2 x
-	l1, l2 y
+	cache *segmentedCache
 }
+
+// by been pointed to from inside the Function, means this is changable without needing a pointer reciever for the call method  
+type segmentedCache struct{
+		i1, i2 x
+		l1, l2 y
+		}
 
 func NewSegmented(s Function, w x) Segmented {
-	return Segmented{Function: s, Width: w}
+	return Segmented{s, w, &segmentedCache{}}
 }
 
+// subsequent calls within the same segment, are generated from cached end values, so avoids calls to the embedded Function.
 func (s Segmented) call(t x) y {
 	temp := t % s.Width
-	if t-temp != s.i1 || t-temp+s.Width != s.i2 {
-		s.i1 = t - temp
-		s.i2 = t - temp + s.Width
-		s.l1 = s.Function.call(s.i1)
-		s.l2 = s.Function.call(s.i2)
+	if t-temp != s.cache.i1 || t-temp+s.Width != s.cache.i2 {
+		// TODO reuse by swap ends
+		s.cache.i1 = t - temp
+		s.cache.i2 = t - temp + s.Width
+		s.cache.l1 = s.Function.call(s.cache.i1)
+		s.cache.l2 = s.Function.call(s.cache.i2)
 	}
-	return s.l1/y(s.Width)*y(s.Width-temp) + s.l2/y(s.Width)*y(temp)
+	return s.cache.l1/y(s.Width)*y(s.Width-temp) + s.cache.l2/y(s.Width)*y(temp)
 }
 
 // Triggered shifts a Function's x to make it cross a trigger y at zero x.
@@ -176,33 +182,39 @@ type Triggered struct {
 	Rising         bool
 	Resolution     x
 	MaxShift       x
-	Shift          x
-	searched       Function
-	locatedTrigger y
-	locatedRising  bool
+	Found *searchInfo 
 }
 
-func (s *Triggered) call(t x) y {
-	if s.Trigger != s.locatedTrigger || s.searched != s.Function || s.locatedRising != s.Rising {
-		s.searched = s.Function
-		s.locatedTrigger = s.Trigger
-		s.locatedRising = s.Rising
-		if s.Rising && s.Function.call(s.Shift) > s.Trigger || !s.Rising && s.Function.call(s.Shift) < s.Trigger {
-			s.Shift += s.Resolution
+type searchInfo struct{
+	Shift          x
+	trigger y
+	rising  bool
+}
+
+func NewTriggered(s Function, trigger y, rising bool, res, max x) Triggered {
+	return Triggered{s, trigger, rising, res, max, &searchInfo{}}
+}
+
+func (s Triggered) call(t x) y {
+	if s.Trigger != s.Found.trigger ||  s.Found.rising != s.Rising {
+		s.Found.trigger = s.Trigger
+		s.Found.rising = s.Rising
+		if s.Rising && s.Function.call(s.Found.Shift) > s.Trigger || !s.Rising && s.Function.call(s.Found.Shift) < s.Trigger {
+			s.Found.Shift += s.Resolution
 		}
-		for t := s.Shift; t <= s.MaxShift; t += s.Resolution {
+		for t := s.Found.Shift; t <= s.MaxShift; t += s.Resolution {
 			if s.Rising && s.Function.call(t) > s.Trigger || !s.Rising && s.Function.call(t) < s.Trigger {
-				s.Shift = t
+				s.Found.Shift = t
 				return s.Function.call(t)
 			}
 		}
-		for t := x(0); t < s.Shift; t += s.Resolution {
+		for t := x(0); t < s.Found.Shift; t += s.Resolution {
 			if s.Rising && s.Function.call(t) > s.Trigger || !s.Rising && s.Function.call(t) < s.Trigger {
-				s.Shift = t
+				s.Found.Shift = t
 				return s.Function.call(t)
 			}
 		}
-		s.Shift = 0
+		s.Found.Shift = 0
 	}
-	return s.Function.call(t + s.Shift)
+	return s.Function.call(t + s.Found.Shift)
 }
