@@ -5,13 +5,18 @@ import (
 	"os"
 )
 
-func Save(file string,s Function){
+func Save(file string,s PeriodicFunction){
 	wavFile, err := os.Create(file)
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile,s,X(4),44100,2)
+	// whole number of cycles or at least a seconds worth
+	if s.Period()>X(1){
+		Encode(wavFile,s,s.Period(),44100,2)
+	}else{
+		Encode(wavFile,s,s.Period()*(X(1)/s.Period()),44100,2)
+	}
 }
 
 /*
@@ -28,4 +33,6 @@ func main(){
 	Save("LineBusyTone.wav",Multiplex{Looped{Pulse{X(.25)},X(0.5)}, Stack{Sine{X(1.0/480)},Sine{X(1/630)}}})
 
 }
+
+
 
