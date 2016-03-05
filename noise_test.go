@@ -12,7 +12,7 @@ func ExampleNoise() {
 	}
 	fmt.Println()
 	 /* Output: 
-23.94%                                         X
+    23.94%                                         X
    -52.49%                 X
      8.21%                                    X
     -9.87%                               X

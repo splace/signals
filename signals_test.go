@@ -7,7 +7,7 @@ import (
 
 func ExampleSquare() {
 	s := Square{unitX}
-	for t := x(0); t < 2*unitX; t += unitX / 10 {
+	for t := X(0); t < X(2); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -37,17 +37,24 @@ func ExampleSquare() {
 
 func ExamplePulse() {
 	s := Pulse{unitX}
-	for t := x(-2); t < 3*unitX; t += unitX / 4 {
+	for t := X(-2); t < X(3); t += unitX / 4 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
 	 /* Output: 
      0.00%                                  X
-   100.00%                                                                   X
-   100.00%                                                                   X
-   100.00%                                                                   X
-   100.00%                                                                   X
      0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
      0.00%                                  X
      0.00%                                  X
      0.00%                                  X
@@ -58,12 +65,12 @@ func ExamplePulse() {
  */}
 func ExampleRampUpDown() {
 	s := RampUp{unitX}
-	for t := x(0); t < 2*unitX; t += unitX / 10 {
+	for t := X(0); t < X(2); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
 	s2 := RampDown{unitX}
-	for t := x(0); t < 2*unitX; t += unitX / 10 {
+	for t := X(0); t < X(2); t += unitX / 10 {
 		fmt.Println(s2.call(t),strings.Repeat(" ",int(s2.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -110,10 +117,42 @@ func ExampleRampUpDown() {
      0.00%                                  X
      0.00%                                  X
 */}
+func ExampleHeavyside() {
+	s := Heavyside{}
+	for t := X(-3); t < X(3); t += unitX / 4 {
+		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
+	}
+	fmt.Println()
+	 /* Output: 
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+     0.00%                                  X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+   100.00%                                                                   X
+*/}
 
 func ExampleSine() {
 	s := Sine{unitX}
-	for t := x(0); t < 2*unitX; t += unitX / 16 {
+	for t := X(0); t < X(2); t += unitX / 16 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -154,7 +193,7 @@ func ExampleSine() {
 
 func ExampleNewTone() {
 	s := NewTone(unitX, 0)
-	for t := x(0); t < 2*unitX; t += unitX / 16 {
+	for t := X(0); t < X(2); t += unitX / 16 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -195,7 +234,7 @@ func ExampleNewTone() {
 
 func ExampleSigmoid() {
 	s := Sigmoid{unitX}
-	for t := x(-5 * unitX); t < 5*unitX; t += unitX / 2 {
+	for t := X(-5); t < X(5); t += unitX / 2 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -224,7 +263,7 @@ func ExampleSigmoid() {
 
 func ExampleReflected() {
 	s := Reflected{NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX)}
-	for t := x(0); t < 5*unitX; t += unitX / 10 {
+	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -283,7 +322,7 @@ func ExampleReflected() {
 
 func ExampleMultiplex() {
 	s := Multiplex{Sine{unitX * 2}, Sine{unitX * 5}}
-	for t := x(0); t < 5*unitX; t += unitX / 10 {
+	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -342,7 +381,7 @@ func ExampleMultiplex() {
 
 func ExampleStack() {
 	s := Stack{Sine{unitX * 2}, Sine{unitX * 5}}
-	for t := x(0); t < 5*unitX; t += unitX / 10 {
+	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -401,14 +440,14 @@ func ExampleStack() {
 
 func ExampleTriggered() {
 	s := Triggered{NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX), maxY / 3 * 2, true, unitX / 100, unitX * 10, 0, nil, 0, false}
-	for t := x(0); t < 5*unitX; t += unitX / 10 {
+	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
 	fmt.Println(s.Shift)
 	//s.Trigger = Maxy / 3
 	s.Rising = false
-	for t := x(0); t < 5*unitX; t += unitX / 10 {
+	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -524,7 +563,7 @@ func ExampleTriggered() {
 
 func ExampleSegmented() {
 	s := NewSegmented(Sine{unitX * 10},unitX)
-	for t := x(0); t < 5*unitX; t += unitX / 10 {
+	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -586,7 +625,7 @@ func ExampleSegmented() {
 
 func ExampleModulated() {
 	s := Modulated{Sine{unitX * 5}, Sine{unitX * 10},unitX}
-	for t := x(0); t < 5*unitX; t += unitX / 10 {
+	for t := X(0); t < X(5); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
@@ -642,5 +681,7 @@ func ExampleModulated() {
     -9.37%                               X
     -4.67%                                 X
   */}
+
+
 
 
