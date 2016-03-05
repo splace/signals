@@ -1,9 +1,20 @@
 /*
-Package signals generates and manipulates abstract signals:- https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signals_and_Systems.
+Package signals generates and manipulates abstract signals, often imported and then used with specific real-world quantities.
+
+Signals variously defined as:
+
+"A detectable physical quantity or impulse (as a voltage, current, or magnetic field strength) by which messages or information can be transmitted." or
+
+"A signal is a function of independent variables that carry some information."
+
+"A signal is a source of information generaly a physical quantity which varies with respect to time, space, temperature like any independent variable"
+
+"A signal is a physical quantity that varies with time,space or any other independent variable.by which information can be conveyed"
+
+see; https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signals_and_Systems.
+
 
 Overview
-
-intended to be abstract, and a base package for import, then used with specific real-world quantities.
 
 Interfaces
 
