@@ -7,14 +7,14 @@ import (
 	"io/ioutil"
 	)
 	
-
-
-func ExampleSquare() {
-	s := Square{unitX}
-	for t := X(0); t < X(2); t += unitX / 10 {
+func PrintGraph(s Function,start,end,step x){
+	for t := start; t < end; t += step {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
-	fmt.Println()
+}
+
+func ExampleSquare() {
+	PrintGraph(Square{unitX},0,2*unitX,unitX/10)
 	 /* Output: 
    100.00%                                                                   X
    100.00%                                                                   X
@@ -40,11 +40,7 @@ func ExampleSquare() {
 }
 
 func ExamplePulse() {
-	s := Pulse{unitX}
-	for t := X(-2); t < X(3); t += unitX / 4 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(Pulse{unitX},-2*unitX,3*unitX,unitX/4)
 	 /* Output: 
      0.00%                                  X
      0.00%                                  X
@@ -68,16 +64,9 @@ func ExamplePulse() {
      0.00%                                  X
  */}
 func ExampleRampUpDown() {
-	s := RampUp{unitX}
-	for t := X(0); t < X(2); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
+	PrintGraph(RampUp{unitX},0,2*unitX,unitX/10)
 	fmt.Println()
-	s2 := RampDown{unitX}
-	for t := X(0); t < X(2); t += unitX / 10 {
-		fmt.Println(s2.call(t),strings.Repeat(" ",int(s2.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(RampDown{unitX},0,2*unitX,unitX/10)
 	 /* Output: 
      0.00%                                  X
     10.00%                                     X
@@ -122,11 +111,7 @@ func ExampleRampUpDown() {
      0.00%                                  X
 */}
 func ExampleHeavyside() {
-	s := Heavyside{}
-	for t := X(-3); t < X(3); t += unitX / 4 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(Heavyside{},-3*unitX,3*unitX,unitX/4)
 	 /* Output: 
      0.00%                                  X
      0.00%                                  X
@@ -155,11 +140,7 @@ func ExampleHeavyside() {
 */}
 
 func ExampleSine() {
-	s := Sine{unitX}
-	for t := X(0); t < X(2); t += unitX / 16 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(Sine{unitX},0,2*unitX,unitX/16)
 	 /* Output: 
      0.00%                                  X
     38.27%                                              X
@@ -196,11 +177,7 @@ func ExampleSine() {
   */}
 
 func ExampleNewTone() {
-	s := NewTone(unitX, 0)
-	for t := X(0); t < X(2); t += unitX / 16 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(NewTone(unitX, 0),0,2*unitX,unitX/16)
 	 /* Output: 
      0.00%                                  X
     38.27%                                              X
@@ -237,11 +214,7 @@ func ExampleNewTone() {
   */}
 
 func ExampleSigmoid() {
-	s := Sigmoid{unitX}
-	for t := X(-5); t < X(5); t += unitX / 2 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(Sigmoid{unitX},-5*unitX,5*unitX,unitX/2)
 	 /* Output: 
      0.67%                                  X
      1.10%                                  X
@@ -266,11 +239,7 @@ func ExampleSigmoid() {
   */}
 
 func ExampleReflected() {
-	s := Reflected{NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX)}
-	for t := X(0); t < X(5); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(Reflected{NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX)},0,5*unitX,unitX/10)
 	 /* Output: 
    100.00%                                                                   X
     90.00%                                                               X
@@ -325,11 +294,7 @@ func ExampleReflected() {
   */}
 
 func ExampleMultiplex() {
-	s := Multiplex{Sine{unitX * 2}, Sine{unitX * 5}}
-	for t := X(0); t < X(5); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(Multiplex{Sine{unitX * 2}, Sine{unitX * 5}},0,5*unitX,unitX/10)
 	 /* Output: 
      0.00%                                  X
      3.87%                                   X
@@ -384,11 +349,7 @@ func ExampleMultiplex() {
   */}
 
 func ExampleStack() {
-	s := Stack{Sine{unitX * 2}, Sine{unitX * 5}}
-	for t := X(0); t < X(5); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(Stack{Sine{unitX * 2}, Sine{unitX * 5}},0,5*unitX,unitX/10)
 	 /* Output: 
      0.00%                                  X
     21.72%                                         X
@@ -444,19 +405,11 @@ func ExampleStack() {
 
 func ExampleTriggered() {
 	s := NewTriggered(NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX), maxY / 3 * 2, true, unitX / 100, unitX * 10)
-	for t := X(0); t < X(5); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(s,0,5*unitX,unitX/10)
 	fmt.Println(s.Found.Shift)
-	//s.Trigger = Maxy / 3
-	s.Rising = false
-	for t := X(0); t < X(5); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	s.Rising = false   // forces a new search from here
+	PrintGraph(s,0,5*unitX,unitX/10)
 	fmt.Println(s.Found.Shift)
-	fmt.Println()
 	 /* Output: 
     67.00%                                                        X
     77.00%                                                           X
@@ -508,7 +461,6 @@ func ExampleTriggered() {
      0.00%                                  X
      0.00%                                  X
      0.00%                                  X
-
      0.67
     66.50%                                                       X
     61.50%                                                      X
@@ -560,17 +512,12 @@ func ExampleTriggered() {
      0.00%                                  X
      0.00%                                  X
      0.00%                                  X
-
      1.67
 */}
 
 
 func ExampleSegmented() {
-	s := NewSegmented(Sine{unitX * 10},unitX)
-	for t := X(0); t < X(5); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(NewSegmented(Sine{unitX * 10},unitX),0,5*unitX,unitX/10)
  /* Output: 
      0.00%                                  X
      5.88%                                   X
@@ -627,11 +574,7 @@ func ExampleSegmented() {
 }
 
 func ExampleSegmented_makeSawtooth() {
-	s := NewSegmented(Square{unitX},unitX/2)
-	for t := X(0); t < X(2); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(NewSegmented(Square{unitX},unitX/2),0,2*unitX,unitX/10)
 	 /* Output: 
    100.00%                                                                  X
     60.00%                                                     X
@@ -657,11 +600,7 @@ func ExampleSegmented_makeSawtooth() {
 }
 
 func ExampleModulated() {
-	s := Modulated{Sine{unitX * 5}, Sine{unitX * 10},unitX}
-	for t := X(0); t < X(5); t += unitX / 10 {
-		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
+	PrintGraph(Modulated{Sine{unitX * 5}, Sine{unitX * 10},unitX},0,5*unitX,unitX/10)
 	 /* Output: 
      0.00%                                  X
     20.31%                                        X
@@ -736,76 +675,4 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 }
 
 
-/*  Hal3 Sat Mar 5 22:44:05 GMT 2016 go version go1.5.1 linux/amd64
-=== RUN   TestNoiseSave
---- PASS: TestNoiseSave (0.82s)
-=== RUN   TestSaveLoad
---- PASS: TestSaveLoad (0.00s)
-=== RUN   TestSaveWav
---- PASS: TestSaveWav (0.00s)
-=== RUN   TestLoad
---- PASS: TestLoad (0.01s)
-=== RUN   TestLoadChannels
---- PASS: TestLoadChannels (0.08s)
-=== RUN   TestStackPCMs
---- PASS: TestStackPCMs (0.08s)
-=== RUN   TestMultiplexTones
---- PASS: TestMultiplexTones (0.02s)
-=== RUN   TestSaveLoadSave
---- PASS: TestSaveLoadSave (0.04s)
-=== RUN   TestPiping
---- PASS: TestPiping (0.00s)
-=== RUN   TestImagingSine
---- PASS: TestImagingSine (0.27s)
-=== RUN   TestImaging
---- PASS: TestImaging (0.31s)
-=== RUN   TestComposable
---- PASS: TestComposable (1.46s)
-=== RUN   TestStackimage
---- PASS: TestStackimage (0.91s)
-=== RUN   TestMultiplexImage
---- PASS: TestMultiplexImage (0.90s)
-=== RUN   ExampleADSREnvelope
---- PASS: ExampleADSREnvelope (0.00s)
-=== RUN   ExamplePulsePattern
---- PASS: ExamplePulsePattern (0.00s)
-=== RUN   ExampleNoise
---- PASS: ExampleNoise (0.00s)
-=== RUN   ExampleSquare
---- PASS: ExampleSquare (0.00s)
-=== RUN   ExamplePulse
---- PASS: ExamplePulse (0.00s)
-=== RUN   ExampleRampUpDown
---- PASS: ExampleRampUpDown (0.00s)
-=== RUN   ExampleHeavyside
---- PASS: ExampleHeavyside (0.00s)
-=== RUN   ExampleSine
---- PASS: ExampleSine (0.00s)
-=== RUN   ExampleNewTone
---- PASS: ExampleNewTone (0.00s)
-=== RUN   ExampleSigmoid
---- PASS: ExampleSigmoid (0.00s)
-=== RUN   ExampleReflected
---- PASS: ExampleReflected (0.00s)
-=== RUN   ExampleMultiplex
---- PASS: ExampleMultiplex (0.00s)
-=== RUN   ExampleStack
---- PASS: ExampleStack (0.00s)
-=== RUN   ExampleTriggered
---- PASS: ExampleTriggered (0.00s)
-=== RUN   ExampleSegmented
---- PASS: ExampleSegmented (0.00s)
-=== RUN   ExampleSegmented_makeSawtooth
---- PASS: ExampleSegmented_makeSawtooth (0.00s)
-=== RUN   ExampleModulated
---- PASS: ExampleModulated (0.00s)
-PASS
-ok  	_/home/simon/Dropbox/github/working/signals	4.928s
-Sat Mar 5 22:44:11 GMT 2016 */
-/*  Hal3 Sat Mar 5 22:44:56 GMT 2016 go version go1.5.1 linux/amd64
-PASS
-BenchmarkSignalsSine-2         	     500	   3148458 ns/op
-BenchmarkSignalsSineSegmented-2	     500	   3874923 ns/op
-ok  	_/home/simon/Dropbox/github/working/signals	4.236s
-Sat Mar 5 22:45:02 GMT 2016 */
 
