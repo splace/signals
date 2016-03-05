@@ -622,7 +622,7 @@ func ExampleSegmented() {
 
 }
 
-func ExampleSegmented_MakeSawtooth() {
+func ExampleSegmented_makeSawtooth() {
 	s := NewSegmented(Square{unitX},unitX/2)
 	for t := X(0); t < X(2); t += unitX / 10 {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
