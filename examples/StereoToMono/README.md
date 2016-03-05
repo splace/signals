@@ -1,8 +1,9 @@
 Extract or Combine channels, from a wave file, to mono wave file(s). 
-
+(tomono[SYSV64].elf:-linux amd64 executable, provided as is.)
 ```
 Usage:
-tomono.(exe|bin) <<flags>> <<inFile.wav>> <<outfile>>
+<<executable>> <<flags>> <<inFile>> <<outfile>>
+flags:
   -bytes precision
     	precision in bytes per sample. (requires format flag set) (default 2)
   -chans string
