@@ -114,7 +114,7 @@ type Modulated struct {
 }
 
 func (s Modulated) call(t x) y {
-	return s.Function.call(t + MultiplyX(float64(s.Modulation.call(t))/Maxyfloat64, s.Factor))
+	return s.Function.call(t + MultiplyX(float64(s.Modulation.call(t))/maxyfloat64, s.Factor))
 }
 
 // TODO if a modulation function is periodic then the modulated will be, or, smaller of either?

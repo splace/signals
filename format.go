@@ -285,8 +285,8 @@ type PCMformat struct {
 	Bits        uint16
 }
 
-// Decode a stream into an array of LimitedFunctions.
-// one Function for each channel in the encoding.
+// Decode a stream into an array of PCMFunctions.
+// one for each channel in the encoding.
 func Decode(wav io.Reader) ([]PCMFunction, error) {
 	var header riffHeader
 	var formatHeader chunkHeader

@@ -40,7 +40,7 @@ const halfyBits = yBits / 2
 //const Halfy=2<<(HalfyBits-1)
 
 // float64 has less resolution than int64 at maxy, so need this to scale float64 sourced functions to never overflow int64
-const Maxyfloat64 float64 = float64(maxY - 512)
+const maxyfloat64 float64 = float64(maxY - 512)
 
 // formatted representation of a y as percentage.
 func (l y) String() string {

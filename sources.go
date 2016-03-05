@@ -33,7 +33,7 @@ func Vol(DB float64) float64 {
 }
 
 func NewConstant(DB float64) Constant {
-	return Constant{y(Maxyfloat64 * Vol(DB))}
+	return Constant{y(maxyfloat64 * Vol(DB))}
 }
 
 type Sine struct {
@@ -41,7 +41,7 @@ type Sine struct {
 }
 
 func (s Sine) call(t x) y {
-	return y(math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) * Maxyfloat64)
+	return y(math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) * maxyfloat64)
 }
 
 func (s Sine) Period() x {
@@ -123,5 +123,5 @@ type Sigmoid struct {
 }
 
 func (s Sigmoid) call(t x) y {
-	return y(Maxyfloat64 / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
+	return y(maxyfloat64 / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }
