@@ -415,7 +415,7 @@ func ExampleTriggered() {
 	fmt.Println(s.Shift)
 	fmt.Println()
 	 /* Output: 
-	67.00%                                                        X
+    67.00%                                                        X
     77.00%                                                           X
     87.00%                                                              X
     97.00%                                                                  X
@@ -528,8 +528,8 @@ func ExampleSegmented() {
 		fmt.Println(s.call(t),strings.Repeat(" ",int(s.call(t)/(maxY/33))+33)+"X")
 	}
 	fmt.Println()
-	 /* Output: 
-	 0.00%                                  X
+ /* Output: 
+     0.00%                                  X
      5.88%                                   X
     11.76%                                     X
     17.63%                                       X
