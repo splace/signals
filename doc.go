@@ -9,11 +9,11 @@ Interfaces
 
 Function :- has method call() which returns a 'y' value from an 'x' value parameter.
 Function's are generally procedural, calculated as needed, meaning changes in parameters, or arrangment, effect returned values of existing types.
-Function's can be encode/decoded as go code binary (gob), making for a basic interpreted signal language, or they can be, lossily, stored in wav files (Function's saved as wav are loaded back as PCMFunctions)
+Function's can be encode/decoded as go code binary (gob), making for a basic interpreted signal language, or they can be stored, lossily, in wav files (Function's saved as wav are loaded back as PCMFunctions)
 
 LimitedFunction :- has a MaxX() method that returns the 'x' value after which the function can be assumed to return zero, effectively has an end.
 
-PeriodicFunction :- a Function with an additional method Period(), reciprocal of any fundamental frequency, (or sample spacing for PCMFunction's), delta 'x'.
+PeriodicFunction :- a Function with an additional method Period(), the repeat dx, reciprocal of any fundamental frequency, or sample spacing for PCMFunction's.
 
 PCMFunction :- a PeriodicLimitedFunction with additional method Encode().
 PCMFunction's are stored, at a particular interval and precision, and can be used to cache an expensive precedural Function.

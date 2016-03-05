@@ -12,6 +12,7 @@ func init() {
 	gob.Register(Reflected{})
 	gob.Register(Modulated{})
 	gob.Register(Triggered{})
+	gob.Register(Segmented{})
 }
 
 // a Function that shifts the x of another function
