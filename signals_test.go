@@ -3,7 +3,31 @@ package signals
 import (
 	"fmt"
 	"strings"
-)
+	"testing"
+	"io/ioutil"
+	)
+	
+func BenchmarkSignalsSine(b *testing.B) {
+	b.StopTimer()
+	s := Sine{unitX}
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		Encode(ioutil.Discard, s, unitX, 8000, 1)
+	}	
+
+}
+
+func BenchmarkSignalsSineSegmented(b *testing.B) {
+	b.StopTimer()
+	s := NewSegmented(Sine{unitX},unitX/2)
+	b.StartTimer()
+	for i := 0; i < b.N; i++ {
+		Encode(ioutil.Discard, s, unitX, 8000, 1)
+	}	
+
+}
+
+
 
 func ExampleSquare() {
 	s := Square{unitX}
@@ -713,7 +737,15 @@ func ExampleModulated() {
 
 
 
-/*  Hal3 Sat Mar 5 18:19:08 GMT 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Sat Mar 5 18:19:09 GMT 2016 */
+/*  Hal3 Sat Mar 5 19:40:15 GMT 2016 go version go1.5.1 linux/amd64
+PASS
+BenchmarkSignalsSegmented-2	    3000	    574544 ns/op
+ok  	_/home/simon/Dropbox/github/working/signals	1.798s
+Sat Mar 5 19:40:18 GMT 2016 */
+/*  Hal3 Sat Mar 5 19:43:01 GMT 2016 go version go1.5.1 linux/amd64
+PASS
+BenchmarkSignalsSine-2         	    2000	    577722 ns/op
+BenchmarkSignalsSineSegmented-2	    1000	   1483830 ns/op
+ok  	_/home/simon/Dropbox/github/working/signals	2.861s
+Sat Mar 5 19:43:06 GMT 2016 */
 
