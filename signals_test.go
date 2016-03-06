@@ -654,6 +654,118 @@ func ExampleModulated() {
     -4.67%                                 X
   */}
 
+
+func ExampleLooped() {
+	PrintGraph(Looped{Sine{unitX * 5},unitX * 25 /10},0,5*unitX,unitX/10)
+	 /* Output: 
+     0.00%                                  X
+    12.53%                                      X
+    24.87%                                          X
+    36.81%                                              X
+    48.18%                                                 X
+    58.78%                                                     X
+    68.45%                                                        X
+    77.05%                                                           X
+    84.43%                                                             X
+    90.48%                                                               X
+    95.11%                                                                 X
+    98.23%                                                                  X
+    99.80%                                                                  X
+    99.80%                                                                  X
+    98.23%                                                                  X
+    95.11%                                                                 X
+    90.48%                                                               X
+    84.43%                                                             X
+    77.05%                                                           X
+    68.45%                                                        X
+    58.78%                                                     X
+    48.18%                                                 X
+    36.81%                                              X
+    24.87%                                          X
+    12.53%                                      X
+     0.00%                                  X
+    12.53%                                      X
+    24.87%                                          X
+    36.81%                                              X
+    48.18%                                                 X
+    58.78%                                                     X
+    68.45%                                                        X
+    77.05%                                                           X
+    84.43%                                                             X
+    90.48%                                                               X
+    95.11%                                                                 X
+    98.23%                                                                  X
+    99.80%                                                                  X
+    99.80%                                                                  X
+    98.23%                                                                  X
+    95.11%                                                                 X
+    90.48%                                                               X
+    84.43%                                                             X
+    77.05%                                                           X
+    68.45%                                                        X
+    58.78%                                                     X
+    48.18%                                                 X
+    36.81%                                              X
+    24.87%                                          X
+    12.53%                                      X
+  */}
+
+func ExampleRepeated() {
+	PrintGraph(Repeated{Sine{unitX * 2},1.5},0,5*unitX,unitX/10)
+	 /* Output: 
+     0.00%                                  X
+    30.90%                                            X
+    58.78%                                                     X
+    80.90%                                                            X
+    95.11%                                                                 X
+   100.00%                                                                  X
+    95.11%                                                                 X
+    80.90%                                                            X
+    58.78%                                                     X
+    30.90%                                            X
+     0.00%                                  X
+   -30.90%                        X
+   -58.78%               X
+   -80.90%        X
+   -95.11%   X
+  -100.00%  X
+   -95.11%   X
+   -80.90%        X
+   -58.78%               X
+   -30.90%                        X
+     0.00%                                  X
+    30.90%                                            X
+    58.78%                                                     X
+    80.90%                                                            X
+    95.11%                                                                 X
+   100.00%                                                                  X
+    95.11%                                                                 X
+    80.90%                                                            X
+    58.78%                                                     X
+    30.90%                                            X
+     0.00%                                  X
+    30.90%                                            X
+    58.78%                                                     X
+    80.90%                                                            X
+    95.11%                                                                 X
+   100.00%                                                                  X
+    95.11%                                                                 X
+    80.90%                                                            X
+    58.78%                                                     X
+    30.90%                                            X
+     0.00%                                  X
+   -30.90%                        X
+   -58.78%               X
+   -80.90%        X
+   -95.11%   X
+  -100.00%  X
+   -95.11%   X
+   -80.90%        X
+   -58.78%               X
+   -30.90%                        X
+  */}
+
+
 func BenchmarkSignalsSine(b *testing.B) {
 	b.StopTimer()
 	s := Sine{unitX}
@@ -674,11 +786,4 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 
 }
 
-
-/*  Hal3 Sun Mar 6 00:51:16 GMT 2016 go version go1.5.1 linux/amd64
-PASS
-BenchmarkSignalsSine-2         	     500	   3137650 ns/op
-BenchmarkSignalsSineSegmented-2	    1000	   2179469 ns/op
-ok  	_/home/simon/Dropbox/github/working/signals	4.305s
-Sun Mar 6 00:51:22 GMT 2016 */
 

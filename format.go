@@ -105,7 +105,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 // PCMFunction is a Pulse-code modulated Function's behaviour
 type PCMFunction interface {
 	LimitedFunction
-	Periodic
+	Period() x
 	peaker
 	Encode(w io.Writer)
 }

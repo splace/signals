@@ -25,6 +25,7 @@ func (s Shifted) call(t x) y {
 	return s.Function.call(t - s.Shift)
 }
 
+
 // a Function that scales the x of another function
 type Spedup struct {
 	Function
@@ -62,18 +63,33 @@ func (s SpedupProgressive) call(t x) y {
 	return s.Function.call(t + t*t/s.Rate)
 }
 
-// a Function that repeats another function
+// a PeriodicFunction that is a Function repeated with Loop length x.
 type Looped struct {
 	Function
-	Length x
+	Loop x
 }
 
 func (s Looped) call(t x) y {
-	return s.Function.call(t % s.Length)
+	return s.Function.call(t % s.Loop)
 }
 
 func (s Looped) Period() x {
-	return s.Length
+	return s.Loop
+}
+
+// a PeriodicFunction that is repeating loop of Cycle repeats of another PeriodicFunction.
+// if the PeriodicFunction is actually precisely repeating, then an integer value of Cycles, results in no change.
+type Repeated struct {
+	PeriodicFunction
+	Cycles float32
+}
+
+func (s Repeated) Period() x {
+	return x(float32(s.PeriodicFunction.Period())*s.Cycles)
+}
+
+func (s Repeated) call(t x) y {
+	return s.PeriodicFunction.call((t % s.Period()) % s.PeriodicFunction.Period())
 }
 
 // a Function that produceds y values that are the negative of another functions y values

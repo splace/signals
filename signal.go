@@ -47,11 +47,6 @@ func (l y) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(maxY))
 }
 
-// Periodic's have a Period method requirment.
-type Periodic interface {
-	Period() x
-}
-
 // peaker adds a PeakY method requirement.
 type peaker interface {
 	PeakY() y
@@ -72,13 +67,13 @@ type Sample interface {
 // PeriodicalFunctions are functions that can be assumed to repeat over Period().
 type PeriodicFunction interface {
 	Function
-	Periodic
+	Period() x
 }
 
 // LimitedPeriodicalFunction are Functions that repeat over Period() and dont exceed MaxY().
 type PeriodicLimitedFunction interface {
 	LimitedFunction
-	Periodic
+	Period() x
 }
 
 // PeakingLimitedFunctions are Functions that can be assumed is zero after a MaxX() and dont exceed a MaxY().
@@ -90,7 +85,7 @@ type PeakingLimitedFunction interface {
 // PeakingLimitedPeriodicalFunction are Functions that can be assumed is zero after a MaxX(), repeat over Period() and dont exceed MaxY().
 type PeakingPeriodicLimitedFunction interface {
 	LimitedFunction
-	Periodic
+	Period() x
 	peaker
 }
 
