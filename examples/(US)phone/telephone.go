@@ -1,3 +1,5 @@
+// generate a few standard US telephone notification signals
+// multiples of cycle, so play wave files repeated to get any length. 
 package main
 
 import (
