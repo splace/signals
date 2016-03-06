@@ -47,8 +47,7 @@ func ExamplePulsePattern() {
    100.00%                                                                   X
      0.00%                                  X
    100.00%                                                                   X
-   100.00%                                                                   X
-   100.00%                                                                   X
    */}
+
 
 
