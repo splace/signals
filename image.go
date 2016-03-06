@@ -64,3 +64,4 @@ type WebSafePalettedImage struct {
 }
 
 func (i WebSafePalettedImage) ColorModel() color.Model { return color.Palette(palette.WebSafe) }
+

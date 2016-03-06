@@ -125,3 +125,4 @@ type Sigmoid struct {
 func (s Sigmoid) call(t x) y {
 	return y(maxyfloat64 / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }
+
