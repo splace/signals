@@ -4,7 +4,8 @@ import (
 	"math/big"
 )
 
-// pulse train specified by the bits of a big int
+// pulse train specified by the bits of a big int.
+// littleendian, ignores high zero bits for MaxX().
 type PulsePattern struct {
 	BitPattern big.Int
 	PulseWidth x

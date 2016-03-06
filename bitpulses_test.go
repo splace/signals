@@ -8,7 +8,7 @@ import (
 
 func ExamplePulsePattern() {
 	i := new(big.Int)
-	_, err := fmt.Sscanf("01110111011101110111011101110111", "%b", i)
+	_, err := fmt.Sscanf("010111011101110111011101110111", "%b", i)
 	if err != nil {
 		panic(i)
 	}
