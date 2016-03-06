@@ -110,7 +110,7 @@ type PCMFunction interface {
 	Encode(w io.Writer)
 }
 
-// PCM is the state and behaviour common to all PCM. Its not a Function, but is a Periodic, specific PCM<<precison>> types embed this, and then are LimitedPeriodicFunction's.
+// PCM is the state and behaviour common to all PCM. Its not a Function, specific PCM<<precison>> types embed this, and then are LimitedPeriodicFunction's.
 type PCM struct {
 	samplePeriod x
 	length       x

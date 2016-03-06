@@ -22,3 +22,14 @@ func (s PulsePattern) call(t x) y {
 		}
 	}
 }
+
+func (s PulsePattern) Period() x {
+	return s.PulseWidth 
+}
+
+
+func (s PulsePattern) MaxX() x {
+	return s.PulseWidth * x(s.BitPattern.BitLen())
+}
+
+
