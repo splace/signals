@@ -123,7 +123,7 @@ func (s Reflected) call(t x) y {
 }
 
 // a Function that stretches the x values of another function, in proportion to the value of a modulation function
-type RateModulated struct { // TODO change to RateModulated
+type RateModulated struct {
 	Function
 	Modulation Function
 	Factor     x
