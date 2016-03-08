@@ -14,8 +14,8 @@ type Function interface {
 // returns a PeriodicLimitedFunction (type multiplex) based on a sine wave,
 // with peak y set to Maxy adjusted by dB,
 // so dB should always be negative.
-func NewTone(period x, dB float64) Multiplex {
-	return Multiplex{Sine{period}, NewConstant(dB)}
+func NewTone(period x, dB float64) Modulated {
+	return Modulated{Sine{period}, NewConstant(dB)}
 }
 
 // x represents a value from -infinity to +infinity, but is actually limited by its current underlying representation.

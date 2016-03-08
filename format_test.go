@@ -40,7 +40,7 @@ func TestSaveLoad(t *testing.T) {
 	}
 	defer file.Close()
 
-	m1 := Multiplex{}
+	m1 := Modulated{}
 	if err := m1.Load(file); err != nil {
 		panic("unable to load")
 	}
@@ -114,7 +114,7 @@ func TestMultiplexTones(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile, Multiplex{m, m1}, 1*unitX, 44100, 1)
+	Encode(wavFile, Modulated{m, m1}, 1*unitX, 44100, 1)
 }
 func TestSaveLoadSave(t *testing.T) {
 	m := NewTone(unitX/1000, -6)
@@ -150,5 +150,3 @@ func TestPiping(t *testing.T) {
 	defer wavFile.Close()
 	NewPCM(NewTone(unitX/200, -6), unitX, 8000, 1).Encode(wavFile)
 }
-
-

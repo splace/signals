@@ -17,7 +17,7 @@ func TestImagingSine(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	png.Encode(file, Plan9PalettedImage{NewDepiction(Multiplex{Sine{unitX}, Pulse{unitX}}, 800, 600, color.RGBA{255, 255, 255, 255}, color.RGBA{0, 0, 0, 0})})
+	png.Encode(file, Plan9PalettedImage{NewDepiction(Modulated{Sine{unitX}, Pulse{unitX}}, 800, 600, color.RGBA{255, 255, 255, 255}, color.RGBA{0, 0, 0, 0})})
 }
 func TestImaging(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
@@ -103,7 +103,7 @@ func TestStackimage(t *testing.T) {
 }
 
 func TestMultiplexImage(t *testing.T) {
-	s := Multiplex{Sine{unitX / 100}, Sine{unitX / 50}}
+	s := Modulated{Sine{unitX / 100}, Sine{unitX / 50}}
 	file, err := os.Create("./test output/multiplex.jpeg")
 	if err != nil {
 		panic(err)
