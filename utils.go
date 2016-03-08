@@ -73,4 +73,3 @@ func MultiplyX(m interface{}, d x) x {
 		return d
 	}
 }
-

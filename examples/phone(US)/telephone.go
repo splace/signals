@@ -32,7 +32,7 @@ func main(){
 	Save("AudibleRingTone.wav",Looped{Multiplex{Pulse{X(2)},Stack{Sine{X(1.0/440)},Sine{X(1.0/480)}}},X(6)})
 	Save("ReceiverOffHookTone.wav",Multiplex{Looped{Pulse{X(.1)},X(.2)}, Stack{Sine{X(1.0/1400)},Sine{X(1.0/2060)}, Sine{X(1.0/2450)}, Sine{X(1.0/2600)}}})
 	Save("NoSuchNumberTone.wav",Stack{Sine{X(1.0/200)},Sine{X(1.0/400)}})
-	Save("LineBusyTone.wav",Multiplex{Looped{Pulse{X(.25)},X(0.5)}, Stack{Sine{X(1.0/480)},Sine{X(1/630)}}})
+	Save("LineBusyTone.wav",Multiplex{Looped{Pulse{X(.25)},X(0.5)}, Stack{Sine{X(1.0/480)},Sine{X(1.0/630)}}})
 
 }
 

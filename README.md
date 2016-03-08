@@ -38,7 +38,7 @@ Features:
 
 sources:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM<<bits>>bit
 
-modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Modulated,Triggered,Segmented
+modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,RateModulated,Triggered,Segmented
 
 combiners:- Stack,Compose,Multiplex
 

@@ -13,24 +13,23 @@ type Function interface {
 
 // returns a PeriodicLimitedFunction (type multiplex) based on a sine wave,
 // with peak y set to Maxy adjusted by dB,
-// dB should always be negative.
+// so dB should always be negative.
 func NewTone(period x, dB float64) Multiplex {
 	return Multiplex{Sine{period}, NewConstant(dB)}
 }
 
-// x is from -infinity to +infinity, can be considered a time Dx.
-// y's at -v'e xs are considered kind of imaginary, and not used, unless a Delay makes them +ve.
-type x time.Duration
+// x represents a value from -infinity to +infinity, but is actually limited by its current underlying representation.
+// -ve x's are considered imaginary, not used, unless a Delay makes them +ve.
+type x time.Duration // current underlying representation
 
-// formatted representation of an x.
 func (i x) String() string {
 	return fmt.Sprintf("%9.2f", float32(i)/float32(unitX))
 }
 
-// use time.Second as sensible middle of resolution range of int64.
+// use time.Second as sensible middle of resolution range of time.Duration.
 const unitX = x(time.Second)
 
-// the y type is a value between +Maxy and -Maxy.
+// the y type represents a value between +maxY and -maxY.
 type y int64
 
 const maxY y = math.MaxInt64
@@ -42,7 +41,6 @@ const halfyBits = yBits / 2
 // float64 has less resolution than int64 at maxy, so need this to scale float64 sourced functions to never overflow int64
 const maxyfloat64 float64 = float64(maxY - 512)
 
-// formatted representation of a y as percentage.
 func (l y) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(maxY))
 }

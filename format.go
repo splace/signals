@@ -398,5 +398,5 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	}
 	return functions, nil
 }
-//Formatted:Sat Mar 5 23:46:13 GMT 2016
 
+//Formatted:Sat Mar 5 23:46:13 GMT 2016

@@ -59,7 +59,7 @@ func TestSaveWav(t *testing.T) {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, m, unitX, 8000, 1)
+	Encode(file, m, unitX, 8000, 3)
 }
 func TestLoad(t *testing.T) {
 	stream, err := os.Open("middlec.wav")
@@ -150,3 +150,5 @@ func TestPiping(t *testing.T) {
 	defer wavFile.Close()
 	NewPCM(NewTone(unitX/200, -6), unitX, 8000, 1).Encode(wavFile)
 }
+
+

@@ -10,7 +10,7 @@ func init() {
 	gob.Register(Inverted{})
 	gob.Register(Reversed{})
 	gob.Register(Reflected{})
-	gob.Register(Modulated{})
+	gob.Register(RateModulated{})
 	gob.Register(Triggered{})
 	gob.Register(Segmented{})
 }
@@ -24,7 +24,6 @@ type Shifted struct {
 func (s Shifted) call(t x) y {
 	return s.Function.call(t - s.Shift)
 }
-
 
 // a Function that scales the x of another function
 type Spedup struct {
@@ -85,7 +84,7 @@ type Repeated struct {
 }
 
 func (s Repeated) Period() x {
-	return x(float32(s.PeriodicFunction.Period())*s.Cycles)
+	return x(float32(s.PeriodicFunction.Period()) * s.Cycles)
 }
 
 func (s Repeated) call(t x) y {
@@ -124,39 +123,15 @@ func (s Reflected) call(t x) y {
 }
 
 // a Function that stretches the x values of another function, in proportion to the value of a modulation function
-type Modulated struct {
+type RateModulated struct { // TODO change to RateModulated
 	Function
 	Modulation Function
 	Factor     x
 }
 
-func (s Modulated) call(t x) y {
+func (s RateModulated) call(t x) y {
 	return s.Function.call(t + MultiplyX(float64(s.Modulation.call(t))/maxyfloat64, s.Factor))
 }
-
-// TODO if a modulation function is periodic then the modulated will be, or, smaller of either?
-/*
-// a Function that stretches the time of another function, in proportion to the value of a modulation function
-type Modulated struct {
-	Function
-	Modulation Function
-	Factor     float64
-}
-
-func (s Modulated) y(t x) y {
-	return s.Function.y(x(float64(t) * DB(float64(s.Modulation.y(t))/Maxyfloat64*s.Factor))
-}
-// a Function that has equal width uniform gradients as an approximation to another function
-type Segmented struct {
-	Function
-	Width   x
-}
-
-func (s Segmented) y(t x) y {
-	temp:=t%s.Width
-	return s.Function.y(t-temp)/y(s.Width)*y(s.Width-temp)+s.Function.y(t+s.Width-temp)/y(s.Width)*y(temp)
-}
-*/
 
 // Segmented is a Function that has equal width uniform gradients as an approximation to another function.
 type Segmented struct {
@@ -165,7 +140,7 @@ type Segmented struct {
 	cache *segmentedCache
 }
 
-// by been pointed to from inside the Function, means this is changable without needing a pointer reciever for the call method
+// by being pointed to from inside the Function, means this is changable without needing a pointer receiver for the call method
 type segmentedCache struct {
 	x1, x2 x
 	l1, l2 x
@@ -181,11 +156,11 @@ func (s Segmented) call(t x) y {
 	if t-temp != s.cache.x1 || t+s.Width-temp != s.cache.x2 {
 		// TODO reuse by swap ends
 		s.cache.x1 = t - temp
-		s.cache.x2 = t + s.Width - temp 
-		s.cache.l1 = x(s.Function.call(s.cache.x1))/s.Width
+		s.cache.x2 = t + s.Width - temp
+		s.cache.l1 = x(s.Function.call(s.cache.x1)) / s.Width
 		s.cache.l2 = x(s.Function.call(s.cache.x2))/s.Width - s.cache.l1
 	}
-	return y(s.cache.l1*s.Width  + s.cache.l2*temp)
+	return y(s.cache.l1*s.Width + s.cache.l2*temp)
 }
 
 // Triggered shifts a Function's x to make it cross a trigger y at zero x.
@@ -201,6 +176,7 @@ type Triggered struct {
 	Found      *searchInfo
 }
 
+// by being pointed to from inside the Function, means this is changable without needing a pointer receiver for the call method
 type searchInfo struct {
 	Shift   x
 	trigger y
@@ -234,5 +210,3 @@ func (s Triggered) call(t x) y {
 	}
 	return s.Function.call(t + s.Found.Shift)
 }
-
-
