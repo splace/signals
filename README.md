@@ -42,11 +42,11 @@ sources:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM<<bits
 
 modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,RateModulated,Triggered,Segmented
 
-combiners:- Stack,Compose,Multiplex
+combiners:- Stack,Compose,Modulate
 
 extras(non-core):- Depiction,ADSR,Noise
 
 
-Extras examples: Depiction of Stack{Sine{UnitX/100}, Sine{UnitX/50}}, red/black,(3200px.600px) for 4 * UnitX. (see ![image tests](https://github.com/splace/signals/blob/master/image_test.go) 
+Extras examples: Depiction of Stack{Sine{unitX/100}, Sine{unitX/50}}, red/black,(3200px.600px) for 4 * unitX. (see ![image tests](https://github.com/splace/signals/blob/master/image_test.go) 
 
 ![speech saved as wav](https://github.com/splace/signals/blob/master/test%20output/out.jpeg)
