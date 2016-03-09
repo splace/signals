@@ -93,7 +93,7 @@ func main() {
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			Encode(out,Multiplex{NewStack(PromoteSlicePCMFunctionsToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+			Encode(out,Modulated{NewStack(PromoteSlicePCMFunctionsToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -107,7 +107,7 @@ func main() {
 				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
 				myLog.message="Encode"
-				Encode(out,Multiplex{n,NewConstant(float64(-dB))},n.MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+				Encode(out,Modulated{n,NewConstant(float64(-dB))},n.MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 				out.Close()
 			}
 		}
@@ -116,7 +116,7 @@ func main() {
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			EncodeLike(out,Multiplex{NewStack(PromoteSlicePCMFunctionsToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0])		
+			EncodeLike(out,Modulated{NewStack(PromoteSlicePCMFunctionsToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0])		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -130,7 +130,7 @@ func main() {
 				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
 				myLog.message="Encode"
-				EncodeLike(out,Multiplex{n,NewConstant(float64(-dB))},PCMFunctions[0])	
+				EncodeLike(out,Modulated{n,NewConstant(float64(-dB))},PCMFunctions[0])	
 				out.Close()
 			}
 		}

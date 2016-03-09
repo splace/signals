@@ -3,9 +3,11 @@
 package main
 
 import (
-	. "github.com/splace/signals"  //"../../../signals" // 
+	. "github.com/splace/signals" 
 	"os"
 )
+
+var OneSecond = X(1)
 
 func Save(file string,s PeriodicFunction){
 	wavFile, err := os.Create(file)
@@ -14,10 +16,10 @@ func Save(file string,s PeriodicFunction){
 	}
 	defer wavFile.Close()
 	// one cycle or at least a seconds worth
-	if s.Period()>X(1){
+	if s.Period()>OneSecond{
 		Encode(wavFile,s,s.Period(),44100,2)
 	}else{
-		Encode(wavFile,s,s.Period()*(X(1)/s.Period()),44100,2)
+		Encode(wavFile,s,s.Period()*(OneSecond/s.Period()),44100,2)
 	}
 
 }
@@ -39,13 +41,12 @@ Notes
 */
 
 func main(){
-	Save("BusyTone.wav",Multiplex{Looped{Pulse{X(0.375)},X(0.750)}, Sine{X(1.0 / 400)}})
-	Save("EngagedTone.wav",Looped{Multiplex{Compose{Multiplex{Pulse{X(.4)},NewConstant(-6)},Shifted{Pulse{X(.225)},X(.75)}}, Sine{X(1.0/400)}}, X(1.5)})
-	Save("RingingTone.wav",Looped{Multiplex{Pulse{X(1)}, Looped{Pulse{X(.4)}, X(.6)}, Stack{Sine{X(1.0/450)},Sine{X(1.0/400)}}}, X(3)})
-	Save("NumberUnobtainableTone.wav",Sine{X(1.0/400)})
-	Save("dialTone.wav",Stack{Sine{X(1.0/450)},Sine{X(1.0/350)}})
+	Save("BusyTone.wav",Modulated{Looped{Pulse{OneSecond*375/1000},OneSecond*75/100}, Sine{OneSecond/400}})
+	Save("EngagedTone.wav",Looped{Modulated{Compose{Modulated{Pulse{OneSecond*4/10},NewConstant(-6)},Shifted{Pulse{OneSecond*225/1000},OneSecond*75/100}}, Sine{OneSecond/400}}, OneSecond*15/10})
+	Save("RingingTone.wav",Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond*4/10}, OneSecond*6/10}, Stack{Sine{OneSecond/450},Sine{OneSecond/400}}}, OneSecond*3})
+	Save("NumberUnobtainableTone.wav",Sine{OneSecond/400})
+	Save("dialTone.wav",Stack{Sine{OneSecond/450},Sine{OneSecond/350}})
 
 }
-/*  hal3 Sat 5 Mar 02:21:24 GMT 2016 go version go1.5.1 linux/386
-Sat 5 Mar 02:21:25 GMT 2016 */
+
 
