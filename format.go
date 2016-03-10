@@ -360,7 +360,7 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 		var c uint32
 		for ; c < uint32(format.Channels); c++ {
 			if n, err := wav.Read(sampleData[(c*samples+s)*uint32(format.Bits/8) : (c*samples+s+1)*uint32(format.Bits/8)]); err != nil || n != int(format.Bits/8) {
-				return nil, ErrWavParse{fmt.Sprintf("data incomplete %s of %s", s, samples)}
+				return nil, ErrWavParse{fmt.Sprintf("data incomplete %v of %v", s, samples)}
 			}
 			if format.Bits == 8 {
 				peaks[c] = PCM8bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)])
