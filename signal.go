@@ -18,7 +18,7 @@ func NewTone(period x, dB float64) Modulated {
 	return Modulated{Sine{period}, NewConstant(dB)}
 }
 
-// x represents a value from -infinity to +infinity, but is actually limited by its current underlying representation.
+// the x represents a value from -infinity to +infinity, but is actually limited by its current underlying representation.
 // -ve x's are considered imaginary, not used, unless a Delay makes them +ve.
 type x time.Duration // current underlying representation
 
@@ -26,7 +26,7 @@ func (i x) String() string {
 	return fmt.Sprintf("%9.2f", float32(i)/float32(unitX))
 }
 
-// use time.Second as sensible middle of resolution range of time.Duration.
+// somewhere close to the middle of the resolution range.
 const unitX = x(time.Second)
 
 // the y type represents a value between +maxY and -maxY.
@@ -56,7 +56,7 @@ type LimitedFunction interface {
 	MaxX() x
 }
 
-// Samples are LimitedFunctions that can be assumed to be zero before their MinX.
+// Samples are LimitedFunctions that are assumed to be zero before their MinX.
 type Sample interface {
 	LimitedFunction
 	MinX() x
