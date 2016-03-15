@@ -106,8 +106,8 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 type PCMFunction interface {
 	LimitedFunction
 	Period() x
-	peaker
 	Encode(w io.Writer)
+	peaker
 }
 
 // make a PCMFunction type, from a Function, using particular parameters,
@@ -285,7 +285,7 @@ type chunkHeader struct {
 }
 
 // PCM format holder
-type PCMformat struct {
+type formatChunk struct {
 	Code        uint16
 	Channels    uint16
 	SampleRate  uint32
@@ -299,7 +299,7 @@ type PCMformat struct {
 func Decode(wav io.Reader) ([]PCMFunction, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
-	var format PCMformat
+	var format formatChunk
 	var dataHeader chunkHeader
 	if err := binary.Read(wav, binary.LittleEndian, &header); err != nil {
 		return nil, ErrWavParse{"Header not complete."}
