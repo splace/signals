@@ -110,6 +110,18 @@ type PCMFunction interface {
 	Encode(w io.Writer)
 }
 
+// make a PCMFunction type, from a Function, using particular parameters,
+func NewPCMFunction(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunction {
+	out, in := io.Pipe()
+	go func() {
+		Encode(in, s, length, sampleRate, sampleBytes)
+		in.Close()
+	}()
+	channels, _ := Decode(out)
+	out.Close()
+	return channels[0].(PCMFunction)
+}
+
 // PCM is the state and behaviour common to all PCM. Its not a Function, specific PCM<<precison>> types embed this, and then are LimitedPeriodicFunction's.
 type PCM struct {
 	samplePeriod x
@@ -119,23 +131,12 @@ type PCM struct {
 }
 
 // make a PCMFunction type, from raw bytes
-func NewPCMfromBytes(sampleRate uint32, sampleBytes uint8,data []byte) (pcm PCMFunction) {
+func NewPCM(sampleRate uint32, sampleBytes uint8,data []byte) PCM {
 	period:=X(1/float32(sampleRate))
 	if len(data)%int(sampleBytes)!=0{
-		log.Println("Byte array not whole numbrt of samples")
+		log.Println("Byte array not whole number of samples")
 	}
-	// TODO dont need this
-	switch sampleBytes {
-	case 1:
-		pcm= PCM8bit{PCM{period,period*x(len(data)/int(sampleBytes)),0,data}}
-	case 2:
-		pcm= PCM16bit{PCM{period,period*x(len(data)/int(sampleBytes)),0,data}}
-	case 3:
-		pcm= PCM24bit{PCM{period,period*x(len(data)/int(sampleBytes)),0,data}}
-	case 4:
-		pcm= PCM32bit{PCM{period,period*x(len(data)/int(sampleBytes)),0,data}}
-	}
-	return  pcm
+	return PCM{period,period*x(len(data)/int(sampleBytes)),0,data}
 }
 
 func (p PCM) Period() x {
@@ -150,31 +151,19 @@ func (p PCM) PeakY() y {
 	return p.Peak
 }
 
-// make a PCMFunction type, from a Function, using particular parameters,
-func NewPCM(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunction {
-	out, in := io.Pipe()
-	go func() {
-		Encode(in, s, length, sampleRate, sampleBytes)
-		in.Close()
-	}()
-	channels, _ := Decode(out)
-	out.Close()
-	return channels[0].(PCMFunction)
-}
-
 // encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and its precision if its a PCM type, otherwise defaults to 16bit.
 func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
 	switch f := s.(type) {
 	case PCM8bit:
-		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 1).Encode(w)
+		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 1).Encode(w)
 	case PCM16bit:
-		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
+		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
 	case PCM24bit:
-		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 3).Encode(w)
+		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 3).Encode(w)
 	case PCM32bit:
-		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 4).Encode(w)
+		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 4).Encode(w)
 	default:
-		NewPCM(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
+		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
 	}
 	return
 }
