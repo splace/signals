@@ -157,10 +157,7 @@ func TestRawPCM(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	pcm,err:=NewPCMfromBytes(unitX, 10, 2,[]byte{0,0,0,10,0,20,0,30,0,40,0,50,0,60,0,70,0,80,0,90,0,100})
-	if err!=nil{
-		panic(err)
-	}
+	pcm:=NewPCMfromBytes(10, 2,[]byte{0,0,0,10,0,20,0,30,0,40,0,50,0,60,0,70,0,80,0,90,0,100})
 	pcm.Encode(wavFile)
 }
 

@@ -119,20 +119,23 @@ type PCM struct {
 }
 
 // make a PCMFunction type, from raw bytes
-func NewPCMfromBytes(length x, sampleRate uint32, sampleBytes uint8,data []byte) (pcm PCMFunction, err error) {
+func NewPCMfromBytes(sampleRate uint32, sampleBytes uint8,data []byte) (pcm PCMFunction) {
 	period:=X(1/float32(sampleRate))
-	if len(data)<int(length/period+1)*int(sampleBytes){return nil,errors.New(fmt.Sprintf("Too few bytes to make PCM. %d<%d",int(length/period+1)*int(sampleBytes),len(data)))}
+	if len(data)%int(sampleBytes)!=0{
+		log.Println("Byte array not whole numbrt of samples")
+	}
+	// TODO dont need this
 	switch sampleBytes {
 	case 1:
-		pcm= PCM8bit{PCM{period,length,0,data}}
+		pcm= PCM8bit{PCM{period,period*x(len(data)/int(sampleBytes)),0,data}}
 	case 2:
-		pcm= PCM16bit{PCM{period,length,0,data}}
+		pcm= PCM16bit{PCM{period,period*x(len(data)/int(sampleBytes)),0,data}}
 	case 3:
-		pcm= PCM24bit{PCM{period,length,0,data}}
+		pcm= PCM24bit{PCM{period,period*x(len(data)/int(sampleBytes)),0,data}}
 	case 4:
-		pcm= PCM32bit{PCM{period,length,0,data}}
+		pcm= PCM32bit{PCM{period,period*x(len(data)/int(sampleBytes)),0,data}}
 	}
-	return  pcm,nil
+	return  pcm
 }
 
 func (p PCM) Period() x {
