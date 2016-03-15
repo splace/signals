@@ -49,7 +49,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
 		}
 	}
-	samplePeriod := MultiplyX(1/float32(sampleRate), unitX)
+	samplePeriod := X(1/float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
 	fmt.Fprint(w, "RIFF")
 	binaryWrite(w, samples*uint32(sampleBytes)+36)
@@ -116,6 +116,23 @@ type PCM struct {
 	length       x
 	Peak         y
 	data         []uint8
+}
+
+// make a PCMFunction type, from raw bytes
+func NewPCMfromBytes(length x, sampleRate uint32, sampleBytes uint8,data []byte) (pcm PCMFunction, err error) {
+	period:=X(1/float32(sampleRate))
+	if len(data)<int(length/period+1)*int(sampleBytes){return nil,errors.New(fmt.Sprintf("Too few bytes to make PCM. %d<%d",int(length/period+1)*int(sampleBytes),len(data)))}
+	switch sampleBytes {
+	case 1:
+		pcm= PCM8bit{PCM{period,length,0,data}}
+	case 2:
+		pcm= PCM16bit{PCM{period,length,0,data}}
+	case 3:
+		pcm= PCM24bit{PCM{period,length,0,data}}
+	case 4:
+		pcm= PCM32bit{PCM{period,length,0,data}}
+	}
+	return  pcm,nil
 }
 
 func (p PCM) Period() x {
@@ -399,4 +416,4 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	return functions, nil
 }
 
-//Formatted:Sat Mar 5 23:46:13 GMT 2016
+
