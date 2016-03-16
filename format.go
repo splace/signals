@@ -130,7 +130,7 @@ type PCM struct {
 }
 
 // make a PCM type, from raw bytes
-// to make into a \Function needs to be embedded in a PCMFunction of the correct type for the data.
+// to get a Function embed this in a PCMFunction of the correct type for the data.
 func NewPCM(sampleRate uint32, sampleBytes uint8,data []byte) PCM {
 	period:=X(1/float32(sampleRate))
 	if len(data)%int(sampleBytes)!=0{
@@ -147,6 +147,7 @@ func (p PCM) MaxX() x {
 	return p.length
 }
 
+// streams the raw data of the PCM, not wave format as supplied by the PCMFunctions.
 func (p PCM) Encode(out io.Writer){
 	io.Copy(out,bytes.NewReader(p.data))
 	return
