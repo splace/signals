@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"bytes"
 )
 
 // Encode a function as PCM data, one channel, in a Riff wave container.
@@ -146,8 +147,9 @@ func (p PCM) MaxX() x {
 	return p.length
 }
 
-func (p PCM) Data() []byte {
-	return p.data
+func (p PCM) Encode(out io.Writer){
+	io.Copy(out,bytes.NewReader(p.data))
+	return
 }
 
 // encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and its precision if its a PCM type, otherwise defaults to 16bit.
