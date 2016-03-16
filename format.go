@@ -107,7 +107,6 @@ type PCMFunction interface {
 	LimitedFunction
 	Period() x
 	Encode(w io.Writer)
-	peaker
 }
 
 // make a PCMFunction type, from a Function, using particular parameters,
@@ -126,7 +125,6 @@ func NewPCMFunction(s Function, length x, sampleRate uint32, sampleBytes uint8) 
 type PCM struct {
 	samplePeriod x
 	length       x
-	Peak         y
 	data         []uint8
 }
 
@@ -137,7 +135,7 @@ func NewPCM(sampleRate uint32, sampleBytes uint8,data []byte) PCM {
 	if len(data)%int(sampleBytes)!=0{
 		log.Println("Byte array not whole number of samples")
 	}
-	return PCM{period,period*x(len(data)/int(sampleBytes)),0,data}
+	return PCM{period,period*x(len(data)/int(sampleBytes)),data}
 }
 
 func (p PCM) Period() x {
@@ -146,10 +144,6 @@ func (p PCM) Period() x {
 
 func (p PCM) MaxX() x {
 	return p.length
-}
-
-func (p PCM) PeakY() y {
-	return p.Peak
 }
 
 // encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and its precision if its a PCM type, otherwise defaults to 16bit.
@@ -397,28 +391,19 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	samples := uint32(len(sampleData)) / uint32(format.Channels) / uint32(format.Bits/8)
 	functions := make([]PCMFunction, format.Channels)
 	var c uint32
-	if format.Bits == 8 {
-		for ; c < uint32(format.Channels); c++ {
-			functions[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples : (c+1)*samples]}}
+	for ; c < uint32(format.Channels); c++ {
+		switch format.Bits {
+		case 8:
+				functions[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples : (c+1)*samples]}}
+		case 16:
+				functions[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*2 : (c+1)*samples*2]}}
+		case 24:
+				functions[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*3 : (c+1)*samples*3]}}
+		case 32: 
+				functions[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*4 : (c+1)*samples*4]}}
 		}
-	} else if format.Bits == 16 {
-		for ; c < uint32(format.Channels); c++ {
-			functions[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*2 : (c+1)*samples*2]}}
-		}
-
-	} else if format.Bits == 24 {
-		for ; c < uint32(format.Channels); c++ {
-			functions[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*3 : (c+1)*samples*3]}}
-		}
-
-	} else if format.Bits == 32 {
-		for ; c < uint32(format.Channels); c++ {
-			functions[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), 0, sampleData[c*samples*4 : (c+1)*samples*4]}}
-		}
-
 	}
 	return functions, nil
 }
-
 
 

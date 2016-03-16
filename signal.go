@@ -45,11 +45,6 @@ func (l y) String() string {
 	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(maxY))
 }
 
-// peaker adds a PeakY method requirement.
-type peaker interface {
-	PeakY() y
-}
-
 // LimitedFunctions are used as Functions that can be assumed is zero after MaxX
 type LimitedFunction interface {
 	Function
@@ -72,19 +67,6 @@ type PeriodicFunction interface {
 type PeriodicLimitedFunction interface {
 	LimitedFunction
 	Period() x
-}
-
-// PeakingLimitedFunctions are Functions that can be assumed is zero after a MaxX() and dont exceed a MaxY().
-type PeakingLimitedFunction interface {
-	LimitedFunction
-	peaker
-}
-
-// PeakingLimitedPeriodicalFunction are Functions that can be assumed is zero after a MaxX(), repeat over Period() and dont exceed MaxY().
-type PeakingPeriodicLimitedFunction interface {
-	LimitedFunction
-	Period() x
-	peaker
 }
 
 // Converters to promote slices of interfaces, needed when using variadic parameters called using a slice since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
