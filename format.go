@@ -130,7 +130,8 @@ type PCM struct {
 	data         []uint8
 }
 
-// make a PCMFunction type, from raw bytes
+// make a PCM type, from raw bytes
+// to make into a \Function needs to be embedded in a PCMFunction of the correct type for the data.
 func NewPCM(sampleRate uint32, sampleBytes uint8,data []byte) PCM {
 	period:=X(1/float32(sampleRate))
 	if len(data)%int(sampleBytes)!=0{
@@ -294,39 +295,37 @@ type formatChunk struct {
 	Bits        uint16
 }
 
-// Decode a stream into an array of PCMFunctions.
-// one for each channel in the encoding.
-func Decode(wav io.Reader) ([]PCMFunction, error) {
+func WavDecode(wav io.Reader) ([]byte,*formatChunk , error) {
 	var header riffHeader
 	var formatHeader chunkHeader
 	var format formatChunk
 	var dataHeader chunkHeader
 	if err := binary.Read(wav, binary.LittleEndian, &header); err != nil {
-		return nil, ErrWavParse{"Header not complete."}
+		return nil, nil,ErrWavParse{"Header not complete."}
 	}
 	if header.C1 != 'R' || header.C2 != 'I' || header.C3 != 'F' || header.C4 != 'F' || header.C5 != 'W' || header.C6 != 'A' || header.C7 != 'V' || header.C8 != 'E' {
-		return nil, ErrWavParse{"Not RIFF/WAVE format."}
+		return nil,nil,ErrWavParse{"Not RIFF/WAVE format."}
 	}
 	//var runningBytes int =16
 	if err := binary.Read(wav, binary.LittleEndian, &formatHeader); err != nil {
-		return nil, ErrWavParse{"Chunk incomplete."}
+		return nil,nil, ErrWavParse{"Chunk incomplete."}
 	}
 	// TODO skip other chunks
 	if formatHeader.C1 != 'f' || formatHeader.C2 != 'm' || formatHeader.C3 != 't' || formatHeader.C4 != ' ' || formatHeader.DataLen != 16 {
-		return nil, ErrWavParse{"No format chunk."}
+		return nil,nil, ErrWavParse{"No format chunk."}
 	}
 
 	if err := binary.Read(wav, binary.LittleEndian, &format); err != nil {
-		return nil, ErrWavParse{"Format chunk incomplete."}
+		return nil,nil, ErrWavParse{"Format chunk incomplete."}
 	}
 	if format.Code != 1 {
-		return nil, errors.New("only PCM supported.")
+		return nil,&format, errors.New("only PCM supported.")
 	}
 	if format.Channels == 0 || format.Channels > 2 {
-		return nil, errors.New("only mono or stereo PCM supported.")
+		return nil,&format, errors.New("only mono or stereo PCM supported.")
 	}
 	if format.Bits%8 != 0 {
-		return nil, ErrWavParse{"not whole byte samples size!"}
+		return nil,&format, ErrWavParse{"not whole byte samples size!"}
 	}
 
 	//nice TODO a "LIST" chunk with, 3 fields third being "INFO", can contain "ICOP" and "ICRD" chunks providing copyright and creation date information.
@@ -336,7 +335,7 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 
 	// skip any non-"data" chucks
 	if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
-		return nil, ErrWavParse{"Chunk header incomplete."}
+		return nil,&format, ErrWavParse{"Chunk header incomplete."}
 	}
 	for dataHeader.C1 != 'd' || dataHeader.C2 != 'a' || dataHeader.C3 != 't' || dataHeader.C4 != 'a' {
 		var err error
@@ -346,31 +345,32 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(dataHeader.DataLen))
 		}
 		if err != nil {
-			return nil, ErrWavParse{string(dataHeader.C1) + string(dataHeader.C2) + string(dataHeader.C3) + string(dataHeader.C4) + " " + err.Error()}
+			return nil,&format, ErrWavParse{string(dataHeader.C1) + string(dataHeader.C2) + string(dataHeader.C3) + string(dataHeader.C4) + " " + err.Error()}
 		}
 
 		if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
-			return nil, ErrWavParse{"Chunk header incomplete."}
+			return nil, &format,ErrWavParse{"Chunk header incomplete."}
 		}
 	}
 
 	//if dataHeader.DataLen!=header.DataLen-36 {return nil, ErrWavParse{fmt.Sprintf("data chunk size mismatch. %v+36!=%v",dataHeader.DataLen,header.DataLen), []byte(fmt.Sprintf("%#v",dataHeader))}}	//  this is only true for non-extensible wav, ie non-microsoft
 	if dataHeader.DataLen%uint32(format.Channels) != 0 {
-		return nil, ErrWavParse{"sound sample data length not divisable by channel count"}
+		return nil,&format, ErrWavParse{fmt.Sprintf("sound sample data length %d not divisable by channel count",dataHeader.DataLen)}
 	}
 
 	sampleData := make([]byte, dataHeader.DataLen)
-	peaks := make([]y, format.Channels)
+//	peaks := make([]y, format.Channels)
 
 	samples := dataHeader.DataLen / uint32(format.Channels) / uint32(format.Bits/8)
 	var s uint32
 	for ; s < samples; s++ {
-		// deinterlace channels by reading directly into separate consecutive blocks
+		// deinterlace channels by reading directly into separate regions of a byte slice
 		var c uint32
 		for ; c < uint32(format.Channels); c++ {
 			if n, err := wav.Read(sampleData[(c*samples+s)*uint32(format.Bits/8) : (c*samples+s+1)*uint32(format.Bits/8)]); err != nil || n != int(format.Bits/8) {
-				return nil, ErrWavParse{fmt.Sprintf("data incomplete %v of %v", s, samples)}
+				return nil,&format, ErrWavParse{fmt.Sprintf("data incomplete %v of %v", s, samples)}
 			}
+			/*
 			if format.Bits == 8 {
 				peaks[c] = PCM8bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)])
 			} else if format.Bits == 16 {
@@ -380,10 +380,22 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 			} else if format.Bits == 32 {
 				peaks[c] = PCM32bitDecode(sampleData[(c*samples+s)*uint32(format.Bits/8)], sampleData[(c*samples+s)*uint32(format.Bits/8)+1], sampleData[(c*samples+s)*uint32(format.Bits/8)+3], sampleData[(c*samples+s)*uint32(format.Bits/8)+3])
 			}
+			*/
 		}
 	}
-	functions := make([]PCMFunction, format.Channels)
+	return sampleData,&format,nil
+}
 
+
+// Decode a stream into an array of PCMFunctions.
+// one for each channel in the encoding.
+func Decode(wav io.Reader) ([]PCMFunction, error) {
+	sampleData,format,err:=WavDecode(wav)
+	if err!=nil{
+		return nil,err
+	}
+	samples := uint32(len(sampleData)) / uint32(format.Channels) / uint32(format.Bits/8)
+	functions := make([]PCMFunction, format.Channels)
 	var c uint32
 	if format.Bits == 8 {
 		for ; c < uint32(format.Channels); c++ {
@@ -407,5 +419,6 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	}
 	return functions, nil
 }
+
 
 
