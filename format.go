@@ -125,7 +125,7 @@ func NewPCMFunction(s Function, length x, sampleRate uint32, sampleBytes uint8) 
 type PCM struct {
 	samplePeriod x
 	length       x
-	data         []uint8
+	data         []byte
 }
 
 // make a PCM type, from raw bytes
@@ -144,6 +144,10 @@ func (p PCM) Period() x {
 
 func (p PCM) MaxX() x {
 	return p.length
+}
+
+func (p PCM) Data() []byte {
+	return p.data
 }
 
 // encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and its precision if its a PCM type, otherwise defaults to 16bit.
