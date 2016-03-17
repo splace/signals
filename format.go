@@ -2,6 +2,7 @@ package signals
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -9,7 +10,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"bytes"
 )
 
 // Encode a function as PCM data, one channel, in a Riff wave container.
@@ -50,7 +50,7 @@ func encode(w *bufio.Writer, s Function, length x, sampleRate uint32, sampleByte
 			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
 		}
 	}
-	samplePeriod := X(1/float32(sampleRate))
+	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
 	fmt.Fprint(w, "RIFF")
 	binaryWrite(w, samples*uint32(sampleBytes)+36)
@@ -130,12 +130,12 @@ type PCM struct {
 }
 
 // make a PCM type, from raw bytes.
-func NewPCM(sampleRate uint32, sampleBytes uint8,data []byte) PCM {
-	period:=X(1/float32(sampleRate))
-	if len(data)%int(sampleBytes)!=0{
+func NewPCM(sampleRate uint32, sampleBytes uint8, data []byte) PCM {
+	period := X(1 / float32(sampleRate))
+	if len(data)%int(sampleBytes) != 0 {
 		log.Println("Byte array not whole number of samples")
 	}
-	return PCM{period,period*x(len(data)/int(sampleBytes)),data}
+	return PCM{period, period * x(len(data)/int(sampleBytes)), data}
 }
 
 func (p PCM) Period() x {
@@ -147,8 +147,8 @@ func (p PCM) MaxX() x {
 }
 
 // writes the raw data from the PCM.
-func (p PCM) Encode(out io.Writer){
-	io.Copy(out,bytes.NewReader(p.data))
+func (p PCM) Encode(out io.Writer) {
+	io.Copy(out, bytes.NewReader(p.data))
 	return
 }
 
@@ -267,32 +267,31 @@ func (s PCM32bit) Encode(w io.Writer) {
 // Read a wave format stream into an array of PCMFunctions.
 // one PCMFunction for each channel in the encoding.
 func Decode(wav io.Reader) ([]PCMFunction, error) {
-	bytesToRead,format,err:=readHeader(wav)
-	if err!=nil{
-		return nil,err
+	bytesToRead, format, err := readHeader(wav)
+	if err != nil {
+		return nil, err
 	}
 	samples := bytesToRead / uint32(format.Channels) / uint32(format.Bits/8)
-	sampleData,err:=readData(wav,samples,uint32(format.Channels),uint32(format.Bits/8))
-	if err!=nil{
-		return nil,err
+	sampleData, err := readData(wav, samples, uint32(format.Channels), uint32(format.Bits/8))
+	if err != nil {
+		return nil, err
 	}
 	functions := make([]PCMFunction, format.Channels)
 	var c uint32
 	for ; c < uint32(format.Channels); c++ {
 		switch format.Bits {
 		case 8:
-				functions[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples : (c+1)*samples]}}
+			functions[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples : (c+1)*samples]}}
 		case 16:
-				functions[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*2 : (c+1)*samples*2]}}
+			functions[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*2 : (c+1)*samples*2]}}
 		case 24:
-				functions[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*3 : (c+1)*samples*3]}}
-		case 32: 
-				functions[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*4 : (c+1)*samples*4]}}
+			functions[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*3 : (c+1)*samples*3]}}
+		case 32:
+			functions[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*4 : (c+1)*samples*4]}}
 		}
 	}
 	return functions, nil
 }
-
 
 type ErrWavParse struct {
 	description string
@@ -325,37 +324,37 @@ type formatChunk struct {
 	Bits        uint16
 }
 
-func readHeader(wav io.Reader) (uint32, *formatChunk , error) {
+func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
 	var format formatChunk
 	var dataHeader chunkHeader
 	if err := binary.Read(wav, binary.LittleEndian, &header); err != nil {
-		return 0, nil,ErrWavParse{"Header not complete."}
+		return 0, nil, ErrWavParse{"Header not complete."}
 	}
 	if header.C1 != 'R' || header.C2 != 'I' || header.C3 != 'F' || header.C4 != 'F' || header.C5 != 'W' || header.C6 != 'A' || header.C7 != 'V' || header.C8 != 'E' {
-		return 0,nil,ErrWavParse{"Not RIFF/WAVE format."}
+		return 0, nil, ErrWavParse{"Not RIFF/WAVE format."}
 	}
 	//var runningBytes int =16
 	if err := binary.Read(wav, binary.LittleEndian, &formatHeader); err != nil {
-		return 0,nil, ErrWavParse{"Chunk incomplete."}
+		return 0, nil, ErrWavParse{"Chunk incomplete."}
 	}
 	// TODO skip other chunks
 	if formatHeader.C1 != 'f' || formatHeader.C2 != 'm' || formatHeader.C3 != 't' || formatHeader.C4 != ' ' || formatHeader.DataLen != 16 {
-		return 0,nil, ErrWavParse{"No format chunk."}
+		return 0, nil, ErrWavParse{"No format chunk."}
 	}
 
 	if err := binary.Read(wav, binary.LittleEndian, &format); err != nil {
-		return 0,nil, ErrWavParse{"Format chunk incomplete."}
+		return 0, nil, ErrWavParse{"Format chunk incomplete."}
 	}
 	if format.Code != 1 {
-		return 0,&format, errors.New("only PCM supported.")
+		return 0, &format, errors.New("only PCM supported.")
 	}
 	if format.Channels == 0 || format.Channels > 2 {
-		return 0,&format, errors.New("only mono or stereo PCM supported.")
+		return 0, &format, errors.New("only mono or stereo PCM supported.")
 	}
 	if format.Bits%8 != 0 {
-		return 0,&format, ErrWavParse{"not whole byte samples size!"}
+		return 0, &format, ErrWavParse{"not whole byte samples size!"}
 	}
 
 	//nice TODO a "LIST" chunk with, 3 fields third being "INFO", can contain "ICOP" and "ICRD" chunks providing copyright and creation date information.
@@ -365,7 +364,7 @@ func readHeader(wav io.Reader) (uint32, *formatChunk , error) {
 
 	// skip any non-"data" chucks
 	if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
-		return 0,&format, ErrWavParse{"Chunk header incomplete."}
+		return 0, &format, ErrWavParse{"Chunk header incomplete."}
 	}
 	for dataHeader.C1 != 'd' || dataHeader.C2 != 'a' || dataHeader.C3 != 't' || dataHeader.C4 != 'a' {
 		var err error
@@ -375,22 +374,22 @@ func readHeader(wav io.Reader) (uint32, *formatChunk , error) {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(dataHeader.DataLen))
 		}
 		if err != nil {
-			return 0,&format, ErrWavParse{string(dataHeader.C1) + string(dataHeader.C2) + string(dataHeader.C3) + string(dataHeader.C4) + " " + err.Error()}
+			return 0, &format, ErrWavParse{string(dataHeader.C1) + string(dataHeader.C2) + string(dataHeader.C3) + string(dataHeader.C4) + " " + err.Error()}
 		}
 
 		if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
-			return 0, &format,ErrWavParse{"Chunk header incomplete."}
+			return 0, &format, ErrWavParse{"Chunk header incomplete."}
 		}
 	}
 
 	//if dataHeader.DataLen!=header.DataLen-36 {return nil, ErrWavParse{fmt.Sprintf("data chunk size mismatch. %v+36!=%v",dataHeader.DataLen,header.DataLen), []byte(fmt.Sprintf("%#v",dataHeader))}}	//  this is only true for non-extensible wav, ie non-microsoft
 	if dataHeader.DataLen%uint32(format.Channels) != 0 {
-		return 0,&format, ErrWavParse{fmt.Sprintf("sound sample data length %d not divisable by channel count",dataHeader.DataLen)}
+		return 0, &format, ErrWavParse{fmt.Sprintf("sound sample data length %d not divisable by channel count", dataHeader.DataLen)}
 	}
-	return dataHeader.DataLen,&format,nil
+	return dataHeader.DataLen, &format, nil
 }
 
-func readData(wav io.Reader,samples uint32,channels uint32,sampleBytes uint32)([]byte,error){
+func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32) ([]byte, error) {
 	sampleData := make([]byte, samples*channels*sampleBytes)
 	var s uint32
 	var err error
@@ -403,9 +402,5 @@ func readData(wav io.Reader,samples uint32,channels uint32,sampleBytes uint32)([
 			}
 		}
 	}
-	return sampleData,err
+	return sampleData, err
 }
-
-
-
-
