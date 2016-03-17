@@ -129,8 +129,7 @@ type PCM struct {
 	data         []byte
 }
 
-// make a PCM type, from raw bytes
-// to get a Function embed this in a PCMFunction of the correct type for the data.
+// make a PCM type, from raw bytes.
 func NewPCM(sampleRate uint32, sampleBytes uint8,data []byte) PCM {
 	period:=X(1/float32(sampleRate))
 	if len(data)%int(sampleBytes)!=0{
@@ -147,7 +146,7 @@ func (p PCM) MaxX() x {
 	return p.length
 }
 
-// streams the raw data of the PCM, not wave format as supplied by the PCMFunctions.
+// writes the raw data from the PCM.
 func (p PCM) Encode(out io.Writer){
 	io.Copy(out,bytes.NewReader(p.data))
 	return
@@ -170,8 +169,8 @@ func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
 	return
 }
 
-// 8 bit PCMFunction
-// unlike the other precisions of PCM, that use signed data, 8bit uses un-signed, the default OpenAL and wave file representation.
+// 8 bit PCMFunction.
+// (unlike the other precisions of PCM, that use signed data, 8bit uses un-signed, the default OpenAL and wave file representation for 8bit precision.)
 type PCM8bit struct {
 	PCM
 }
@@ -265,6 +264,36 @@ func (s PCM32bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 4)
 }
 
+// Read a wave format stream into an array of PCMFunctions.
+// one PCMFunction for each channel in the encoding.
+func Decode(wav io.Reader) ([]PCMFunction, error) {
+	bytesToRead,format,err:=readHeader(wav)
+	if err!=nil{
+		return nil,err
+	}
+	samples := bytesToRead / uint32(format.Channels) / uint32(format.Bits/8)
+	sampleData,err:=readData(wav,samples,uint32(format.Channels),uint32(format.Bits/8))
+	if err!=nil{
+		return nil,err
+	}
+	functions := make([]PCMFunction, format.Channels)
+	var c uint32
+	for ; c < uint32(format.Channels); c++ {
+		switch format.Bits {
+		case 8:
+				functions[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples : (c+1)*samples]}}
+		case 16:
+				functions[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*2 : (c+1)*samples*2]}}
+		case 24:
+				functions[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*3 : (c+1)*samples*3]}}
+		case 32: 
+				functions[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*4 : (c+1)*samples*4]}}
+		}
+	}
+	return functions, nil
+}
+
+
 type ErrWavParse struct {
 	description string
 }
@@ -296,7 +325,7 @@ type formatChunk struct {
 	Bits        uint16
 }
 
-func WavDecode(wav io.Reader) (uint32, *formatChunk , error) {
+func readHeader(wav io.Reader) (uint32, *formatChunk , error) {
 	var header riffHeader
 	var formatHeader chunkHeader
 	var format formatChunk
@@ -375,36 +404,6 @@ func readData(wav io.Reader,samples uint32,channels uint32,sampleBytes uint32)([
 		}
 	}
 	return sampleData,err
-}
-
-
-// Decode a stream into an array of PCMFunctions.
-// one for each channel in the encoding.
-func Decode(wav io.Reader) ([]PCMFunction, error) {
-	bytesToRead,format,err:=WavDecode(wav)
-	if err!=nil{
-		return nil,err
-	}
-	samples := bytesToRead / uint32(format.Channels) / uint32(format.Bits/8)
-	sampleData,err:=readData(wav,samples,uint32(format.Channels),uint32(format.Bits/8))
-	if err!=nil{
-		return nil,err
-	}
-	functions := make([]PCMFunction, format.Channels)
-	var c uint32
-	for ; c < uint32(format.Channels); c++ {
-		switch format.Bits {
-		case 8:
-				functions[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples : (c+1)*samples]}}
-		case 16:
-				functions[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*2 : (c+1)*samples*2]}}
-		case 24:
-				functions[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*3 : (c+1)*samples*3]}}
-		case 32: 
-				functions[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*4 : (c+1)*samples*4]}}
-		}
-	}
-	return functions, nil
 }
 
 

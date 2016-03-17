@@ -7,7 +7,7 @@ import (
 )
 
 // a Depictor is an image.Image without a colormodel, so is more general.
-// embedded in one of the helper wrappers to get an image.Image.
+// embedded in one of the helper wrappers gets you an image.Image.
 type Depictor interface {
 	Bounds() image.Rectangle
 	At(x, y int) color.Color
