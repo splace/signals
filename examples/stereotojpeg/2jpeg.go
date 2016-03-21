@@ -1,8 +1,8 @@
 // make a jpeg image from a stereo wav file.
-// usage: 2jpeg.<<o|exe>> <<stereo.wav>>
+// usage: 2jpeg.<<elf|exe>> <<stereo.wav>>
 package main
 
-import . "github.com/splace/signals"  //"../../../signals" // 
+import . "github.com/splace/signals" //"../../../signals" //
 import (
 	"flag"
 	"image"
@@ -20,20 +20,20 @@ func main() {
 	//flag.UintVar(&sampleBytes,"bytes", 2, "bytes per sample")
 	flag.Parse()
 	files := flag.Args()
-	myLog := messageLog{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
+	statefulLog := messageLog{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
 	var in, out *os.File
 	if len(files) != 1 {
-		myLog.Fatal("1 file names required.")
+		statefulLog.Fatal("file name required.")
 	}
-	in=myLog.errFatal(os.Open(files[0])).(*os.File)
-	myLog.message = "Decode:" + files[0]
+	in = statefulLog.errFatal(os.Open(files[0])).(*os.File)
+	statefulLog.message = "Decode:" + files[0]
 	defer in.Close()
-	noise := myLog.errFatal(Decode(in)).([]PCMFunction)
+	noise := statefulLog.errFatal(Decode(in)).([]PCMFunction)
 	if len(noise) != 2 {
-		myLog.Fatal("Need a stereo input file.")
+		statefulLog.Fatal("Need a stereo input file.")
 	}
-	myLog.message = "File Access"
-	out = myLog.errFatal(os.Create(files[0]+".jpeg")).(*os.File)
+	statefulLog.message = "File Access"
+	out = statefulLog.errFatal(os.Create(files[0] + ".jpeg")).(*os.File)
 	defer out.Close()
 	m := newcomposable(image.NewPaletted(image.Rect(0, -150, 800, 150), palette.WebSafe))
 	// offset centre of 600px image, to fit 300px width.
@@ -101,4 +101,5 @@ func (i *composable) drawOverAt(isrc image.Image, pt image.Point) {
 func (i *composable) drawOverOffset(isrc image.Image, pt image.Point) {
 	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min.Add(pt), draw.Over)
 }
+//Formatted:Fri Mar 18 19:22:08 GMT 2016
 

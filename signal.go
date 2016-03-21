@@ -29,6 +29,20 @@ func (i x) String() string {
 // somewhere close to the middle of the resolution range.
 const unitX = x(time.Second)
 
+/*
+// the y type represents a value between +maxY and -maxY.
+type y int32
+
+const maxY y = math.MaxInt32
+const yBits = 32
+const halfyBits = yBits / 2
+
+//const Halfy=2<<(HalfyBits-1)
+
+// float64 has less resolution than int64 at maxy, so need this to scale float64 sourced functions to never overflow int64
+const maxyfloat64 float64 = float64(maxY - 64)   // 512
+*/
+
 // the y type represents a value between +maxY and -maxY.
 type y int64
 

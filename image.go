@@ -6,15 +6,7 @@ import (
 	"image/color/palette"
 )
 
-// a Depictor is an image.Image without a colormodel, so is more general.
-// embedded in one of the helper wrappers gets you an image.Image.
-// (this and the wrappers would ideally be in their own package)
-type Depictor interface {
-	Bounds() image.Rectangle
-	At(x, y int) color.Color
-}
-
-// Depiction is a Depictor of a Function
+// Depiction of a Function
 type Depiction struct {
 	Function
 	size                     image.Rectangle
@@ -36,6 +28,14 @@ func (i Depiction) At(xp, yp int) color.Color {
 		return i.aboveColour
 	}
 	return i.belowColour
+}
+
+// a Depictor is an image.Image without a colormodel, so is more general.
+// embedded in one of the helper wrappers gets you an image.Image.
+// (this and the wrappers would ideally be in their own package)
+type Depictor interface {
+	Bounds() image.Rectangle
+	At(x, y int) color.Color
 }
 
 // RGBA depiction wrapper

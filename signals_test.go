@@ -13,6 +13,25 @@ func PrintGraph(s Function, start, end, step x) {
 	}
 }
 
+func ExampleConstantZero() {
+	PrintGraph(Constant{0}, 0, 3*unitX, unitX)
+	/* Output:
+	      0.00%                                  X
+	      0.00%                                  X
+	      0.00%                                  X
+	*/
+}
+
+func ExampleConstantUnity() {
+	PrintGraph(NewConstant(0), 0, 3*unitX, unitX)
+	/* Output:
+	    100.00%                                                                  X
+	    100.00%                                                                  X
+	    100.00%                                                                  X
+	*/
+}
+
+
 func ExampleSquare() {
 	PrintGraph(Square{unitX}, 0, 2*unitX, unitX/10)
 	/* Output:
@@ -608,7 +627,7 @@ func ExampleSegmented_makeSawtooth() {
 	*/
 }
 
-func ExampleModulated() {
+func ExampleRateModulated() {
 	PrintGraph(RateModulated{Sine{unitX * 5}, Sine{unitX * 10}, unitX}, 0, 5*unitX, unitX/10)
 	/* Output:
 	      0.00%                                  X
@@ -795,76 +814,4 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 	}
 
 }
-/*  Hal3 Thu Mar 17 23:02:56 GMT 2016 go version go1.5.1 linux/amd64
-=== RUN   TestNoiseSave
---- PASS: TestNoiseSave (0.81s)
-=== RUN   TestSaveLoad
---- PASS: TestSaveLoad (0.00s)
-=== RUN   TestSaveWav
---- PASS: TestSaveWav (0.00s)
-=== RUN   TestLoad
---- PASS: TestLoad (0.01s)
-=== RUN   TestLoadChannels
---- PASS: TestLoadChannels (0.07s)
-=== RUN   TestStackPCMs
---- PASS: TestStackPCMs (0.05s)
-=== RUN   TestMultiplexTones
---- PASS: TestMultiplexTones (0.01s)
-=== RUN   TestSaveLoadSave
---- PASS: TestSaveLoadSave (0.04s)
-=== RUN   TestPiping
---- PASS: TestPiping (0.00s)
-=== RUN   TestRawPCM
---- PASS: TestRawPCM (0.00s)
-=== RUN   TestImagingSine
---- PASS: TestImagingSine (0.26s)
-=== RUN   TestImaging
---- PASS: TestImaging (0.33s)
-=== RUN   TestComposable
---- PASS: TestComposable (1.45s)
-=== RUN   TestStackimage
---- PASS: TestStackimage (0.90s)
-=== RUN   TestMultiplexImage
---- PASS: TestMultiplexImage (0.92s)
-=== RUN   ExampleADSREnvelope
---- PASS: ExampleADSREnvelope (0.00s)
-=== RUN   ExamplePulsePattern
---- PASS: ExamplePulsePattern (0.00s)
-=== RUN   ExampleNoise
---- PASS: ExampleNoise (0.01s)
-=== RUN   ExampleSquare
---- PASS: ExampleSquare (0.00s)
-=== RUN   ExamplePulse
---- PASS: ExamplePulse (0.00s)
-=== RUN   ExampleRampUpDown
---- PASS: ExampleRampUpDown (0.00s)
-=== RUN   ExampleHeavyside
---- PASS: ExampleHeavyside (0.00s)
-=== RUN   ExampleSine
---- PASS: ExampleSine (0.00s)
-=== RUN   ExampleNewTone
---- PASS: ExampleNewTone (0.00s)
-=== RUN   ExampleSigmoid
---- PASS: ExampleSigmoid (0.00s)
-=== RUN   ExampleReflected
---- PASS: ExampleReflected (0.01s)
-=== RUN   ExampleMultiplex
---- PASS: ExampleMultiplex (0.00s)
-=== RUN   ExampleStack
---- PASS: ExampleStack (0.00s)
-=== RUN   ExampleTriggered
---- PASS: ExampleTriggered (0.00s)
-=== RUN   ExampleSegmented
---- PASS: ExampleSegmented (0.00s)
-=== RUN   ExampleSegmented_makeSawtooth
---- PASS: ExampleSegmented_makeSawtooth (0.00s)
-=== RUN   ExampleModulated
---- PASS: ExampleModulated (0.00s)
-=== RUN   ExampleLooped
---- PASS: ExampleLooped (0.00s)
-=== RUN   ExampleRepeated
---- PASS: ExampleRepeated (0.00s)
-PASS
-ok  	_/home/simon/Dropbox/github/working/signals	4.894s
-Thu Mar 17 23:03:03 GMT 2016 */
 
