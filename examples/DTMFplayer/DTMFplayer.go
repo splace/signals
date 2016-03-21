@@ -1,7 +1,7 @@
 // pipe command for converting characters into DTMF tone PCM data.
 // example usage:  play text as tones.
 // ./DTMFplayer[SYSV64].elf <<< "0123456789ABCD#*" | aplay -fs16
-// (outputs same default rate as aplay, but 16bit precision not aplay's 8bit default.) 
+// (same default rate as aplay, but 16bit precision not aplay's 8bit default.) 
 //or
 // ./DTMFplayer\[SYSV64\].elf -rate=16000 <<< "0123456789ABCD#*" | aplay -fs16 -r 16000
 package main
