@@ -1,16 +1,16 @@
 // pipe command for converting characters into DTMF tone PCM data.
-// example usage:  play text as tones.
+// example usage:  pipe tones onto aplay;
 // ./DTMFplayer[SYSV64].elf <<< "0123456789ABCD#*" | aplay -fs16
-// (same default rate as aplay, but 16bit precision not aplay's 8bit default.) 
-//or
+// (DTMFplayer has the same default rate as aplay, but has 16bit precision not aplay's 8bit default.)
+// or specifiy sample rate;
 // ./DTMFplayer\[SYSV64\].elf -rate=16000 <<< "0123456789ABCD#*" | aplay -fs16 -r 16000
 package main
 
 import (
 	"bufio"
+	"flag"
 	"io"
 	"os"
-	"flag"
 )
 
 import . "github.com/splace/signals"
@@ -19,7 +19,7 @@ var length = X(.07)
 var gap = X(.08)
 
 func main() {
-    help := flag.Bool("help", false, "display help/usage.")
+	help := flag.Bool("help", false, "display help/usage.")
 	var sampleRate uint
 	flag.UintVar(&sampleRate, "rate", 8000, "`samples` per second.")
 	flag.Parse()

@@ -1,8 +1,14 @@
 package signals
 
+import "encoding/gob"
+
 import (
 	"math/big"
 )
+
+func init() {
+	gob.Register(PulsePattern{})
+}
 
 // pulse train specified by the bits of a big int.
 // littleendian, ignores high zero bits for MaxX().
@@ -31,3 +37,5 @@ func (s PulsePattern) Period() x {
 func (s PulsePattern) MaxX() x {
 	return s.PulseWidth * x(s.BitPattern.BitLen())
 }
+
+

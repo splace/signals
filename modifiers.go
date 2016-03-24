@@ -91,7 +91,7 @@ func (s Repeated) call(t x) y {
 	return s.PeriodicFunction.call((t % s.Period()) % s.PeriodicFunction.Period())
 }
 
-// a Function that produceds y values that are the negative of another functions y values
+// a Function that produces y values that are the negative of another functions y values
 type Inverted struct {
 	Function
 }
@@ -122,6 +122,16 @@ func (s Reflected) call(t x) y {
 	}
 }
 
+// a Function that produces the square, or power, of another function
+type Power struct {
+	Function
+}
+
+func (s Power) call(t x) y {
+	r := s.Function.call(t) >> halfyBits
+	return r * r
+}
+
 // a Function that stretches the x values of another function, in proportion to the value of a modulation function
 type RateModulated struct {
 	Function
@@ -133,24 +143,24 @@ func (s RateModulated) call(t x) y {
 	return s.Function.call(t + MultiplyX(float64(s.Modulation.call(t))/maxyfloat64, s.Factor))
 }
 
-// Segmented is a Function that has equal width uniform gradients as an approximation to another function.
+// Segmented is a Function that has equal width uniform gradients that can approximate another function.
 type Segmented struct {
 	Function
 	Width x
-	cache *segmentedCache
+	cache *segmentCache // by being a pointer this is mutable in methods, without needing a pointer receiver.
+
 }
 
-// by being pointed to from inside the Function, means this is changable without needing a pointer receiver for the call method
-type segmentedCache struct {
+type segmentCache struct {
 	x1, x2 x
 	l1, l2 x
 }
 
 func NewSegmented(s Function, w x) Segmented {
-	return Segmented{s, w, &segmentedCache{}}
+	return Segmented{s, w, &segmentCache{}}
 }
 
-// subsequent calls within the same segment, are generated from cached end values, so avoids calls to the embedded Function.
+// repeated calls within the same segment, are generated from cached end values, so avoids calls to the embedded Function.
 func (s Segmented) call(t x) y {
 	temp := t % s.Width
 	if t-temp != s.cache.x1 || t+s.Width-temp != s.cache.x2 {
@@ -163,8 +173,8 @@ func (s Segmented) call(t x) y {
 	return y(s.cache.l1*s.Width + s.cache.l2*temp)
 }
 
-// Triggered shifts a Function's x to make it cross a trigger y at zero x.
-// searches with a Resolution, from Shift+Resolution to MaxShift, then from 0 to Shift.
+// Triggered shifts a Function's x so the Function crosses a trigger y at zero x.
+// it searches with a Resolution, from Shift+Resolution to MaxShift, then from 0 to Shift.
 // Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round.
 // Rising can be alternated to find either way crossing
 type Triggered struct {
@@ -173,10 +183,9 @@ type Triggered struct {
 	Rising     bool
 	Resolution x
 	MaxShift   x
-	Found      *searchInfo
+	Found      *searchInfo // by being a pointer this is mutable in methods, without needing a pointer receiver.
 }
 
-// by being pointed to from inside the Function, means this is changable without needing a pointer receiver for the call method
 type searchInfo struct {
 	Shift   x
 	trigger y
@@ -210,3 +219,5 @@ func (s Triggered) call(t x) y {
 	}
 	return s.Function.call(t + s.Found.Shift)
 }
+
+

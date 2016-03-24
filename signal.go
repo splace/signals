@@ -11,7 +11,7 @@ type Function interface {
 	call(x) y
 }
 
-// returns a PeriodicLimitedFunction (type multiplex) based on a sine wave,
+// returns a PeriodicLimitedFunction (type Modulated) based on a sine wave,
 // with peak y set to Maxy adjusted by dB,
 // so dB should always be negative.
 func NewTone(period x, dB float64) Modulated {
