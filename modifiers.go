@@ -122,16 +122,6 @@ func (s Reflected) call(t x) y {
 	}
 }
 
-// a Function that produces the square, or power, of another function
-type Power struct {
-	Function
-}
-
-func (s Power) call(t x) y {
-	r := s.Function.call(t) >> halfyBits
-	return r * r *2
-}
-
 // a Function that stretches the x values of another function, in proportion to the value of a modulation function
 type RateModulated struct {
 	Function
