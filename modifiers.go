@@ -129,7 +129,7 @@ type Power struct {
 
 func (s Power) call(t x) y {
 	r := s.Function.call(t) >> halfyBits
-	return r * r
+	return r * r *2
 }
 
 // a Function that stretches the x values of another function, in proportion to the value of a modulation function

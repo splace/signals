@@ -319,6 +319,57 @@ func ExampleReflected() {
 	*/
 }
 
+
+func ExamplePower() {
+	Sine:=Sine{unitX * 2}
+	Power:=Modulated{Sine,Sine}
+	PrintGraph(Power, 0, unitX, unitX/40)
+	/* Output:
+	      0.00%                                  X
+	      0.62%                                  X
+	      2.45%                                  X
+	      5.45%                                   X
+	      9.55%                                     X
+	     14.64%                                      X
+	     20.61%                                        X
+	     27.30%                                           X
+	     34.55%                                             X
+	     42.18%                                               X
+	     50.00%                                                  X
+	     57.82%                                                     X
+	     65.45%                                                       X
+	     72.70%                                                         X
+	     79.39%                                                            X
+	     85.36%                                                              X
+	     90.45%                                                               X
+	     94.55%                                                                 X
+	     97.55%                                                                  X
+	     99.38%                                                                  X
+	    100.00%                                                                  X
+	     99.38%                                                                  X
+	     97.55%                                                                  X
+	     94.55%                                                                 X
+	     90.45%                                                               X
+	     85.36%                                                              X
+	     79.39%                                                            X
+	     72.70%                                                         X
+	     65.45%                                                       X
+	     57.82%                                                     X
+	     50.00%                                                  X
+	     42.18%                                               X
+	     34.55%                                             X
+	     27.30%                                           X
+	     20.61%                                        X
+	     14.64%                                      X
+	      9.55%                                     X
+	      5.45%                                   X
+	      2.45%                                  X
+	      0.62%                                  X
+	*/
+}
+
+
+
 func ExampleMultiplex() {
 	PrintGraph(Modulated{Sine{unitX * 2}, Sine{unitX * 5}}, 0, 5*unitX, unitX/10)
 	/* Output:
@@ -814,4 +865,5 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 	}
 
 }
+
 
