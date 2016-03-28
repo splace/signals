@@ -1,10 +1,12 @@
-// pipe command for converting characters into DTMF tone PCM data.
-// example usage:  pipe tones onto aplay;
-// ./DTMFplayer[SYSV64].elf <<< "0123456789ABCD#*" | aplay -fs16
-// (DTMFplayer has the same default rate as aplay, but has 16bit precision not aplay's 8bit default.)
-// or specifiy sample rate;
-// ./DTMFplayer\[SYSV64\].elf -rate=16000 <<< "0123456789ABCD#*" | aplay -fs16 -r 16000
-// for streaming: "| base64" and "audio/L16"
+// pipe command for playing gob encodings of functions.
+// example usage:  pipe tone to aplay;
+// ./player\[SYSV64\].elf < 1kSine.gob | aplay -fs16
+//  note  player has the same default rate as aplay, but not the same default precision.
+//  note  1kSine.gob is a procedural 1k cycles sine wave.
+// or specifiy sample rate:
+// ./player\[SYSV64\].elf -rate=16000 < 1kSine.gob | aplay -fs16 -r 16000
+// or specifiy duration:
+// ./player\[SYSV64\].elf -length=2 < 1kSine.gob | aplay -fs16
 package main
 
 import (
@@ -19,7 +21,9 @@ import signals "github.com/splace/signals"
 func main() {
 	help := flag.Bool("help", false, "display help/usage.")
 	var sampleRate uint
-	flag.UintVar(&sampleRate, "rate", 8000, "`samples` per second.")
+	flag.UintVar(&sampleRate, "rate", 8000, "`samples` per unit.")
+	var length float64
+	flag.Float64Var(&length, "length", 1, "length in `units`")
 	flag.Parse()
 	if *help {
 		flag.PrintDefaults()
@@ -30,7 +34,7 @@ func main() {
 	if err := m1.Load(rr); err != nil {
 		panic("unable to load."+err.Error())
 	}
-	signals.Encode(os.Stdout,m1,signals.X(1),uint32(sampleRate),2)
+	signals.Encode(os.Stdout,m1,signals.X(length),uint32(sampleRate),2)
 	os.Stdout.Close()
 }
 
