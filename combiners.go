@@ -59,10 +59,12 @@ func (c Modulated) MaxX() (min x) {
 	return
 }
 
+// write Gob encoding
 func (c Modulated) Save(p io.Writer) error {
 	return gob.NewEncoder(p).Encode(&c)
 }
 
+// read Gob encoding
 func (c *Modulated) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
@@ -109,10 +111,12 @@ func (c Composite) MaxX() (max x) {
 	return
 }
 
+// write Gob encoding
 func (c Composite) Save(p io.Writer) error {
 	return gob.NewEncoder(p).Encode(&c)
 }
 
+// read Gob encoding
 func (c *Composite) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
@@ -160,10 +164,12 @@ func (c Stack) MaxX() (max x) {
 	return
 }
 
+// write Gob encoding
 func (c Stack) Save(p io.Writer) error {
 	return gob.NewEncoder(p).Encode(&c)
 }
 
+// read Gob encoding
 func (c *Stack) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
