@@ -209,5 +209,3 @@ func (s Triggered) call(t x) y {
 	}
 	return s.Function.call(t + s.Found.Shift)
 }
-
-

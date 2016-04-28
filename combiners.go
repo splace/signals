@@ -179,5 +179,3 @@ func (c *Stack) Load(p io.Reader) error {
 func NewStack(c ...Function) Stack {
 	return Stack(c)
 }
-
-

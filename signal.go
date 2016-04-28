@@ -56,7 +56,7 @@ const halfyBits = yBits / 2
 const maxyfloat64 float64 = float64(maxY - 512)
 
 func (l y) String() string {
-	return fmt.Sprintf("%9.2f%%", 100*float32(l)/float32(maxY))
+	return fmt.Sprintf("%7.2f%%", 100*float32(l)/float32(maxY))
 }
 
 // LimitedFunctions are used as Functions that can be assumed is zero after MaxX

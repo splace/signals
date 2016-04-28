@@ -37,5 +37,3 @@ func (s PulsePattern) Period() x {
 func (s PulsePattern) MaxX() x {
 	return s.PulseWidth * x(s.BitPattern.BitLen())
 }
-
-
