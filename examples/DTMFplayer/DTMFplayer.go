@@ -11,6 +11,7 @@ import (
 	"flag"
 	"io"
 	"os"
+	"bytes"
 )
 
 import . "github.com/splace/signals"
@@ -58,12 +59,11 @@ func main() {
 		} else if err != nil {
 			panic(err)
 		}
-		Tones[Rune].Save(os.Stdout)
-		gapPCM.Save(os.Stdout)
+		io.Copy(os.Stdout, bytes.NewReader(Tones[Rune].Data))
+		io.Copy(os.Stdout, bytes.NewReader(gapPCM.Data))
 	}
+	
 	os.Stdout.Close()
 }
 
-/*  Hal3 Fri Apr 29 00:26:14 BST 2016 go version go1.5.1 linux/amd64
-Fri Apr 29 00:26:15 BST 2016 */
 
