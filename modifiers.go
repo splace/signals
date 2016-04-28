@@ -21,8 +21,8 @@ type Shifted struct {
 	Shift x
 }
 
-func (s Shifted) call(t x) y {
-	return s.Function.call(t - s.Shift)
+func (s Shifted) property(t x) y {
+	return s.Function.property(t - s.Shift)
 }
 
 // a Function that scales the x of another function
@@ -31,8 +31,8 @@ type Spedup struct {
 	Factor float32
 }
 
-func (s Spedup) call(t x) y {
-	return s.Function.call(x(float32(t) * s.Factor))
+func (s Spedup) property(t x) y {
+	return s.Function.property(x(float32(t) * s.Factor))
 }
 
 /*
@@ -58,8 +58,8 @@ type SpedupProgressive struct {
 	Rate x
 }
 
-func (s SpedupProgressive) call(t x) y {
-	return s.Function.call(t + t*t/s.Rate)
+func (s SpedupProgressive) property(t x) y {
+	return s.Function.property(t + t*t/s.Rate)
 }
 
 // a PeriodicFunction that is a Function repeated with Loop length x.
@@ -68,8 +68,8 @@ type Looped struct {
 	Loop x
 }
 
-func (s Looped) call(t x) y {
-	return s.Function.call(t % s.Loop)
+func (s Looped) property(t x) y {
+	return s.Function.property(t % s.Loop)
 }
 
 func (s Looped) Period() x {
@@ -87,8 +87,8 @@ func (s Repeated) Period() x {
 	return x(float32(s.PeriodicFunction.Period()) * s.Cycles)
 }
 
-func (s Repeated) call(t x) y {
-	return s.PeriodicFunction.call((t % s.Period()) % s.PeriodicFunction.Period())
+func (s Repeated) property(t x) y {
+	return s.PeriodicFunction.property((t % s.Period()) % s.PeriodicFunction.Period())
 }
 
 // a Function that produces y values that are the negative of another functions y values
@@ -96,8 +96,8 @@ type Inverted struct {
 	Function
 }
 
-func (s Inverted) call(t x) y {
-	return -s.Function.call(t)
+func (s Inverted) property(t x) y {
+	return -s.Function.property(t)
 }
 
 // a Function that returns y's that are for the -ve x of another function
@@ -105,8 +105,8 @@ type Reversed struct {
 	Function
 }
 
-func (s Reversed) call(t x) y {
-	return s.Function.call(-t)
+func (s Reversed) property(t x) y {
+	return s.Function.property(-t)
 }
 
 // a Function that produces values that are flipped over, (Maxy<->zero) of another function
@@ -114,11 +114,11 @@ type Reflected struct {
 	Function
 }
 
-func (s Reflected) call(t x) y {
-	if r := s.Function.call(t); r < 0 {
-		return -maxY - r
+func (s Reflected) property(t x) y {
+	if r := s.Function.property(t); r < 0 {
+		return -unitY - r
 	} else {
-		return maxY - r
+		return unitY - r
 	}
 }
 
@@ -129,8 +129,8 @@ type RateModulated struct {
 	Factor     x
 }
 
-func (s RateModulated) call(t x) y {
-	return s.Function.call(t + MultiplyX(float64(s.Modulation.call(t))/maxyfloat64, s.Factor))
+func (s RateModulated) property(t x) y {
+	return s.Function.property(t + MultiplyX(float64(s.Modulation.property(t))/maxyfloat64, s.Factor))
 }
 
 // Segmented is a Function that has equal width uniform gradients that can approximate another function.
@@ -151,14 +151,14 @@ func NewSegmented(s Function, w x) Segmented {
 }
 
 // repeated calls within the same segment, are generated from cached end values, so avoids calls to the embedded Function.
-func (s Segmented) call(t x) y {
+func (s Segmented) property(t x) y {
 	temp := t % s.Width
 	if t-temp != s.cache.x1 || t+s.Width-temp != s.cache.x2 {
 		// TODO reuse by swap ends
 		s.cache.x1 = t - temp
 		s.cache.x2 = t + s.Width - temp
-		s.cache.l1 = x(s.Function.call(s.cache.x1)) / s.Width
-		s.cache.l2 = x(s.Function.call(s.cache.x2))/s.Width - s.cache.l1
+		s.cache.l1 = x(s.Function.property(s.cache.x1)) / s.Width
+		s.cache.l2 = x(s.Function.property(s.cache.x2))/s.Width - s.cache.l1
 	}
 	return y(s.cache.l1*s.Width + s.cache.l2*temp)
 }
@@ -186,26 +186,26 @@ func NewTriggered(s Function, trigger y, rising bool, res, max x) Triggered {
 	return Triggered{s, trigger, rising, res, max, &searchInfo{}}
 }
 
-func (s Triggered) call(t x) y {
+func (s Triggered) property(t x) y {
 	if s.Trigger != s.Found.trigger || s.Found.rising != s.Rising {
 		s.Found.trigger = s.Trigger
 		s.Found.rising = s.Rising
-		if s.Rising && s.Function.call(s.Found.Shift) > s.Trigger || !s.Rising && s.Function.call(s.Found.Shift) < s.Trigger {
+		if s.Rising && s.Function.property(s.Found.Shift) > s.Trigger || !s.Rising && s.Function.property(s.Found.Shift) < s.Trigger {
 			s.Found.Shift += s.Resolution
 		}
 		for t := s.Found.Shift; t <= s.MaxShift; t += s.Resolution {
-			if s.Rising && s.Function.call(t) > s.Trigger || !s.Rising && s.Function.call(t) < s.Trigger {
+			if s.Rising && s.Function.property(t) > s.Trigger || !s.Rising && s.Function.property(t) < s.Trigger {
 				s.Found.Shift = t
-				return s.Function.call(t)
+				return s.Function.property(t)
 			}
 		}
 		for t := x(0); t < s.Found.Shift; t += s.Resolution {
-			if s.Rising && s.Function.call(t) > s.Trigger || !s.Rising && s.Function.call(t) < s.Trigger {
+			if s.Rising && s.Function.property(t) > s.Trigger || !s.Rising && s.Function.property(t) < s.Trigger {
 				s.Found.Shift = t
-				return s.Function.call(t)
+				return s.Function.property(t)
 			}
 		}
 		s.Found.Shift = 0
 	}
-	return s.Function.call(t + s.Found.Shift)
+	return s.Function.property(t + s.Found.Shift)
 }

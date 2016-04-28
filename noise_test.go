@@ -1,17 +1,17 @@
 package signals
 
 import (
-	"fmt"
-	"strings"
+ "fmt"
+ "strings"
 )
 
 func ExampleNoise() {
-	s := NewNoise()
-	for t := x(0); t < 40*unitX; t += unitX {
-		fmt.Println( s.call(t), strings.Repeat(" ", int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
-	/* Output:
+ s := NewNoise()
+ for t := x(0); t < 40*unitX; t += unitX {
+  fmt.Println(s.property(t), strings.Repeat(" ", int(s.property(t)/(unitY/33))+33)+"X")
+ }
+ fmt.Println()
+ /* Output:
   23.94%                                         X
  -52.49%                 X
    8.21%                                    X
@@ -52,5 +52,5 @@ func ExampleNoise() {
   25.50%                                          X
   23.76%                                         X
  -87.69%      X
-	*/
+ */
 }

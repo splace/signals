@@ -1,17 +1,17 @@
 package signals
 
 import (
-	"fmt"
-	"strings"
+ "fmt"
+ "strings"
 )
 
 func ExampleADSREnvelope() {
-	s := NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX)
-	for t := x(0); t < 5*unitX; t += unitX / 10 {
-		fmt.Println(s.call(t), strings.Repeat(" ", int(s.call(t)/(maxY/33))+33)+"X")
-	}
-	fmt.Println()
-	/* Output:
+ s := NewADSREnvelope(unitX, unitX, unitX, unitY/2, unitX)
+ for t := x(0); t < 5*unitX; t += unitX / 10 {
+  fmt.Println(s.property(t), strings.Repeat(" ", int(s.property(t)/(unitY/33))+33)+"X")
+ }
+ fmt.Println()
+ /* Output:
    0.00%                                  X
   10.00%                                     X
   20.00%                                        X
@@ -62,5 +62,5 @@ func ExampleADSREnvelope() {
    0.00%                                  X
    0.00%                                  X
    0.00%                                  X
-*/
+ */
 }

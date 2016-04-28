@@ -18,15 +18,15 @@ func init() {
 // As with 'AND' logic, all sources have to be Maxy (at a particular x) for Modulated to be Maxy, whereas, ANY function at zero will generate a Modulated of zero.
 type Modulated []Function
 
-func (c Modulated) call(t x) (total y) {
-	total = maxY
+func (c Modulated) property(t x) (total y) {
+	total = unitY
 	for _, s := range c {
-		l := s.call(t)
+		l := s.property(t)
 		switch l {
 		case 0:
 			total = 0
 			break
-		case maxY:
+		case unitY:
 			continue
 		default:
 			//total = (total / Halfy) * (l / Halfy)*2
@@ -81,9 +81,9 @@ func NewMultiplex(c ...Function) Modulated {
 // As with 'OR' logic, all sources have to be zero (at a particular x) for Composite to be zero.
 type Composite []Function
 
-func (c Composite) call(t x) (total y) {
+func (c Composite) property(t x) (total y) {
 	for _, s := range c {
-		total += s.call(t)
+		total += s.property(t)
 	}
 	return
 }
@@ -134,9 +134,9 @@ func NewComposite(c ...Function) Composite {
 // As with 'OR' logic, all sources have to be zero (at a particular x) for Stack to be zero.
 type Stack []Function
 
-func (c Stack) call(t x) (total y) {
+func (c Stack) property(t x) (total y) {
 	for _, s := range c {
-		total += s.call(t) / y(len(c))
+		total += s.property(t) / y(len(c))
 	}
 	return
 }

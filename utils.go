@@ -2,7 +2,7 @@ package signals
 
 // convert to internal y representation, 1 -> maxY
 func Y(d interface{}) y {
-	return MultiplyY(d, maxY)
+	return MultiplyY(d, unitY)
 }
 
 // multiply anything by an y quantity

@@ -8,7 +8,7 @@ import (
 
 // function types can represent an analogue y as it varies with x
 type Function interface {
-	call(x) y
+	property(x) y
 }
 
 // returns a PeriodicLimitedFunction (type Modulated) based on a sine wave,
@@ -46,17 +46,17 @@ const maxyfloat64 float64 = float64(maxY - 64)   // 512
 // the y type represents a value between +maxY and -maxY.
 type y int64
 
-const maxY y = math.MaxInt64
+const unitY y = math.MaxInt64
 const yBits = 64
 const halfyBits = yBits / 2
 
 //const Halfy=2<<(HalfyBits-1)
 
 // float64 has less resolution than int64 at maxy, so need this to scale float64 sourced functions to never overflow int64
-const maxyfloat64 float64 = float64(maxY - 512)
+const maxyfloat64 float64 = float64(unitY - 512)
 
 func (l y) String() string {
-	return fmt.Sprintf("%7.2f%%", 100*float32(l)/float32(maxY))
+	return fmt.Sprintf("%7.2f%%", 100*float32(l)/float32(unitY))
 }
 
 // LimitedFunctions are used as Functions that can be assumed is zero after MaxX

@@ -4,28 +4,28 @@ Package signals generates and manipulates abstract signals, when imported can th
 
 Definition of signal
 
-A signal is a record of some state, as it varies with respect to some other quantity.
+A signal is the record of some property, as it varies with some parameter.
+
+The controlling parameter is generally unboundeed, and the property bounded.
 
 also see; https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signals_and_Systems.
-
-Here the 'state' is represented by a 'y' value between +unity and -unity, as it varies with 'x', an unbounded value.
 
 
 Fundamental Types
 
-x :- designed to be used as if infinite (+ve and -ve), with the var unitX, somewhere near the center of its precision range.
+x :- the 'parameter' designed to be used as if unbounded (+ve and -ve), with unitX near the center of its precision range.
 
-y :- can have a value between +-Maxy, but is operated on as if Maxy is unity.
+y :- the 'property', can have a value between +unitY and -unitY.
 
 
 Interfaces
 
-Function :- has method call(x), which returns a 'y' value from an 'x' value parameter.
+Function :- has method property(x), which returns a 'y' value from an 'x' value parameter.
 Function's are generally procedural, calculated as needed, meaning changes in parameters, or arrangment, effect returned values of existing types.
 Function's can be encode/decoded as go code binary (gob), making for a basic interpreted signal language, or they can be stored, lossily, in wav files (Function's saved as wav are loaded back as PCMFunctions)
 
 LimitedFunction :- has a MaxX() method that returns the 'x' value after which the function can be assumed to return zero, effectively has an end.
-an 'x' value of zero is normally requarded as its start. 
+an 'x' value of zero is normally requarded as its start.
 
 PeriodicFunction :- a Function with an additional method Period(), the repeat dx, r the reciprocal of any fundamental frequency, or the sample spacing for PCMFunction's.
 

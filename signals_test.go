@@ -9,7 +9,7 @@ import (
 
 func PrintGraph(s Function, start, end, step x) {
 	for t := start; t < end; t += step {
-		fmt.Println(s.call(t), strings.Repeat(" ", int(s.call(t)/(maxY/33))+33)+"X")
+		fmt.Println(s.property(t), strings.Repeat(" ", int(s.property(t)/(unitY/33))+33)+"X")
 	}
 }
 
@@ -107,7 +107,7 @@ func ExampleRampUpDown() {
  100.00%                                                                   X
  100.00%                                                                   X
  100.00%                                                                   X
-
+ 
  100.00%                                                                  X
   90.00%                                                               X
   80.00%                                                            X
@@ -263,7 +263,7 @@ func ExampleSigmoid() {
 }
 
 func ExampleReflected() {
-	PrintGraph(Reflected{NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX)}, 0, 5*unitX, unitX/10)
+	PrintGraph(Reflected{NewADSREnvelope(unitX, unitX, unitX, unitY/2, unitX)}, 0, 5*unitX, unitX/10)
 	/* Output:
  100.00%                                                                   X
   90.00%                                                               X
@@ -479,12 +479,12 @@ func ExampleStack() {
 }
 
 func ExampleTriggered() {
-	s := NewTriggered(NewADSREnvelope(unitX, unitX, unitX, maxY/2, unitX), maxY/3*2, true, unitX/100, unitX*10)
+	s := NewTriggered(NewADSREnvelope(unitX, unitX, unitX, unitY/2, unitX), unitY/3*2, true, unitX/100, unitX*10)
 	PrintGraph(s, 0, 5*unitX, unitX/10)
-	fmt.Println( s.Found.Shift)
+	fmt.Println(s.Found.Shift)
 	s.Rising = false // forces a new search from here
 	PrintGraph(s, 0, 5*unitX, unitX/10)
-	fmt.Println( s.Found.Shift)
+	fmt.Println(s.Found.Shift)
 	/* Output:
   67.00%                                                        X
   77.00%                                                           X
@@ -861,3 +861,4 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 	}
 
 }
+
