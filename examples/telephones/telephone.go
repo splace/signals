@@ -42,11 +42,10 @@ Notes
 
 func main(){
 	Save("BusyTone.wav",Modulated{Looped{Pulse{OneSecond*375/1000},OneSecond*75/100}, Sine{OneSecond/400}})
-	Save("EngagedTone.wav",Looped{Modulated{Compose{Modulated{Pulse{OneSecond*4/10},NewConstant(-6)},Shifted{Pulse{OneSecond*225/1000},OneSecond*75/100}}, Sine{OneSecond/400}}, OneSecond*15/10})
+	Save("EngagedTone.wav",Looped{Modulated{Composite{Modulated{Pulse{OneSecond*4/10},NewConstant(-6)},Shifted{Pulse{OneSecond*225/1000},OneSecond*75/100}}, Sine{OneSecond/400}}, OneSecond*15/10})
 	Save("RingingTone.wav",Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond*4/10}, OneSecond*6/10}, Stack{Sine{OneSecond/450},Sine{OneSecond/400}}}, OneSecond*3})
 	Save("NumberUnobtainableTone.wav",Sine{OneSecond/400})
 	Save("dialTone.wav",Stack{Sine{OneSecond/450},Sine{OneSecond/350}})
 
 }
-
 
