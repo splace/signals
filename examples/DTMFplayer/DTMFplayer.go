@@ -58,10 +58,12 @@ func main() {
 		} else if err != nil {
 			panic(err)
 		}
-		Tones[Rune].Encode(os.Stdout)
-		gapPCM.Encode(os.Stdout)
+		Tones[Rune].Save(os.Stdout)
+		gapPCM.Save(os.Stdout)
 	}
 	os.Stdout.Close()
 }
 
+/*  Hal3 Fri Apr 29 00:26:14 BST 2016 go version go1.5.1 linux/amd64
+Fri Apr 29 00:26:15 BST 2016 */
 

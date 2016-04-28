@@ -34,7 +34,7 @@ func encode1byte(w *bufio.Writer, s Function, length x, sampleRate uint32) {
 	writeHeader(w, sampleRate, samples, 1)
 	var i uint32
 	if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
-		w.Write(pcm.data) // TODO can cope with shorter length
+		w.Write(pcm.Data) // TODO can cope with shorter length
 	} else {
 		for ; i < samples; i++ {
 			err = w.WriteByte(PCM8bitEncode(s.property(x(i) * samplePeriod)))
@@ -51,7 +51,7 @@ func encode2byte(w *bufio.Writer, s Function, length x, sampleRate uint32) {
 	writeHeader(w, sampleRate, samples, 2)
 	var i uint32
 	if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
-		w.Write(pcm.data) // TODO can cope with shorter length
+		w.Write(pcm.Data) // TODO can cope with shorter length
 	} else {
 		for ; i < samples; i++ {
 			b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
@@ -70,7 +70,7 @@ func encode3byte(w *bufio.Writer, s Function, length x, sampleRate uint32) {
 	writeHeader(w, sampleRate, samples, 3)
 	var i uint32
 	if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
-		w.Write(pcm.data) // TODO can cope with shorter length
+		w.Write(pcm.Data) // TODO can cope with shorter length
 	} else {
 		for ; i < samples; i++ {
 			b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
@@ -90,7 +90,7 @@ func encode4byte(w *bufio.Writer, s Function, length x, sampleRate uint32) {
 	writeHeader(w, sampleRate, samples, 4)
 	var i uint32
 	if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
-		w.Write(pcm.data) // TODO can cope with shorter length
+		w.Write(pcm.Data) // TODO can cope with shorter length
 	} else {
 		for ; i < samples; i++ {
 			b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
@@ -149,16 +149,16 @@ func NewPCMFunction(s Function, length x, sampleRate uint32, sampleBytes uint8) 
 type PCM struct {
 	samplePeriod x
 	length       x
-	data         []byte
+	Data         []byte
 }
 
 // make a PCM type, from raw bytes.
-func NewPCM(sampleRate uint32, sampleBytes uint8, data []byte) PCM {
+func NewPCM(sampleRate uint32, sampleBytes uint8, Data []byte) PCM {
 	period := X(1 / float32(sampleRate))
-	if len(data)%int(sampleBytes) != 0 {
+	if len(Data)%int(sampleBytes) != 0 {
 		log.Println("Byte array not whole number of samples")
 	}
-	return PCM{period, period * x(len(data)/int(sampleBytes)), data}
+	return PCM{period, period * x(len(Data)/int(sampleBytes)), Data}
 }
 
 func (p PCM) Period() x {
@@ -194,10 +194,10 @@ type PCM8bit struct {
 
 func (s PCM8bit) property(offset x) y {
 	index := int(offset / s.samplePeriod)
-	if index < 0 || index >= len(s.data)-1 {
+	if index < 0 || index >= len(s.Data)-1 {
 		return 0
 	}
-	return PCM8bitDecode(s.data[index])
+	return PCM8bitDecode(s.Data[index])
 }
 
 func PCM8bitDecode(b byte) y {
@@ -218,10 +218,10 @@ type PCM16bit struct {
 
 func (s PCM16bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 2
-	if index < 0 || index >= len(s.data)-3 {
+	if index < 0 || index >= len(s.Data)-3 {
 		return 0
 	}
-	return PCM16bitDecode(s.data[index], s.data[index+1])
+	return PCM16bitDecode(s.Data[index], s.Data[index+1])
 }
 
 func PCM16bitDecode(b1, b2 byte) y {
@@ -242,10 +242,10 @@ type PCM24bit struct {
 
 func (s PCM24bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 3
-	if index < 0 || index >= len(s.data)-4 {
+	if index < 0 || index >= len(s.Data)-4 {
 		return 0
 	}
-	return PCM24bitDecode(s.data[index], s.data[index+1], s.data[index+2])
+	return PCM24bitDecode(s.Data[index], s.Data[index+1], s.Data[index+2])
 }
 func PCM24bitDecode(b1, b2, b3 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) * (unitY >> 23)
@@ -265,10 +265,10 @@ type PCM32bit struct {
 
 func (s PCM32bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 4
-	if index < 0 || index >= len(s.data)-5 {
+	if index < 0 || index >= len(s.Data)-5 {
 		return 0
 	}
-	return PCM32bitDecode(s.data[index], s.data[index+1], s.data[index+2], s.data[index+3])
+	return PCM32bitDecode(s.Data[index], s.Data[index+1], s.Data[index+2], s.Data[index+3])
 }
 func PCM32bitDecode(b1, b2, b3, b4 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) * (unitY >> 31)
@@ -421,3 +421,5 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	}
 	return sampleData, err
 }
+
+
