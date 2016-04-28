@@ -2,31 +2,32 @@
 Package signals generates and manipulates abstract signals, when imported can then be used with specific real-world quantities.
 
 
-definition of signal
+Definition of signal
 
-A signal is a record of the state of a physical quantity, as it varies, uniquely, with respect to some other quantity, so carrying information.
+A signal is a record of some state, as it varies with respect to some other quantity.
 
 also see; https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signals_and_Systems.
 
-Here the 'state' is represented by a value between +unity and -unity, as it varies with a, conceptually, unbounded value.
+Here the 'state' is represented by a 'y' value between +unity and -unity, as it varies with 'x', an unbounded value.
 
 
 Fundamental Types
 
-x :- designed to be used as if infinite (+ve and -ve), with UnitX somewhere near the center of its precision range.
+x :- designed to be used as if infinite (+ve and -ve), with the var unitX, somewhere near the center of its precision range.
 
-y :- can have a value from -Maxy to +Maxy, operated on as if unity.
+y :- can have a value between +-Maxy, but is operated on as if Maxy is unity.
 
 
 Interfaces
 
-Function :- has method Call(), which returns a 'y' value from an 'x' value parameter.
+Function :- has method call(x), which returns a 'y' value from an 'x' value parameter.
 Function's are generally procedural, calculated as needed, meaning changes in parameters, or arrangment, effect returned values of existing types.
 Function's can be encode/decoded as go code binary (gob), making for a basic interpreted signal language, or they can be stored, lossily, in wav files (Function's saved as wav are loaded back as PCMFunctions)
 
 LimitedFunction :- has a MaxX() method that returns the 'x' value after which the function can be assumed to return zero, effectively has an end.
+an 'x' value of zero is normally requarded as its start. 
 
-PeriodicFunction :- a Function with an additional method Period(), the repeat dx, reciprocal of any fundamental frequency, or sample spacing for PCMFunction's.
+PeriodicFunction :- a Function with an additional method Period(), the repeat dx, r the reciprocal of any fundamental frequency, or the sample spacing for PCMFunction's.
 
 PeriodicLimitedFunction :- both above.
 
