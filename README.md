@@ -42,7 +42,7 @@ sources:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM<<bits
 
 modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,RateModulated,Triggered,Segmented
 
-combiners:- Stack,Compose,Modulate
+combiners:- Stack,Composite,Modulate
 
 extras(non-core):- Depiction,ADSR,Noise
 
