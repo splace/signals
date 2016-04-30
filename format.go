@@ -13,97 +13,66 @@ import (
 
 // Encode a function as PCM data, one channel, in a Riff wave container.
 func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes uint8) {
+	var err error
+	var i uint32
 	buf := bufio.NewWriter(w)
+	samplePeriod := X(1 / float32(sampleRate))
+	samples := uint32(length/samplePeriod) + 1
+	writeHeader(buf, sampleRate, samples,  sampleBytes)
 	switch sampleBytes {
 	case 1:
-		encode1byte(buf, s, length, sampleRate)
+		if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
+			buf.Write(pcm.Data) // TODO can cope with shorter length
+		} else {
+			for ; i < samples; i++ {
+				err = buf.WriteByte(PCM8bitEncode(s.property(x(i) * samplePeriod)))
+				if err != nil {break}
+			}
+		}
 	case 2:
-		encode2byte(buf, s, length, sampleRate)
+		if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
+			buf.Write(pcm.Data) // TODO can cope with shorter length
+		} else {
+			for ; i < samples; i++ {
+				b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
+				err = buf.WriteByte(b2)
+				err = buf.WriteByte(b1)
+				if err != nil {break}
+			}
+		}
 	case 3:
-		encode3byte(buf, s, length, sampleRate)
+		if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
+			buf.Write(pcm.Data) // TODO can cope with shorter length
+		} else {
+			for ; i < samples; i++ {
+				b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
+				err = buf.WriteByte(b3)
+				err = buf.WriteByte(b2)
+				err = buf.WriteByte(b1)
+				if err != nil {break}
+			}
+		}
 	case 4:
-		encode4byte(buf, s, length, sampleRate)
+		if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
+			buf.Write(pcm.Data) // TODO can cope with shorter length
+		} else {
+			for ; i < samples; i++ {
+				b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
+				err = buf.WriteByte(b4)
+				err = buf.WriteByte(b3)
+				err = buf.WriteByte(b2)
+				err = buf.WriteByte(b1)
+				if err != nil {break}
+			}
+		}
 	}
-	buf.Flush()
+	if err != nil {
+		log.Println("Encode failure:" + err.Error() + fmt.Sprint(buf))
+	}else{
+		buf.Flush()
+	}
 }
 
-func encode1byte(w *bufio.Writer, s Function, length x, sampleRate uint32) {
-	var err error
-	samplePeriod := X(1 / float32(sampleRate))
-	samples := uint32(length/samplePeriod) + 1
-	writeHeader(w, sampleRate, samples, 1)
-	var i uint32
-	if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
-		w.Write(pcm.Data) // TODO can cope with shorter length
-	} else {
-		for ; i < samples; i++ {
-			err = w.WriteByte(PCM8bitEncode(s.property(x(i) * samplePeriod)))
-			if err != nil {
-				log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
-			}
-		}
-	}
-}
-func encode2byte(w *bufio.Writer, s Function, length x, sampleRate uint32) {
-	var err error
-	samplePeriod := X(1 / float32(sampleRate))
-	samples := uint32(length/samplePeriod) + 1
-	writeHeader(w, sampleRate, samples, 2)
-	var i uint32
-	if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
-		w.Write(pcm.Data) // TODO can cope with shorter length
-	} else {
-		for ; i < samples; i++ {
-			b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
-			err = w.WriteByte(b2)
-			err = w.WriteByte(b1)
-			if err != nil {
-				log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
-			}
-		}
-	}
-}
-func encode3byte(w *bufio.Writer, s Function, length x, sampleRate uint32) {
-	var err error
-	samplePeriod := X(1 / float32(sampleRate))
-	samples := uint32(length/samplePeriod) + 1
-	writeHeader(w, sampleRate, samples, 3)
-	var i uint32
-	if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
-		w.Write(pcm.Data) // TODO can cope with shorter length
-	} else {
-		for ; i < samples; i++ {
-			b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
-			err = w.WriteByte(b3)
-			err = w.WriteByte(b2)
-			err = w.WriteByte(b1)
-			if err != nil {
-				log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
-			}
-		}
-	}
-}
-func encode4byte(w *bufio.Writer, s Function, length x, sampleRate uint32) {
-	var err error
-	samplePeriod := X(1 / float32(sampleRate))
-	samples := uint32(length/samplePeriod) + 1
-	writeHeader(w, sampleRate, samples, 4)
-	var i uint32
-	if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
-		w.Write(pcm.Data) // TODO can cope with shorter length
-	} else {
-		for ; i < samples; i++ {
-			b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
-			err = w.WriteByte(b4)
-			err = w.WriteByte(b3)
-			err = w.WriteByte(b2)
-			err = w.WriteByte(b1)
-			if err != nil {
-				log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
-			}
-		}
-	}
-}
 
 func writeHeader(w *bufio.Writer, sampleRate uint32, samples uint32, sampleBytes uint8) {
 	binaryWrite := func(w io.Writer, d interface{}) {
@@ -421,5 +390,4 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	}
 	return sampleData, err
 }
-
 
