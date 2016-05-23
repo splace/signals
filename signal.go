@@ -83,77 +83,79 @@ type PeriodicLimitedFunction interface {
 	Period() x
 }
 
-// Converters to promote slices of interfaces, needed when using variadic parameters called using a slice, since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
+// Converters to promote slices of interfaces, needed when using variadic parameters called using a slice since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
 // for example: without these you couldn't use a slice of LimitedFunction's in a variadic call to a func requiring Function's. (when you can use separate LimitedFunction's in the same call.)
 
-// converts []LimitedFunction to []Function
-func PromoteSliceLimitedFunctionsToFunctions(s []LimitedFunction) []Function {
-	out := make([]Function, len(s))
-	for i := range out {
-		out[i] = s[i].(Function)
+// converts  to []Function
+func PromoteToFunctions(s interface{}) (out []Function) {
+	switch st := s.(type) {
+	case []LimitedFunction:
+		out = make([]Function, len(st))
+		for i := range out {
+			out[i] = st[i].(Function)
+		}
+	case []PeriodicLimitedFunction:
+		out = make([]Function, len(st))
+		for i := range out {
+			out[i] = st[i].(Function)
+		}
+	case []PeriodicFunction:
+		out = make([]Function, len(st))
+		for i := range out {
+			out[i] = st[i].(Function)
+		}
+	case []PCMFunction:
+		out = make([]Function, len(st))
+		for i := range out {
+			out[i] = st[i].(Function)
+		}
 	}
-	return out
+	return
 }
 
-// converts []PeriodicLimitedFunction to []Function
-func PromoteSlicePeriodicLimitedFunctionsToFunctions(s []PeriodicLimitedFunction) []Function {
-	out := make([]Function, len(s))
-	for i := range out {
-		out[i] = s[i].(Function)
+// converts []LimitedFunction
+func PromoteToLimitedFunctions(s interface{}) (out []LimitedFunction) {
+	switch st := s.(type) {
+	case []PeriodicLimitedFunction:
+		out = make([]LimitedFunction, len(st))
+		for i := range out {
+			out[i] = st[i].(LimitedFunction)
+		}
+	case []PCMFunction:
+		out = make([]LimitedFunction, len(st))
+		for i := range out {
+			out[i] = st[i].(LimitedFunction)
+		}
 	}
-	return out
-}
-
-// converts []PeriodicFunction to []Function
-func PromoteSlicePeriodicFunctionsToFunctions(s []PeriodicFunction) []Function {
-	out := make([]Function, len(s))
-	for i := range out {
-		out[i] = s[i].(Function)
-	}
-	return out
-}
-
-// converts []PeriodicLimitedFunction to []LimitedFunction
-func PromoteSlicePeriodicLimitedFunctionsToLimitedFunctions(s []PeriodicLimitedFunction) []LimitedFunction {
-	out := make([]LimitedFunction, len(s))
-	for i := range out {
-		out[i] = s[i].(LimitedFunction)
-	}
-	return out
-}
-
-// converts []PCMFunction to []Function
-func PromoteSlicePCMFunctionsToFunctions(s []PCMFunction) []Function {
-	out := make([]Function, len(s))
-	for i := range out {
-		out[i] = s[i].(Function)
-	}
-	return out
-}
-
-// converts []PCMFunction to []LimitedFunction
-func PromoteSlicePCMFunctionsToLimitedFunctions(s []PCMFunction) []LimitedFunction {
-	out := make([]LimitedFunction, len(s))
-	for i := range out {
-		out[i] = s[i].(LimitedFunction)
-	}
-	return out
-}
-
-// converts []PCMFunction to []PeriodicLimitedFunction
-func PromoteSlicePCMFunctionsToPeriodicLimitedFunctions(s []PCMFunction) []PeriodicLimitedFunction {
-	out := make([]PeriodicLimitedFunction, len(s))
-	for i := range out {
-		out[i] = s[i].(PeriodicLimitedFunction)
-	}
-	return out
+	return
 }
 
 // converts []PCMFunction to []PeriodicFunction
-func PromoteSlicePCMFunctionsToPeriodicFunctions(s []PCMFunction) []PeriodicFunction {
-	out := make([]PeriodicFunction, len(s))
-	for i := range out {
-		out[i] = s[i].(PeriodicFunction)
+func PromoteToPeriodicFunctions(s interface{}) (out []PeriodicFunction) {
+	switch st := s.(type) {
+	case []PeriodicLimitedFunction:
+		out = make([]PeriodicFunction, len(st))
+		for i := range out {
+			out[i] = st[i].(PeriodicFunction)
+		}
+	case []PCMFunction:
+		out = make([]PeriodicFunction, len(st))
+		for i := range out {
+			out[i] = st[i].(PeriodicFunction)
+		}
 	}
-	return out
+	return
 }
+
+// converts []PCMFunction to []PeriodicLimitedFunction
+func PromoteToPeriodicLimitedFunctions(s interface{}) (out []PeriodicLimitedFunction) {
+	switch st := s.(type) {
+	case []PCMFunction:
+		out = make([]PeriodicLimitedFunction, len(st))
+		for i := range out {
+			out[i] = st[i].(PeriodicLimitedFunction)
+		}
+	}
+	return
+}
+
