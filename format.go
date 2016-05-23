@@ -102,7 +102,7 @@ type PCMFunction interface {
 	Encode(w io.Writer)
 }
 
-// make a PCMFunction type, from a Function, using particular parameters,
+// make a PCMFunction type, by sampling from a Function, using provided parameters.
 func NewPCMFunction(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunction {
 	out, in := io.Pipe()
 	go func() {
@@ -114,7 +114,7 @@ func NewPCMFunction(s Function, length x, sampleRate uint32, sampleBytes uint8) 
 	return channels[0].(PCMFunction)
 }
 
-// PCM is the state and behaviour common to all PCM. Its not a Function, specific PCM<<precison>> types embed this, and then are LimitedPeriodicFunction's.
+// PCM is the state and behaviour common to all PCM. Its not a Function, specific PCM<<precison>> types embed this, and then are PCMFunction's.
 type PCM struct {
 	samplePeriod x
 	length       x
@@ -156,7 +156,7 @@ func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
 }
 
 // 8 bit PCMFunction.
-// (unlike the other precisions of PCM, that use signed data, 8bit uses un-signed, the default OpenAL and wave file representation for 8bit precision.)
+// unlike the other precisions of PCM, that use signed data, 8bit uses un-signed. (the default OpenAL and wave file representation for 8bit precision.)
 type PCM8bit struct {
 	PCM
 }
