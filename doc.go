@@ -4,7 +4,7 @@ Package signals generates and manipulates abstract signals, when imported can th
 
 Definition of signal
 
-A signal is the record of some property, as it varies, with some parameter.
+A signal is the value of some property, as it depends, uniquely, with some parameter.
 
 The controlling parameter is generally unbounded, and the property bounded.
 
