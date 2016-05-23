@@ -59,17 +59,18 @@ func (l y) String() string {
 	return fmt.Sprintf("%7.2f%%", 100*float32(l)/float32(unitY))
 }
 
-// LimitedFunctions are used as Functions that can be assumed is zero after MaxX
+// LimitedFunctions are used as Functions that can be assumed have zero y after MaxX
 type LimitedFunction interface {
 	Function
 	MaxX() x
 }
 
+/*
 // Samples are LimitedFunctions that are assumed to be zero before their MinX.
 type Sample interface {
 	LimitedFunction
 	MinX() x
-}
+}*/
 
 // PeriodicalFunctions are functions that can be assumed to repeat over Period().
 type PeriodicFunction interface {
@@ -86,7 +87,7 @@ type PeriodicLimitedFunction interface {
 // Converters to promote slices of interfaces, needed when using variadic parameters called using a slice since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
 // for example: without these you couldn't use a slice of LimitedFunction's in a variadic call to a func requiring Function's. (when you can use separate LimitedFunction's in the same call.)
 
-// converts  to []Function
+// converts to []Function
 func PromoteToFunctions(s interface{}) (out []Function) {
 	switch st := s.(type) {
 	case []LimitedFunction:

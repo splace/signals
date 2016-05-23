@@ -36,7 +36,7 @@ type messageLog struct{
 	message string
 }
 
-
+// pick of the standard second arg returned error (second arg.) to simplify handling structure.
 func (ml messageLog) errFatal(result interface{},err error) interface{}{
 	if err!=nil{
 		ml.Fatal(err.Error())
@@ -78,7 +78,7 @@ func main() {
 		os.Exit(0)
 	}
 	files := flag.Args()
-	myLog := messageLog{log.New(os.Stderr,"ERROR\t",log.LstdFlags),"File access"} 
+	myLog := messageLog{log.New(os.Stderr,"ERROR\t",log.LstdFlags),"File access"} // this log will give 'ERROR's and start with file access.
 	var in,out *os.File
 	if len(files)==2 {
 		in=myLog.errFatal(os.Open(files[0])).(*os.File)
@@ -93,7 +93,7 @@ func main() {
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			Encode(out,Modulated{NewStack(PromoteSlicePCMFunctionsToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+			Encode(out,Modulated{NewStack(PromoteToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -116,7 +116,7 @@ func main() {
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			EncodeLike(out,Modulated{NewStack(PromoteSlicePCMFunctionsToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0])		
+			EncodeLike(out,Modulated{NewStack(PromoteToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0])		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -136,7 +136,5 @@ func main() {
 		}
 	}
 }
-
-
 
 
