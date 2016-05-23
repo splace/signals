@@ -113,7 +113,7 @@ func PromoteToFunctions(s interface{}) (out []Function) {
 	return
 }
 
-// converts []LimitedFunction
+// converts to []LimitedFunction
 func PromoteToLimitedFunctions(s interface{}) (out []LimitedFunction) {
 	switch st := s.(type) {
 	case []PeriodicLimitedFunction:
@@ -130,7 +130,7 @@ func PromoteToLimitedFunctions(s interface{}) (out []LimitedFunction) {
 	return
 }
 
-// converts []PCMFunction to []PeriodicFunction
+// converts to []PeriodicFunction
 func PromoteToPeriodicFunctions(s interface{}) (out []PeriodicFunction) {
 	switch st := s.(type) {
 	case []PeriodicLimitedFunction:
@@ -147,7 +147,7 @@ func PromoteToPeriodicFunctions(s interface{}) (out []PeriodicFunction) {
 	return
 }
 
-// converts []PCMFunction to []PeriodicLimitedFunction
+// converts to []PeriodicLimitedFunction
 func PromoteToPeriodicLimitedFunctions(s interface{}) (out []PeriodicLimitedFunction) {
 	switch st := s.(type) {
 	case []PCMFunction:
