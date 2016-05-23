@@ -83,7 +83,7 @@ type PeriodicLimitedFunction interface {
 	Period() x
 }
 
-// Converters to promote slices of interfaces, needed when using variadic parameters called using a slice since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
+// Converters to promote slices of interfaces, needed when using variadic parameters called using a slice, since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
 // for example: without these you couldn't use a slice of LimitedFunction's in a variadic call to a func requiring Function's. (when you can use separate LimitedFunction's in the same call.)
 
 // converts []LimitedFunction to []Function

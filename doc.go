@@ -27,12 +27,12 @@ Function's can be saved/loaded from go code binary (gob), making for a basic int
 LimitedFunction :- has a MaxX() method that returns the 'x' value after which the function can be assumed to return zero, effectively has an end.
 an 'x' value of zero is normally regarded as its start.
 
-PeriodicFunction :- a Function with an additional method Period(), the repeat dx, r the reciprocal of any fundamental frequency, or the sample spacing for PCMFunction's.
+PeriodicFunction :- a Function with an additional method Period(), returning the repeat dx, or the reciprocal of any fundamental frequency, or the sample spacing for PCMFunction's.
 
 PeriodicLimitedFunction :- both above.
 
 PCMFunction :- a PeriodicLimitedFunction with additional method Encode().
-PCMFunction's are stored, at a particular interval and precision, and can be used to cache an expensive procedural Function.
+PCMFunction's are stored 'recordings' rather than procedurally generated, at a particular interval and precision. They can be used to cache a procedural Function.
 
 
 */
