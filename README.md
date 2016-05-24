@@ -39,8 +39,7 @@ Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signe
 Features:
 
   * sources:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM{bits}bit
-
- + (PCM sources can be loaded from wav files)
+(PCM sources can be loaded from wav files)
 	
   * modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,RateModulated,Triggered,Segmented
 
