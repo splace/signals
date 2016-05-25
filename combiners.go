@@ -78,7 +78,7 @@ func NewTone(period x, dB float64) Modulated {
 
 // helper to enable generation from another slice.
 // will in general need to use a slice interface promoter function.
-func NewMultiplex(c ...Signal) Modulated {
+func NewModulated(c ...Signal) Modulated {
 	return Modulated(c)
 }
 

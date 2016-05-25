@@ -269,21 +269,21 @@ func Decode(wav io.Reader) ([]PCMSignal, error) {
 	if err != nil {
 		return nil, err
 	}
-	functions := make([]PCMSignal, format.Channels)
+	pcms := make([]PCMSignal, format.Channels)
 	var c uint32
 	for ; c < uint32(format.Channels); c++ {
 		switch format.Bits {
 		case 8:
-			functions[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples : (c+1)*samples]}}
+			pcms[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples : (c+1)*samples]}}
 		case 16:
-			functions[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*2 : (c+1)*samples*2]}}
+			pcms[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*2 : (c+1)*samples*2]}}
 		case 24:
-			functions[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*3 : (c+1)*samples*3]}}
+			pcms[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*3 : (c+1)*samples*3]}}
 		case 32:
-			functions[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*4 : (c+1)*samples*4]}}
+			pcms[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*4 : (c+1)*samples*4]}}
 		}
 	}
-	return functions, nil
+	return pcms, nil
 }
 
 type ErrWavParse struct {

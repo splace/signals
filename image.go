@@ -32,7 +32,7 @@ func (i Depiction) At(xp, yp int) color.Color {
 
 // a Depictor is an image.Image without a colormodel, so is more general.
 // embedded in one of the helper wrappers gets you an image.Image.
-// (this and the wrappers might be moved, in a later version of theis package, to their own package.)
+// (this and the wrappers might be moved, in a later version of this package, to their own package.)
 type Depictor interface {
 	Bounds() image.Rectangle
 	At(x, y int) color.Color

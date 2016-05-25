@@ -1,4 +1,4 @@
-// command for piping from gob encodings of functions to PCM.
+// command for piping from gob encodings of Signals to PCM.
 // example usage (to play a tone):-
 // ./player\[SYSV64\].elf < gobs/1kSine.gob | aplay
 // or
