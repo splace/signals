@@ -20,20 +20,20 @@ func main() {
 	//flag.UintVar(&sampleBytes,"bytes", 2, "bytes per sample")
 	flag.Parse()
 	files := flag.Args()
-	sLog := statefulLogger{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
+	sLogError := statefulLogger{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
 	var in, out *os.File
 	if len(files) != 1 {
-		sLog.Fatal("file name required.")
+		sLogError.Fatal("file name required.")
 	}
-	in = sLog.ErrFatal(os.Open(files[0])).(*os.File)
-	sLog.State = "Decode:" + files[0]
+	in = sLogError.ErrFatal(os.Open(files[0])).(*os.File)
+	sLogError.State = "Decode:" + files[0]
 	defer in.Close()
-	noise := sLog.ErrFatal(Decode(in)).([]PCMSignal)
+	noise := sLogError.ErrFatal(Decode(in)).([]PCMSignal)
 	if len(noise) != 2 {
-		sLog.Fatal("Need a stereo input file.")
+		sLogError.Fatal("Need a stereo input file.")
 	}
-	sLog.State = "File Access"
-	out = sLog.ErrFatal(os.Create(files[0] + ".jpeg")).(*os.File)
+	sLogError.State = "File Access"
+	out = sLogError.ErrFatal(os.Create(files[0] + ".jpeg")).(*os.File)
 	defer out.Close()
 	m := newcomposable(image.NewPaletted(image.Rect(0, -150, 800, 150), palette.WebSafe))
 	// offset centre of 600px image, to fit 300px width.
@@ -101,5 +101,7 @@ func (i *composable) drawOverAt(isrc image.Image, pt image.Point) {
 func (i *composable) drawOverOffset(isrc image.Image, pt image.Point) {
 	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min.Add(pt), draw.Over)
 } 
+
+
 
 
