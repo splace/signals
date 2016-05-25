@@ -1,5 +1,5 @@
 // generate a few standard US telephone notification tones.
-// length is a multiple of cycle, so play wave files repeated to get any length. 
+// length is a multiple of cycle, so play the output repeatedly to get any length. 
 package main
 
 import (

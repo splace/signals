@@ -1,14 +1,20 @@
-// command for piping from gob encodings of Signals to PCM.
+// command for piping from gob encodings of Signals to PCM data.
+
 // example usage (to play a tone):-
+
 // ./player\[SYSV64\].elf < gobs/1kSine.gob | aplay
 // or
+
 // cat gobs/1kSine.gob | ./player\[SYSV64\].elf | aplay
 //  (1kSine.gob is a procedural 1k cycles sine wave.)
+
 // to specifiy duration:
 // ./player\[SYSV64\].elf -length=2 < 1kSine.gob | aplay
+
 // to specifiy sample rate:
 // ./player\[SYSV64\].elf -rate=16000 < 1kSine.gob | aplay
 // (output s not a higher frequency, since player passes wave format and so includes rate.)
+
 // to specifiy sample precision:
 // ./player\[SYSV64\].elf -bytes=1 < 1kSine.gob | aplay
 // (bytes can be one of: 1,2,3,4.)
