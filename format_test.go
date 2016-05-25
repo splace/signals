@@ -104,7 +104,7 @@ func TestStackPCMs(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile, Stack{noise[0], noise[1]}, noise[0].(PCMFunction).MaxX(), 44100, 1)
+	Encode(wavFile, Stack{noise[0], noise[1]}, noise[0].(PCMSignal).MaxX(), 44100, 1)
 }
 func TestMultiplexTones(t *testing.T) {
 	m := NewTone(unitX/1000, -6)
@@ -139,7 +139,7 @@ func TestSaveLoadSave(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	noise[0].(PCMFunction).Encode(wavFile)
+	noise[0].(PCMSignal).Encode(wavFile)
 }
 
 func TestPiping(t *testing.T) {

@@ -12,13 +12,13 @@ import (
 )
 
 // Encode a function as PCM data, one channel, in a Riff wave container.
-func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes uint8) {
+func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint8) {
 	var err error
 	var i uint32
 	buf := bufio.NewWriter(w)
 	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
-	writeHeader(buf, sampleRate, samples,  sampleBytes)
+	writeHeader(buf, sampleRate, samples, sampleBytes)
 	switch sampleBytes {
 	case 1:
 		if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
@@ -26,7 +26,9 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 		} else {
 			for ; i < samples; i++ {
 				err = buf.WriteByte(PCM8bitEncode(s.property(x(i) * samplePeriod)))
-				if err != nil {break}
+				if err != nil {
+					break
+				}
 			}
 		}
 	case 2:
@@ -37,7 +39,9 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 				b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
 				err = buf.WriteByte(b2)
 				err = buf.WriteByte(b1)
-				if err != nil {break}
+				if err != nil {
+					break
+				}
 			}
 		}
 	case 3:
@@ -49,7 +53,9 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 				err = buf.WriteByte(b3)
 				err = buf.WriteByte(b2)
 				err = buf.WriteByte(b1)
-				if err != nil {break}
+				if err != nil {
+					break
+				}
 			}
 		}
 	case 4:
@@ -62,17 +68,18 @@ func Encode(w io.Writer, s Function, length x, sampleRate uint32, sampleBytes ui
 				err = buf.WriteByte(b3)
 				err = buf.WriteByte(b2)
 				err = buf.WriteByte(b1)
-				if err != nil {break}
+				if err != nil {
+					break
+				}
 			}
 		}
 	}
 	if err != nil {
 		log.Println("Encode failure:" + err.Error() + fmt.Sprint(buf))
-	}else{
+	} else {
 		buf.Flush()
 	}
 }
-
 
 func writeHeader(w *bufio.Writer, sampleRate uint32, samples uint32, sampleBytes uint8) {
 	binaryWrite := func(w io.Writer, d interface{}) {
@@ -97,13 +104,13 @@ func writeHeader(w *bufio.Writer, sampleRate uint32, samples uint32, sampleBytes
 }
 
 // PCMFunction is a Pulse-code modulated Function's behaviour
-type PCMFunction interface {
-	PeriodicLimitedFunction
+type PCMSignal interface {
+	PeriodicLimitedSignal
 	Encode(w io.Writer)
 }
 
 // make a PCMFunction type, by sampling from a Function, using provided parameters.
-func NewPCMFunction(s Function, length x, sampleRate uint32, sampleBytes uint8) PCMFunction {
+func NewPCMFunction(s Signal, length x, sampleRate uint32, sampleBytes uint8) PCMSignal {
 	out, in := io.Pipe()
 	go func() {
 		Encode(in, s, length, sampleRate, sampleBytes)
@@ -111,7 +118,7 @@ func NewPCMFunction(s Function, length x, sampleRate uint32, sampleBytes uint8) 
 	}()
 	channels, _ := Decode(out)
 	out.Close()
-	return channels[0].(PCMFunction)
+	return channels[0].(PCMSignal)
 }
 
 // PCM is the state and behaviour common to all PCM. Its not a Function, specific PCM<<precison>> types embed this, and then are PCMFunction's.
@@ -139,7 +146,7 @@ func (p PCM) MaxX() x {
 }
 
 // encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and its precision if its a PCM type, otherwise defaults to 16bit.
-func EncodeLike(w io.Writer, p LimitedFunction, s PeriodicLimitedFunction) {
+func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicLimitedSignal) {
 	switch f := s.(type) {
 	case PCM8bit:
 		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 1).Encode(w)
@@ -252,7 +259,7 @@ func (s PCM32bit) Encode(w io.Writer) {
 
 // Read a wave format stream into an array of PCMFunctions.
 // one PCMFunction for each channel in the encoding.
-func Decode(wav io.Reader) ([]PCMFunction, error) {
+func Decode(wav io.Reader) ([]PCMSignal, error) {
 	bytesToRead, format, err := readHeader(wav)
 	if err != nil {
 		return nil, err
@@ -262,7 +269,7 @@ func Decode(wav io.Reader) ([]PCMFunction, error) {
 	if err != nil {
 		return nil, err
 	}
-	functions := make([]PCMFunction, format.Channels)
+	functions := make([]PCMSignal, format.Channels)
 	var c uint32
 	for ; c < uint32(format.Channels); c++ {
 		switch format.Bits {
@@ -390,4 +397,3 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	}
 	return sampleData, err
 }
-

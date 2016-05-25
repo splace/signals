@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func PrintGraph(s Function, start, end, step x) {
+func PrintGraph(s Signal, start, end, step x) {
 	for t := start; t < end; t += step {
 		fmt.Println(s.property(t), strings.Repeat(" ", int(s.property(t)/(unitY/33))+33)+"X")
 	}
@@ -861,4 +861,5 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 	}
 
 }
+
 

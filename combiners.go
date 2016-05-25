@@ -16,7 +16,7 @@ func init() {
 // Modulated's MaxX() comes from the smallest contstituent MaxX(), (0 if none of the contained Functions are LimitedFunctions.)
 // Modulated's Period() comes from its first member.
 // As with 'AND' logic, all sources have to be Maxy (at a particular x) for Modulated to be Maxy, whereas, ANY function at zero will generate a Modulated of zero.
-type Modulated []Function
+type Modulated []Signal
 
 func (c Modulated) property(t x) (total y) {
 	total = unitY
@@ -39,7 +39,7 @@ func (c Modulated) property(t x) (total y) {
 func (c Modulated) Period() (period x) {
 	// TODO needs to be longest period and all constituents but only when the shorter are multiples of it.
 	if len(c) > 0 {
-		if s, ok := c[0].(PeriodicFunction); ok {
+		if s, ok := c[0].(PeriodicSignal); ok {
 			return s.Period()
 		}
 	}
@@ -50,7 +50,7 @@ func (c Modulated) Period() (period x) {
 func (c Modulated) MaxX() (min x) {
 	min = -1
 	for _, s := range c {
-		if sls, ok := s.(LimitedFunction); ok {
+		if sls, ok := s.(LimitedSignal); ok {
 			if newmin := sls.MaxX(); newmin >= 0 && (min == -1 || newmin < min) {
 				min = newmin
 			}
@@ -69,9 +69,16 @@ func (c *Modulated) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
+// returns a PeriodicLimitedFunction (type Modulated) based on a sine wave,
+// with peak y set to Maxy adjusted by dB,
+// so dB should always be negative.
+func NewTone(period x, dB float64) Modulated {
+	return Modulated{Sine{period}, NewConstant(dB)}
+}
+
 // helper to enable generation from another slice.
 // will in general need to use a slice interface promoter function.
-func NewMultiplex(c ...Function) Modulated {
+func NewMultiplex(c ...Signal) Modulated {
 	return Modulated(c)
 }
 
@@ -79,7 +86,7 @@ func NewMultiplex(c ...Function) Modulated {
 // Composite's MaxX() comes from the largest contstituent MaxX(), (0 if none of the contained Functions are LimitedFunctions.)
 // Composite's Period() comes from its first member.
 // As with 'OR' logic, all sources have to be zero (at a particular x) for Composite to be zero.
-type Composite []Function
+type Composite []Signal
 
 func (c Composite) property(t x) (total y) {
 	for _, s := range c {
@@ -91,7 +98,7 @@ func (c Composite) property(t x) (total y) {
 func (c Composite) Period() (period x) {
 	// TODO could helpfully be the longest period and all constituents but only when the shorter are multiples of it.
 	if len(c) > 0 {
-		if s, ok := c[0].(PeriodicFunction); ok {
+		if s, ok := c[0].(PeriodicSignal); ok {
 			return s.Period()
 		}
 	}
@@ -102,7 +109,7 @@ func (c Composite) Period() (period x) {
 func (c Composite) MaxX() (max x) {
 	max = -1
 	for _, s := range c {
-		if sls, ok := s.(LimitedFunction); ok {
+		if sls, ok := s.(LimitedSignal); ok {
 			if newmax := sls.MaxX(); newmax > max {
 				max = newmax
 			}
@@ -123,7 +130,7 @@ func (c *Composite) Load(p io.Reader) error {
 
 // helper to enable generation from another slice.
 // will in general need to use a slice interface promoter function.
-func NewComposite(c ...Function) Composite {
+func NewComposite(c ...Signal) Composite {
 	return Composite(c)
 }
 
@@ -132,7 +139,7 @@ func NewComposite(c ...Function) Composite {
 // Stack's Period() comes from its first member.
 // Overwise like Composite, Stack scales down by len(Stack), making it impossible to overrun maxy.
 // As with 'OR' logic, all sources have to be zero (at a particular x) for Stack to be zero.
-type Stack []Function
+type Stack []Signal
 
 func (c Stack) property(t x) (total y) {
 	for _, s := range c {
@@ -144,7 +151,7 @@ func (c Stack) property(t x) (total y) {
 func (c Stack) Period() (period x) {
 	// TODO needs to be longest period and all constituents but only when the shorter are multiples of it.
 	if len(c) > 0 {
-		if s, ok := c[0].(PeriodicFunction); ok {
+		if s, ok := c[0].(PeriodicSignal); ok {
 			return s.Period()
 		}
 	}
@@ -155,7 +162,7 @@ func (c Stack) Period() (period x) {
 func (c Stack) MaxX() (max x) {
 	max = -1
 	for _, s := range c {
-		if sls, ok := s.(LimitedFunction); ok {
+		if sls, ok := s.(LimitedSignal); ok {
 			if newmax := sls.MaxX(); newmax > max {
 				max = newmax
 			}
@@ -176,6 +183,82 @@ func (c *Stack) Load(p io.Reader) error {
 
 // helper to enable generation from another slice.
 // will in general need to use a slice interface promoter function.
-func NewStack(c ...Function) Stack {
+func NewStack(c ...Signal) Stack {
 	return Stack(c)
+}
+
+// Converters to promote slices of interfaces, needed when using variadic parameters called using a slice since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
+// for example: without these you couldn't use a slice of LimitedFunction's in a variadic call to a func requiring Function's. (when you can use separate LimitedFunction's in the same call.)
+
+// converts to []Function
+func PromoteToFunctions(s interface{}) (out []Signal) {
+	switch st := s.(type) {
+	case []LimitedSignal:
+		out = make([]Signal, len(st))
+		for i := range out {
+			out[i] = st[i].(Signal)
+		}
+	case []PeriodicLimitedSignal:
+		out = make([]Signal, len(st))
+		for i := range out {
+			out[i] = st[i].(Signal)
+		}
+	case []PeriodicSignal:
+		out = make([]Signal, len(st))
+		for i := range out {
+			out[i] = st[i].(Signal)
+		}
+	case []PCMSignal:
+		out = make([]Signal, len(st))
+		for i := range out {
+			out[i] = st[i].(Signal)
+		}
+	}
+	return
+}
+
+// converts to []LimitedFunction
+func PromoteToLimitedFunctions(s interface{}) (out []LimitedSignal) {
+	switch st := s.(type) {
+	case []PeriodicLimitedSignal:
+		out = make([]LimitedSignal, len(st))
+		for i := range out {
+			out[i] = st[i].(LimitedSignal)
+		}
+	case []PCMSignal:
+		out = make([]LimitedSignal, len(st))
+		for i := range out {
+			out[i] = st[i].(LimitedSignal)
+		}
+	}
+	return
+}
+
+// converts to []PeriodicFunction
+func PromoteToPeriodicFunctions(s interface{}) (out []PeriodicSignal) {
+	switch st := s.(type) {
+	case []PeriodicLimitedSignal:
+		out = make([]PeriodicSignal, len(st))
+		for i := range out {
+			out[i] = st[i].(PeriodicSignal)
+		}
+	case []PCMSignal:
+		out = make([]PeriodicSignal, len(st))
+		for i := range out {
+			out[i] = st[i].(PeriodicSignal)
+		}
+	}
+	return
+}
+
+// converts to []PeriodicLimitedFunction
+func PromoteToPeriodicLimitedFunctions(s interface{}) (out []PeriodicLimitedSignal) {
+	switch st := s.(type) {
+	case []PCMSignal:
+		out = make([]PeriodicLimitedSignal, len(st))
+		for i := range out {
+			out[i] = st[i].(PeriodicLimitedSignal)
+		}
+	}
+	return
 }
