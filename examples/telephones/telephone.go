@@ -9,7 +9,7 @@ import (
 
 var OneSecond = X(1)
 
-func Save(file string,s PeriodicFunction){
+func Save(file string,s PeriodicSignal){
 	wavFile, err := os.Create(file)
 	if err != nil {
 		panic(err)

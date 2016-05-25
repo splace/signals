@@ -29,10 +29,3 @@ func main(){
 	play(Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond*4/10}, OneSecond*6/10}, Stack{Sine{OneSecond/450},Sine{OneSecond/400}}}, OneSecond*3})
 }
 
-/*  Hal3 Thu May 26 00:23:26 BST 2016 go version go1.5.1 linux/amd64
-Thu May 26 00:23:26 BST 2016 */
-/*  Hal3 Thu May 26 00:23:44 BST 2016 go version go1.5.1 linux/amd64
-Thu May 26 00:23:48 BST 2016 */
-/*  Hal3 Thu May 26 00:24:33 BST 2016 go version go1.5.1 linux/amd64
-Thu May 26 00:24:37 BST 2016 */
-

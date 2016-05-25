@@ -28,7 +28,7 @@ func main() {
 	in = statefulLog.errFatal(os.Open(files[0])).(*os.File)
 	statefulLog.message = "Decode:" + files[0]
 	defer in.Close()
-	noise := statefulLog.errFatal(Decode(in)).([]PCMFunction)
+	noise := statefulLog.errFatal(Decode(in)).([]PCMSignal)
 	if len(noise) != 2 {
 		statefulLog.Fatal("Need a stereo input file.")
 	}
@@ -101,4 +101,5 @@ func (i *composable) drawOverAt(isrc image.Image, pt image.Point) {
 func (i *composable) drawOverOffset(isrc image.Image, pt image.Point) {
 	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min.Add(pt), draw.Over)
 }
+
 

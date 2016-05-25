@@ -87,13 +87,13 @@ func main() {
 		myLog.Fatal( "2 file names required.")
 	}
 	myLog.message="Decode:"+files[0]
-	PCMFunctions:=myLog.errFatal(Decode(in)).([]PCMFunction)
+	PCMs:=myLog.errFatal(Decode(in)).([]PCMSignal)
 	if *format{
 		if *stack{
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			Encode(out,Modulated{NewStack(PromoteToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+			Encode(out,Modulated{NewStack(PromoteToSignals(PCMs)...),NewConstant(float64(-dB))},PCMs[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -102,7 +102,7 @@ func main() {
 				chs[int(myLog.errFatal(strconv.ParseUint(c, 10, 16)).(uint64))]=struct{}{}
 			}
 			prefixes:=strings.Split(namePrefix,",")
-			for i,n:=range(PCMFunctions){
+			for i,n:=range(PCMs){
 				if _, ok := chs[i]; !ok{continue}
 				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
@@ -116,7 +116,7 @@ func main() {
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			EncodeLike(out,Modulated{NewStack(PromoteToFunctions(PCMFunctions)...),NewConstant(float64(-dB))},PCMFunctions[0])		
+			EncodeLike(out,Modulated{NewStack(PromoteToSignals(PCMs)...),NewConstant(float64(-dB))},PCMs[0])		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -125,16 +125,15 @@ func main() {
 				chs[int(myLog.errFatal(strconv.ParseUint(c, 10, 16)).(uint64))-1]=struct{}{}
 			}
 			prefixes:=strings.Split(namePrefix,",")
-			for i,n:=range(PCMFunctions){
+			for i,n:=range(PCMs){
 				if _, ok := chs[i]; !ok{continue}
 				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
 				myLog.message="Encode"
-				EncodeLike(out,Modulated{n,NewConstant(float64(-dB))},PCMFunctions[0])	
+				EncodeLike(out,Modulated{n,NewConstant(float64(-dB))},PCMs[0])	
 				out.Close()
 			}
 		}
 	}
 }
-
 
