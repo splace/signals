@@ -133,7 +133,8 @@ func (s RateModulated) property(t x) y {
 	return s.Signal.property(t + MultiplyX(float64(s.Modulation.property(t))/maxyfloat64, s.Factor))
 }
 
-// Segmented is a Signal that has equal width uniform gradients that can approximate another Signal.
+// Segmented is a Signal that is a sequence of equal width, uniform gradient, segments, that approximate another Signal.
+// repeated calls within the same segment, are generated from cached end values, so avoiding calls to the embedded Signal.
 type Segmented struct {
 	Signal
 	Width x
@@ -150,7 +151,6 @@ func NewSegmented(s Signal, w x) Segmented {
 	return Segmented{s, w, &segmentCache{}}
 }
 
-// repeated calls within the same segment, are generated from cached end values, so avoids calls to the embedded Signal.
 func (s Segmented) property(t x) y {
 	temp := t % s.Width
 	if t-temp != s.cache.x1 || t+s.Width-temp != s.cache.x2 {
@@ -165,7 +165,7 @@ func (s Segmented) property(t x) y {
 
 // Triggered shifts a Signal's x so the Signal crosses a trigger y at zero x.
 // it searches with a Resolution, from Shift+Resolution to MaxShift, then from 0 to Shift.
-// Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round.
+// Shift can be set initially, then is set to the last found trigger, so subsequent uses find new crossings, and wraps round.
 // Rising can be alternated to find either way crossing
 type Triggered struct {
 	Signal
