@@ -15,7 +15,7 @@ func init() {
 	gob.Register(Segmented{})
 }
 
-// a Function that shifts the x of another function
+// a Signal that shifts the x of another Signal
 type Shifted struct {
 	Signal
 	Shift x
@@ -25,7 +25,7 @@ func (s Shifted) property(t x) y {
 	return s.Signal.property(t - s.Shift)
 }
 
-// a Function that scales the x of another function
+// a Signal that scales the x of another Signal
 type Spedup struct {
 	Signal
 	Factor float32
@@ -37,18 +37,18 @@ func (s Spedup) property(t x) y {
 
 /*
 // TODO spedup tone should have MaxX and period changed
-// a Function that scales the x of another function
+// a Signal that scales the x of another Signal
 type Squeeze struct {
-	LimitedFunction
+	LimitedSignal
 	Factor float32
 }
 
 func (s Squeeze) Call(t x) y {
-	return s.LimitedFunction.Call(x(float32(t) * s.Factor))
+	return s.LimitedSignal.Call(x(float32(t) * s.Factor))
 }
 
 func (s Squeeze) MaxX() x {
-	return x(float32(s.LimitedFunction.MaxX())*s.Factor)
+	return x(float32(s.LimitedSignal.MaxX())*s.Factor)
 }
 
 */
@@ -62,7 +62,7 @@ func (s SpedupProgressive) property(t x) y {
 	return s.Signal.property(t + t*t/s.Rate)
 }
 
-// a PeriodicFunction that is a Function repeated with Loop length x.
+// a PeriodicSignal that is a Signal repeated with Loop length x.
 type Looped struct {
 	Signal
 	Loop x
@@ -76,8 +76,8 @@ func (s Looped) Period() x {
 	return s.Loop
 }
 
-// a PeriodicFunction that is repeating loop of Cycle repeats of another PeriodicFunction.
-// if the PeriodicFunction is actually precisely repeating, then an integer value of Cycles, results in no change.
+// a PeriodicSignal that is repeating loop of Cycle repeats of another PeriodicSignal.
+// if the PeriodicSignal is actually precisely repeating, then an integer value of Cycles, results in no change.
 type Repeated struct {
 	PeriodicSignal
 	Cycles float32
@@ -91,7 +91,7 @@ func (s Repeated) property(t x) y {
 	return s.PeriodicSignal.property((t % s.Period()) % s.PeriodicSignal.Period())
 }
 
-// a Function that produces y values that are the negative of another functions y values
+// a Signal that produces y values that are the negative of another Signals y values
 type Inverted struct {
 	Signal
 }
@@ -100,7 +100,7 @@ func (s Inverted) property(t x) y {
 	return -s.Signal.property(t)
 }
 
-// a Function that returns y's that are for the -ve x of another function
+// a Signal that returns y's that are for the -ve x of another Signal
 type Reversed struct {
 	Signal
 }
@@ -109,7 +109,7 @@ func (s Reversed) property(t x) y {
 	return s.Signal.property(-t)
 }
 
-// a Function that produces values that are flipped over, (Maxy<->zero) of another function
+// a Signal that produces values that are flipped over, (Maxy<->zero) of another Signal
 type Reflected struct {
 	Signal
 }
@@ -122,7 +122,7 @@ func (s Reflected) property(t x) y {
 	}
 }
 
-// a Function that stretches the x values of another function, in proportion to the value of a modulation function
+// a Signal that stretches the x values of another Signal, in proportion to the value of a modulation Signal
 type RateModulated struct {
 	Signal
 	Modulation Signal
@@ -133,7 +133,7 @@ func (s RateModulated) property(t x) y {
 	return s.Signal.property(t + MultiplyX(float64(s.Modulation.property(t))/maxyfloat64, s.Factor))
 }
 
-// Segmented is a Function that has equal width uniform gradients that can approximate another function.
+// Segmented is a Signal that has equal width uniform gradients that can approximate another Signal.
 type Segmented struct {
 	Signal
 	Width x
@@ -150,7 +150,7 @@ func NewSegmented(s Signal, w x) Segmented {
 	return Segmented{s, w, &segmentCache{}}
 }
 
-// repeated calls within the same segment, are generated from cached end values, so avoids calls to the embedded Function.
+// repeated calls within the same segment, are generated from cached end values, so avoids calls to the embedded Signal.
 func (s Segmented) property(t x) y {
 	temp := t % s.Width
 	if t-temp != s.cache.x1 || t+s.Width-temp != s.cache.x2 {
@@ -163,7 +163,7 @@ func (s Segmented) property(t x) y {
 	return y(s.cache.l1*s.Width + s.cache.l2*temp)
 }
 
-// Triggered shifts a Function's x so the Function crosses a trigger y at zero x.
+// Triggered shifts a Signal's x so the Signal crosses a trigger y at zero x.
 // it searches with a Resolution, from Shift+Resolution to MaxShift, then from 0 to Shift.
 // Delay is set to last found trigger, so subsequent uses finds new crossing, and wraps round.
 // Rising can be alternated to find either way crossing

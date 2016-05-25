@@ -9,7 +9,7 @@ func init() {
 	gob.Register(Noise{})
 }
 
-// Noise is a deterministic random Function, white noise.
+// Noise is a deterministic random Signal, white noise.
 // it always produces the same y value for the same x value, (for the same Noise) but random otherwise.
 // determinism allows caching even for this type
 type Noise struct {

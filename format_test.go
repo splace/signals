@@ -148,7 +148,7 @@ func TestPiping(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	NewPCMFunction(NewTone(unitX/200, -6), unitX, 8000, 1).Encode(wavFile)
+	NewPCMSignal(NewTone(unitX/200, -6), unitX, 8000, 1).Encode(wavFile)
 }
 
 func TestRawPCM(t *testing.T) {

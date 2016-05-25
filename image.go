@@ -6,7 +6,7 @@ import (
 	"image/color/palette"
 )
 
-// Depiction of a Function, implements Depictor
+// Depiction of a Signal, implements Depictor
 type Depiction struct {
 	Signal
 	size                     image.Rectangle

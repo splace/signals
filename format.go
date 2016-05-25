@@ -11,7 +11,7 @@ import (
 	"os"
 )
 
-// Encode a function as PCM data, one channel, in a Riff wave container.
+// Encode a Signal as PCM data, one channel, in a Riff wave container.
 func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint8) {
 	var err error
 	var i uint32
@@ -103,14 +103,14 @@ func writeHeader(w *bufio.Writer, sampleRate uint32, samples uint32, sampleBytes
 	return
 }
 
-// PCMFunction is a Pulse-code modulated Function's behaviour
+// PCMSignal is a Pulse-code modulated Signal's behaviour
 type PCMSignal interface {
 	PeriodicLimitedSignal
 	Encode(w io.Writer)
 }
 
-// make a PCMFunction type, by sampling from a Function, using provided parameters.
-func NewPCMFunction(s Signal, length x, sampleRate uint32, sampleBytes uint8) PCMSignal {
+// make a PCMSignal type, by sampling from a Signal, using provided parameters.
+func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PCMSignal {
 	out, in := io.Pipe()
 	go func() {
 		Encode(in, s, length, sampleRate, sampleBytes)
@@ -121,7 +121,7 @@ func NewPCMFunction(s Signal, length x, sampleRate uint32, sampleBytes uint8) PC
 	return channels[0].(PCMSignal)
 }
 
-// PCM is the state and behaviour common to all PCM. Its not a Function, specific PCM<<precison>> types embed this, and then are PCMFunction's.
+// PCM is the state and behaviour common to all PCM. Its not a Signal, specific PCM<<precison>> types embed this, and then are PCMSignal's.
 type PCM struct {
 	samplePeriod x
 	length       x
@@ -145,24 +145,24 @@ func (p PCM) MaxX() x {
 	return p.length
 }
 
-// encode a LimitedFunction with a sampleRate equal to the Period() of a given PeriodicLimitedFunction, and its precision if its a PCM type, otherwise defaults to 16bit.
+// encode a LimitedSignal with a sampleRate equal to the Period() of a given PeriodicLimitedSignal, and its precision if its a PCM type, otherwise defaults to 16bit.
 func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicLimitedSignal) {
 	switch f := s.(type) {
 	case PCM8bit:
-		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 1).Encode(w)
+		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 1).Encode(w)
 	case PCM16bit:
-		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
+		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
 	case PCM24bit:
-		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 3).Encode(w)
+		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 3).Encode(w)
 	case PCM32bit:
-		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 4).Encode(w)
+		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 4).Encode(w)
 	default:
-		NewPCMFunction(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
+		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
 	}
 	return
 }
 
-// 8 bit PCMFunction.
+// 8 bit PCMSignal.
 // unlike the other precisions of PCM, that use signed data, 8bit uses un-signed. (the default OpenAL and wave file representation for 8bit precision.)
 type PCM8bit struct {
 	PCM
@@ -187,7 +187,7 @@ func (s PCM8bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 1)
 }
 
-// 16 bit PCM Function
+// 16 bit PCM Signal
 type PCM16bit struct {
 	PCM
 }
@@ -211,7 +211,7 @@ func (s PCM16bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 2)
 }
 
-// 24 bit PCM Function
+// 24 bit PCM Signal
 type PCM24bit struct {
 	PCM
 }
@@ -234,7 +234,7 @@ func (s PCM24bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 3)
 }
 
-// 32 bit PCM Function
+// 32 bit PCM Signal
 type PCM32bit struct {
 	PCM
 }
@@ -257,8 +257,8 @@ func (s PCM32bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 4)
 }
 
-// Read a wave format stream into an array of PCMFunctions.
-// one PCMFunction for each channel in the encoding.
+// Read a wave format stream into an array of PCMSignals.
+// one PCMSignal for each channel in the encoding.
 func Decode(wav io.Reader) ([]PCMSignal, error) {
 	bytesToRead, format, err := readHeader(wav)
 	if err != nil {
