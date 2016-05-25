@@ -20,20 +20,20 @@ func main() {
 	//flag.UintVar(&sampleBytes,"bytes", 2, "bytes per sample")
 	flag.Parse()
 	files := flag.Args()
-	statefulLog := messageLog{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
+	sLog := statefulLogger{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
 	var in, out *os.File
 	if len(files) != 1 {
-		statefulLog.Fatal("file name required.")
+		sLog.Fatal("file name required.")
 	}
-	in = statefulLog.errFatal(os.Open(files[0])).(*os.File)
-	statefulLog.message = "Decode:" + files[0]
+	in = sLog.ErrFatal(os.Open(files[0])).(*os.File)
+	sLog.State = "Decode:" + files[0]
 	defer in.Close()
-	noise := statefulLog.errFatal(Decode(in)).([]PCMSignal)
+	noise := sLog.ErrFatal(Decode(in)).([]PCMSignal)
 	if len(noise) != 2 {
-		statefulLog.Fatal("Need a stereo input file.")
+		sLog.Fatal("Need a stereo input file.")
 	}
-	statefulLog.message = "File Access"
-	out = statefulLog.errFatal(os.Create(files[0] + ".jpeg")).(*os.File)
+	sLog.State = "File Access"
+	out = sLog.ErrFatal(os.Create(files[0] + ".jpeg")).(*os.File)
 	defer out.Close()
 	m := newcomposable(image.NewPaletted(image.Rect(0, -150, 800, 150), palette.WebSafe))
 	// offset centre of 600px image, to fit 300px width.
@@ -42,20 +42,20 @@ func main() {
 	jpeg.Encode(out, m, nil)
 }
 
-type messageLog struct {
+type statefulLogger struct {
 	*log.Logger
-	message string
+	State string
 }
 
-func (ml messageLog) errFatal(result interface{}, err error) interface{} {
+func (sl statefulLogger) ErrFatal(result interface{}, err error) interface{} {
 	if err != nil {
-		ml.Fatal(err.Error())
+		sl.Fatal(err.Error())
 	}
 	return result
 }
 
-func (ml messageLog) Fatal(info string) {
-	ml.Logger.Fatal("\t" + os.Args[0] + "\t" + ml.message + "\t" + info)
+func (sl statefulLogger) Fatal(info string) {
+	sl.Logger.Fatal("\t" + os.Args[0] + "\t" + sl.State + "\t" + info)
 	return
 }
 
@@ -100,6 +100,6 @@ func (i *composable) drawOverAt(isrc image.Image, pt image.Point) {
 
 func (i *composable) drawOverOffset(isrc image.Image, pt image.Point) {
 	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min.Add(pt), draw.Over)
-}
+} 
 
 
