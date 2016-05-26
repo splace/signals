@@ -27,7 +27,7 @@ func main() {
 	sLogError.State = "Decode:" + files[0]
 	defer in.Close()
 	noise := sLogError.ErrFatal(Decode(in)).([]PCMSignal)
-	sLogError.AssertFatal(func ()bool{return len(noise) ==2},", input file not stereo.")
+	sLogError.AssertFatal(func ()bool{return len(noise) ==2}," to detect a stereo file.")
 	sLogError.State = "File Access"
 	out = sLogError.ErrFatal(os.Create(files[0] + ".jpeg")).(*os.File)
 	defer out.Close()
