@@ -22,16 +22,12 @@ func main() {
 	files := flag.Args()
 	sLogError := statefulLogger{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
 	var in, out *os.File
-	if len(files) != 1 {
-		sLogError.Fatal("file name required.")
-	}
+	sLogError.AssertFatal(" to detect an input file name.",func ()bool{return len(files)==1})
 	in = sLogError.ErrFatal(os.Open(files[0])).(*os.File)
 	sLogError.State = "Decode:" + files[0]
 	defer in.Close()
 	noise := sLogError.ErrFatal(Decode(in)).([]PCMSignal)
-	if len(noise) != 2 {
-		sLogError.Fatal("Need a stereo input file.")
-	}
+	sLogError.AssertFatal(", input file not stereo.",func ()bool{return len(noise) ==2})
 	sLogError.State = "File Access"
 	out = sLogError.ErrFatal(os.Create(files[0] + ".jpeg")).(*os.File)
 	defer out.Close()
@@ -52,6 +48,13 @@ func (sl statefulLogger) ErrFatal(result interface{}, err error) interface{} {
 		sl.Fatal(err.Error())
 	}
 	return result
+}
+
+func (sl statefulLogger) AssertFatal(info string,test func()bool) {
+	if !test() {
+		sl.Fatal("failed"+info)
+	}
+	return
 }
 
 func (sl statefulLogger) Fatal(info string) {
@@ -101,7 +104,5 @@ func (i *composable) drawOverAt(isrc image.Image, pt image.Point) {
 func (i *composable) drawOverOffset(isrc image.Image, pt image.Point) {
 	draw.Draw(i, i.Bounds(), isrc, isrc.Bounds().Min.Add(pt), draw.Over)
 } 
-
-
 
 
