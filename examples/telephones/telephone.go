@@ -1,5 +1,5 @@
-// generate a few standard telephone notification tones.
-// length is a multiple of the repeat cycle, so play output repeatedly to get any length. 
+// generate a few standard telephone notification tones into wav files.
+// tone duration is a multiple of the repeat cycle, so to get any length play output repeatedly. 
 package main
 
 import (
