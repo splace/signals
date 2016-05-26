@@ -22,12 +22,12 @@ func main() {
 	files := flag.Args()
 	sLogError := statefulLogger{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
 	var in, out *os.File
-	sLogError.AssertFatal(" to detect an input file name.",func ()bool{return len(files)==1})
+	sLogError.AssertFatal(func ()bool{return len(files)==1}," to detect an input file name.")
 	in = sLogError.ErrFatal(os.Open(files[0])).(*os.File)
 	sLogError.State = "Decode:" + files[0]
 	defer in.Close()
 	noise := sLogError.ErrFatal(Decode(in)).([]PCMSignal)
-	sLogError.AssertFatal(", input file not stereo.",func ()bool{return len(noise) ==2})
+	sLogError.AssertFatal(func ()bool{return len(noise) ==2},", input file not stereo.")
 	sLogError.State = "File Access"
 	out = sLogError.ErrFatal(os.Create(files[0] + ".jpeg")).(*os.File)
 	defer out.Close()
@@ -50,7 +50,7 @@ func (sl statefulLogger) ErrFatal(result interface{}, err error) interface{} {
 	return result
 }
 
-func (sl statefulLogger) AssertFatal(info string,test func()bool) {
+func (sl statefulLogger) AssertFatal(test func()bool,info string) {
 	if !test() {
 		sl.Fatal("failed"+info)
 	}
