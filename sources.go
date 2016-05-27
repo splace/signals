@@ -17,14 +17,6 @@ func init() {
 	gob.Register(Sigmoid{})
 }
 
-type Constant struct {
-	Constant y
-}
-
-func (s Constant) property(t x) y {
-	return s.Constant
-}
-
 func DB(vol float64) float64 {
 	return 6 * math.Log2(vol)
 }
@@ -32,10 +24,20 @@ func Vol(DB float64) float64 {
 	return math.Pow(2, DB/6)
 }
 
+// a Signal with constant value
+type Constant struct {
+	Constant y
+}
+
 func NewConstant(DB float64) Constant {
 	return Constant{y(maxyfloat64 * Vol(DB))}
 }
 
+func (s Constant) property(t x) y {
+	return s.Constant
+}
+
+// a PeriodicSignal that varies sinusoidally, repeating with Cycle width.
 type Sine struct {
 	Cycle x
 }
@@ -48,6 +50,7 @@ func (s Sine) Period() x {
 	return s.Cycle
 }
 
+// a LimitedSignal that produces unitY for a Width, zero otherwise.
 type Pulse struct {
 	Width x
 }
@@ -64,6 +67,7 @@ func (s Pulse) MaxX() x {
 	return s.Width
 }
 
+// a PeriodicSignal that produces equal regions of +unitY then -unitY, repeating with Cycle width.
 type Square struct {
 	Cycle x
 }
@@ -80,6 +84,7 @@ func (s Square) Period() x {
 	return s.Cycle
 }
 
+// a Signal which ramps from zero to unitY over a Period width.
 type RampUp struct {
 	Period x
 }
@@ -94,6 +99,7 @@ func (s RampUp) property(t x) y {
 	}
 }
 
+// a Signal wcich ramps from unitY to zero, over a Period width.
 type RampDown struct {
 	Period x
 }
@@ -108,6 +114,7 @@ func (s RampDown) property(t x) y {
 	}
 }
 
+// a Signal that returns +unitY for positive x and zero for negative. 
 type Heavyside struct {
 }
 
@@ -118,6 +125,8 @@ func (s Heavyside) property(t x) y {
 	return unitY
 }
 
+// a Signal that smoothly transitions from 0 to +unitY. 
+// with a maximium gradient (first derivative) at x=0, of Steepness.
 type Sigmoid struct {
 	Steepness x
 }
