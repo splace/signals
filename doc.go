@@ -27,9 +27,9 @@ Signal's can be saved/loaded from a go code binary (gob) file, making for a basi
 LimitedSignal :- has a MaxX() method that returns the 'x' value after which the Signal can be assumed to return zero, effectively has an end.
 an 'x' value of zero is normally regarded as its start.
 
-PeriodicSignal :- a Signal with an additional method Period(), returning the repeat dx, or the reciprocal of any fundamental frequency, or the sample spacing for PCMSignal's.
+PeriodicSignal :- a Signal with an additional method Period(), returning the repeat dx, or the reciprocal of any fundamental frequency, or the sample spacing for onr of te PCM Signal types.
 
-PeriodicLimitedSignal :- both above.
+PeriodicLimitedSignal :- both above, implemented by the PCM Signal types.
 
 */
 package signals
