@@ -103,14 +103,8 @@ func writeHeader(w *bufio.Writer, sampleRate uint32, samples uint32, sampleBytes
 	return
 }
 
-// PCMSignal is a Pulse-code modulated Signal's behaviour
-type PCMSignal interface {
-	PeriodicLimitedSignal
-	Encode(w io.Writer)
-}
-
-// make a PCMSignal type, by sampling from a Signal, using provided parameters.
-func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PCMSignal {
+// make a PCM Signal type, by sampling from another Signal, using provided parameters.
+func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PeriodicLimitedSignal {
 	out, in := io.Pipe()
 	go func() {
 		Encode(in, s, length, sampleRate, sampleBytes)
@@ -118,7 +112,7 @@ func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PCMS
 	}()
 	channels, _ := Decode(out)
 	out.Close()
-	return channels[0].(PCMSignal)
+	return channels[0]
 }
 
 // PCM is the state and behaviour common to all PCM. Its not a Signal, specific PCM<<precison>> types embed this, and then are PCMSignal's.
@@ -149,15 +143,15 @@ func (p PCM) MaxX() x {
 func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicLimitedSignal) {
 	switch f := s.(type) {
 	case PCM8bit:
-		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 1).Encode(w)
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 1)
 	case PCM16bit:
-		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 2)
 	case PCM24bit:
-		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 3).Encode(w)
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 3)
 	case PCM32bit:
-		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 4).Encode(w)
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 4)
 	default:
-		NewPCMSignal(p, p.MaxX(), uint32(unitX/f.Period()), 2).Encode(w)
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 2)
 	}
 	return
 }
@@ -166,6 +160,10 @@ func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicLimitedSignal) {
 // unlike the other precisions of PCM, that use signed data, 8bit uses un-signed. (the default OpenAL and wave file representation for 8bit precision.)
 type PCM8bit struct {
 	PCM
+}
+
+func NewPCM8bit(sampleRate uint32, Data []byte) PCM8bit {
+	return PCM8bit{NewPCM(sampleRate,1,Data)}
 }
 
 func (s PCM8bit) property(offset x) y {
@@ -192,6 +190,10 @@ type PCM16bit struct {
 	PCM
 }
 
+func NewPCM16bit(sampleRate uint32, Data []byte) PCM16bit {
+	return PCM16bit{NewPCM(sampleRate,2,Data)}
+}
+
 func (s PCM16bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 2
 	if index < 0 || index >= len(s.Data)-3 {
@@ -214,6 +216,10 @@ func (s PCM16bit) Encode(w io.Writer) {
 // 24 bit PCM Signal
 type PCM24bit struct {
 	PCM
+}
+
+func NewPCM24bit(sampleRate uint32, Data []byte) PCM24bit {
+	return PCM24bit{NewPCM(sampleRate,3,Data)}
 }
 
 func (s PCM24bit) property(offset x) y {
@@ -239,6 +245,10 @@ type PCM32bit struct {
 	PCM
 }
 
+func NewPCM32bit(sampleRate uint32, Data []byte) PCM32bit {
+	return PCM32bit{NewPCM(sampleRate,4,Data)}
+}
+
 func (s PCM32bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 4
 	if index < 0 || index >= len(s.Data)-5 {
@@ -257,9 +267,9 @@ func (s PCM32bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 4)
 }
 
-// Read a wave format stream into an array of PCMSignals.
-// one PCMSignal for each channel in the encoding.
-func Decode(wav io.Reader) ([]PCMSignal, error) {
+// Read a wave format stream into an array of PeriodicLimitedSignals.
+// one for each channel in the encoding.
+func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 	bytesToRead, format, err := readHeader(wav)
 	if err != nil {
 		return nil, err
@@ -269,7 +279,7 @@ func Decode(wav io.Reader) ([]PCMSignal, error) {
 	if err != nil {
 		return nil, err
 	}
-	pcms := make([]PCMSignal, format.Channels)
+	pcms := make([]PeriodicLimitedSignal, format.Channels)
 	var c uint32
 	for ; c < uint32(format.Channels); c++ {
 		switch format.Bits {
@@ -396,4 +406,7 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 		}
 	}
 	return sampleData, err
-}
+}/*  Hal3 Sat Jun 4 20:07:15 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Sat Jun 4 20:07:16 BST 2016 */
+

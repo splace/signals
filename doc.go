@@ -31,10 +31,6 @@ PeriodicSignal :- a Signal with an additional method Period(), returning the rep
 
 PeriodicLimitedSignal :- both above.
 
-PCMSignal :- a PeriodicLimitedSignal with additional method Encode().
-PCMSignal's are stored 'recordings' rather than procedurally generated, at a particular interval and precision. They can be used to cache a procedural Signal.
-
-
 */
 package signals
 
