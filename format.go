@@ -115,7 +115,7 @@ func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) Peri
 	return channels[0]
 }
 
-// PCM is the state and behaviour common to all PCM. Its not a Signal, specific PCM<<precison>> types embed this, and then are PCMSignal's.
+// PCM is the state and behaviour common to all PCM. Its not a Signal, specific PCM<<precison>> types embed this, and then are Signal's.
 type PCM struct {
 	samplePeriod x
 	length       x

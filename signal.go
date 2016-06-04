@@ -46,13 +46,13 @@ type LimitedSignal interface {
 	MaxX() x
 }
 
-// PeriodicalSignals are Signals that repeat, give the same y, if x changes by the amount returned by Period().
+// PeriodicSignals are Signals that repeat, that is, they give the same y, if x changes by the amount returned by Period().
 type PeriodicSignal interface {
 	Signal
 	Period() x
 }
 
-// LimitedPeriodicalSignal are Signals that repeat over Period() and dont exceed MaxX().
+// PeriodicLimitedSignal are Signals that repeat over Period() and dont exceed MaxX().
 type PeriodicLimitedSignal interface {
 	LimitedSignal
 	Period() x
