@@ -157,5 +157,25 @@ func TestRawPCM(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	PCM16bit{NewPCM(10, 2, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Encode(wavFile)
+	PCM16bit{NewPCM(5, 2, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Encode(wavFile)
 }
+
+func TestSplitPCM(t *testing.T) {
+	wavFileHead, err := os.Create("./test output/TestSplitHead.wav")
+	if err != nil {
+		panic(err)
+	}
+	wavFileTail, err := os.Create("./test output/TestSplitTail.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer wavFileHead.Close()
+	defer wavFileTail.Close()
+	s:=PCM16bit{NewPCM(5, 2, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}
+	sh,st:=s.Split(X(1.01))
+	sh.Encode(wavFileHead)
+	st.Encode(wavFileTail)
+}
+
+
+

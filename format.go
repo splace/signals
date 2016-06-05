@@ -21,7 +21,7 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 	writeHeader(buf, sampleRate, samples, sampleBytes)
 	switch sampleBytes {
 	case 1:
-		if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
+		if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod {
 			buf.Write(pcm.Data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
@@ -32,7 +32,7 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 			}
 		}
 	case 2:
-		if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
+		if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod  {
 			buf.Write(pcm.Data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
@@ -45,7 +45,7 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 			}
 		}
 	case 3:
-		if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
+		if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod  {
 			buf.Write(pcm.Data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
@@ -59,7 +59,7 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 			}
 		}
 	case 4:
-		if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.length == length {
+		if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod {
 			buf.Write(pcm.Data) // TODO can cope with shorter length
 		} else {
 			for ; i < samples; i++ {
@@ -118,29 +118,37 @@ func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) Peri
 // PCM is the state and behaviour common to all PCM. Its not a Signal, specific PCM<<precison>> types embed this, and then are Signal's.
 type PCM struct {
 	samplePeriod x
-	length       x
 	Data         []byte
 }
 
 // make a PCM type, from raw bytes.
 func NewPCM(sampleRate uint32, sampleBytes uint8, Data []byte) PCM {
-	period := X(1 / float32(sampleRate))
 	if len(Data)%int(sampleBytes) != 0 {
 		log.Println("Byte array not whole number of samples")
 	}
-	return PCM{period, period * x(len(Data)/int(sampleBytes)), Data}
+	return PCM{X(1 / float32(sampleRate)), Data}
 }
 
 func (p PCM) Period() x {
 	return p.samplePeriod
 }
 
-func (p PCM) MaxX() x {
-	return p.length
+// split PCM in two, at position
+func (p PCM) Split(sample uint32, sampleBytes uint8) (head PCM,tail PCM){
+	copy:=func(p PCM) PCM {return p}
+	bytePosition:=sample*uint32(sampleBytes)
+	if bytePosition>uint32(len(p.Data)){
+		bytePosition=uint32(len(p.Data))
+		}
+	head,tail=p,copy(p)
+	tail.Data=tail.Data[bytePosition:]
+	head.Data=head.Data[:bytePosition]
+	return
 }
 
-// encode a LimitedSignal with a sampleRate equal to the Period() of a given PeriodicLimitedSignal, and its precision if its a PCM type, otherwise defaults to 16bit.
-func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicLimitedSignal) {
+
+// encode a LimitedSignal with a sampleRate equal to the Period() of a given PeriodicSignal, and its precision if its a PCM type, otherwise defaults to 16bit.
+func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicSignal) {
 	switch f := s.(type) {
 	case PCM8bit:
 		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 1)
@@ -185,6 +193,15 @@ func (s PCM8bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 1)
 }
 
+func (p PCM8bit) MaxX() x {
+	return p.PCM.samplePeriod*x(len(p.PCM.Data)-1)
+}
+
+func (p PCM8bit) Split(position x) (PCM8bit,PCM8bit) {
+	head,tail:=p.PCM.Split(uint32(uint64(len(p.PCM.Data))*uint64(position)/uint64(p.MaxX()))+1,1)
+	return PCM8bit{head},PCM8bit{tail}
+}
+
 // 16 bit PCM Signal
 type PCM16bit struct {
 	PCM
@@ -212,6 +229,15 @@ func PCM16bitEncode(y y) (byte, byte) {
 func (s PCM16bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 2)
 }
+func (p PCM16bit) MaxX() x {
+	return p.PCM.samplePeriod*x(len(p.PCM.Data)-2)/2
+}
+
+func (p PCM16bit) Split(position x) (PCM16bit,PCM16bit) {
+	head,tail:=p.PCM.Split(uint32(uint64(len(p.PCM.Data)/2)*uint64(position)/uint64(p.MaxX()))+1 ,2)
+	return PCM16bit{head},PCM16bit{tail}
+}
+
 
 // 24 bit PCM Signal
 type PCM24bit struct {
@@ -239,6 +265,15 @@ func PCM24bitEncode(y y) (byte, byte, byte) {
 func (s PCM24bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 3)
 }
+func (p PCM24bit) MaxX() x {
+	return p.PCM.samplePeriod*x(len(p.PCM.Data)-3)/3
+}
+
+func (p PCM24bit) Split(position x) (PCM24bit,PCM24bit) {
+	head,tail:=p.PCM.Split(uint32(uint64(len(p.PCM.Data)/3)*uint64(position)/uint64(p.MaxX()))+1,3)
+	return PCM24bit{head},PCM24bit{tail}
+}
+
 
 // 32 bit PCM Signal
 type PCM32bit struct {
@@ -266,6 +301,14 @@ func PCM32bitEncode(y y) (byte, byte, byte, byte) {
 func (s PCM32bit) Encode(w io.Writer) {
 	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 4)
 }
+func (p PCM32bit) MaxX() x {
+	return p.PCM.samplePeriod*x(len(p.PCM.Data)-4)/4
+}
+
+func (p PCM32bit) Split(position x) (PCM32bit,PCM32bit) {
+	head,tail:=p.PCM.Split(uint32(uint64(len(p.PCM.Data)/4)*uint64(position)/uint64(p.MaxX()))+1 ,4)
+	return PCM32bit{head},PCM32bit{tail}
+}
 
 // Read a wave format stream into an array of PeriodicLimitedSignals.
 // one for each channel in the encoding.
@@ -284,13 +327,13 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 	for ; c < uint32(format.Channels); c++ {
 		switch format.Bits {
 		case 8:
-			pcms[c] = PCM8bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples : (c+1)*samples]}}
+			pcms[c] = PCM8bit{PCM{unitX / x(format.SampleRate),  sampleData[c*samples : (c+1)*samples]}}
 		case 16:
-			pcms[c] = PCM16bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*2 : (c+1)*samples*2]}}
+			pcms[c] = PCM16bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*2 : (c+1)*samples*2]}}
 		case 24:
-			pcms[c] = PCM24bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*3 : (c+1)*samples*3]}}
+			pcms[c] = PCM24bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*3 : (c+1)*samples*3]}}
 		case 32:
-			pcms[c] = PCM32bit{PCM{unitX / x(format.SampleRate), unitX / x(format.SampleRate) * x(samples), sampleData[c*samples*4 : (c+1)*samples*4]}}
+			pcms[c] = PCM32bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*4 : (c+1)*samples*4]}}
 		}
 	}
 	return pcms, nil
@@ -406,7 +449,5 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 		}
 	}
 	return sampleData, err
-}/*  Hal3 Sat Jun 4 20:07:15 BST 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Sat Jun 4 20:07:16 BST 2016 */
+}
 
