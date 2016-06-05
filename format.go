@@ -22,7 +22,7 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 	switch sampleBytes {
 	case 1:
 		if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod {
-			buf.Write(pcm.Data) // TODO can cope with shorter length
+			buf.Write(pcm.Data) 
 		} else {
 			for ; i < samples; i++ {
 				err = buf.WriteByte(PCM8bitEncode(s.property(x(i) * samplePeriod)))
@@ -33,7 +33,7 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 		}
 	case 2:
 		if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod  {
-			buf.Write(pcm.Data) // TODO can cope with shorter length
+			buf.Write(pcm.Data)
 		} else {
 			for ; i < samples; i++ {
 				b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
@@ -46,7 +46,7 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 		}
 	case 3:
 		if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod  {
-			buf.Write(pcm.Data) // TODO can cope with shorter length
+			buf.Write(pcm.Data) 
 		} else {
 			for ; i < samples; i++ {
 				b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
@@ -60,7 +60,7 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 		}
 	case 4:
 		if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod {
-			buf.Write(pcm.Data) // TODO can cope with shorter length
+			buf.Write(pcm.Data) 
 		} else {
 			for ; i < samples; i++ {
 				b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
@@ -121,18 +121,6 @@ func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicSignal) {
 	return
 }
 
-// make a PCM Signal type, by sampling from another Signal, using provided parameters.
-func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PeriodicLimitedSignal {
-	out, in := io.Pipe()
-	go func() {
-		Encode(in, s, length, sampleRate, sampleBytes)
-		in.Close()
-	}()
-	channels, _ := Decode(out)
-	out.Close()
-	return channels[0]
-}
-
 // PCM is the state and behaviour common to all PCM. Its not a Signal, specific PCM<<precison>> types embed this, and then are Signal's.
 type PCM struct {
 	samplePeriod x
@@ -144,11 +132,23 @@ func NewPCM(sampleRate uint32, Data []byte) PCM {
 	return PCM{X(1 / float32(sampleRate)), Data}
 }
 
+// make a PeriodicLimitedSignal by sampling from another Signal, using provided parameters.
+func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PeriodicLimitedSignal {
+	out, in := io.Pipe()
+	go func() {
+		Encode(in, s, length, sampleRate, sampleBytes)
+		in.Close()
+	}()
+	channels, _ := Decode(out)
+	out.Close()
+	return channels[0]
+}
+
 func (p PCM) Period() x {
 	return p.samplePeriod
 }
 
-// split PCM in two, at sample
+// from a PCM return two new PCM's (with the same underlying data) from either side of a sample.
 func (p PCM) Split(sample uint32, sampleBytes uint8) (head PCM,tail PCM){
 	copy:=func(p PCM) PCM {return p}
 	bytePosition:=sample*uint32(sampleBytes)
@@ -393,9 +393,9 @@ func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	if format.Code != 1 {
 		return 0, &format, errors.New("only PCM supported.")
 	}
-	if format.Channels == 0 || format.Channels > 2 {
-		return 0, &format, errors.New("only mono or stereo PCM supported.")
-	}
+	//if format.Channels == 0 || format.Channels > 2 {
+	//	return 0, &format, errors.New("only mono or stereo PCM supported.")
+	//}
 	if format.Bits%8 != 0 {
 		return 0, &format, ErrWavParse{"not whole byte samples size!"}
 	}
@@ -447,7 +447,5 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	}
 	return sampleData, err
 }
-/*  Hal3 Sun Jun 5 17:22:03 BST 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Sun Jun 5 17:22:04 BST 2016 */
+
 
