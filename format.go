@@ -103,6 +103,24 @@ func writeHeader(w *bufio.Writer, sampleRate uint32, samples uint32, sampleBytes
 	return
 }
 
+
+// encode a LimitedSignal with a sampleRate equal to the Period() of a given PeriodicSignal, and its precision if its a PCM type, otherwise defaults to 16bit.
+func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicSignal) {
+	switch f := s.(type) {
+	case PCM8bit:
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 1)
+	case PCM16bit:
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 2)
+	case PCM24bit:
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 3)
+	case PCM32bit:
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 4)
+	default:
+		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 2)
+	}
+	return
+}
+
 // make a PCM Signal type, by sampling from another Signal, using provided parameters.
 func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PeriodicLimitedSignal {
 	out, in := io.Pipe()
@@ -122,10 +140,7 @@ type PCM struct {
 }
 
 // make a PCM type, from raw bytes.
-func NewPCM(sampleRate uint32, sampleBytes uint8, Data []byte) PCM {
-	if len(Data)%int(sampleBytes) != 0 {
-		log.Println("Byte array not whole number of samples")
-	}
+func NewPCM(sampleRate uint32, Data []byte) PCM {
 	return PCM{X(1 / float32(sampleRate)), Data}
 }
 
@@ -146,24 +161,6 @@ func (p PCM) Split(sample uint32, sampleBytes uint8) (head PCM,tail PCM){
 	return
 }
 
-
-// encode a LimitedSignal with a sampleRate equal to the Period() of a given PeriodicSignal, and its precision if its a PCM type, otherwise defaults to 16bit.
-func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicSignal) {
-	switch f := s.(type) {
-	case PCM8bit:
-		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 1)
-	case PCM16bit:
-		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 2)
-	case PCM24bit:
-		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 3)
-	case PCM32bit:
-		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 4)
-	default:
-		Encode(w,p, p.MaxX(), uint32(unitX/f.Period()), 2)
-	}
-	return
-}
-
 // 8 bit PCMSignal.
 // unlike the other precisions of PCM, that use signed data, 8bit uses un-signed. (the default OpenAL and wave file representation for 8bit precision.)
 type PCM8bit struct {
@@ -171,7 +168,7 @@ type PCM8bit struct {
 }
 
 func NewPCM8bit(sampleRate uint32, Data []byte) PCM8bit {
-	return PCM8bit{NewPCM(sampleRate,1,Data)}
+	return PCM8bit{NewPCM(sampleRate,Data)}
 }
 
 func (s PCM8bit) property(offset x) y {
@@ -208,7 +205,7 @@ type PCM16bit struct {
 }
 
 func NewPCM16bit(sampleRate uint32, Data []byte) PCM16bit {
-	return PCM16bit{NewPCM(sampleRate,2,Data)}
+	return PCM16bit{NewPCM(sampleRate,Data)}
 }
 
 func (s PCM16bit) property(offset x) y {
@@ -245,7 +242,7 @@ type PCM24bit struct {
 }
 
 func NewPCM24bit(sampleRate uint32, Data []byte) PCM24bit {
-	return PCM24bit{NewPCM(sampleRate,3,Data)}
+	return PCM24bit{NewPCM(sampleRate,Data)}
 }
 
 func (s PCM24bit) property(offset x) y {
@@ -281,7 +278,7 @@ type PCM32bit struct {
 }
 
 func NewPCM32bit(sampleRate uint32, Data []byte) PCM32bit {
-	return PCM32bit{NewPCM(sampleRate,4,Data)}
+	return PCM32bit{NewPCM(sampleRate,Data)}
 }
 
 func (s PCM32bit) property(offset x) y {
@@ -450,4 +447,7 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	}
 	return sampleData, err
 }
+/*  Hal3 Sun Jun 5 17:22:03 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Sun Jun 5 17:22:04 BST 2016 */
 
