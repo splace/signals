@@ -133,7 +133,7 @@ func (p PCM) Period() x {
 	return p.samplePeriod
 }
 
-// split PCM in two, at position
+// split PCM in two, at sample
 func (p PCM) Split(sample uint32, sampleBytes uint8) (head PCM,tail PCM){
 	copy:=func(p PCM) PCM {return p}
 	bytePosition:=sample*uint32(sampleBytes)
