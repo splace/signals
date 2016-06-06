@@ -171,8 +171,7 @@ func TestSplitPCM(t *testing.T) {
 	}
 	defer wavFileHead.Close()
 	defer wavFileTail.Close()
-	s:=PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}
-	sh,st:=s.Split(X(1.01))
+	sh,st:=PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Split(X(1.01))
 	sh.Encode(wavFileHead)
 	st.Encode(wavFileTail)
 }
