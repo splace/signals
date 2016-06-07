@@ -3,7 +3,6 @@ package signals
 import (
 	"fmt"
 	"math"
-	"time"
 )
 
 // satisfying the Signal interface means a type represents an analogue signal, where a y property varies with an x parameter.
@@ -13,10 +12,10 @@ type Signal interface {
 
 // the x represents a value from -infinity to +infinity, but is actually limited by its current underlying representation.
 // -ve x's are considered imaginary, not used, unless a Delay makes them +ve.
-type x time.Duration // current underlying representation
+type x int64 // current underlying representation
 
 // somewhere close to the middle of the resolution range.
-const unitX = x(time.Second)
+const unitX = x(1000000000)
 
 // string representation of an x scaled to unitX
 func (i x) String() string {
@@ -57,5 +56,4 @@ type PeriodicLimitedSignal interface {
 	LimitedSignal
 	Period() x
 }
-
 
