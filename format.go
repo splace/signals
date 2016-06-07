@@ -122,6 +122,7 @@ func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicSignal) {
 }
 
 // PCM is the state and behaviour common to all PCM. Its not a Signal, specific PCM<<precison>> types embed this, and then are Signal's.
+// the specific precision types, the Signals, return the recorded property in steps, Segmented can be used to get interpolated property values.
 type PCM struct {
 	samplePeriod x
 	Data         []byte
