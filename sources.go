@@ -114,7 +114,7 @@ func (s RampDown) property(t x) y {
 	}
 }
 
-// a Signal that returns +unitY for positive x and zero for negative. 
+// a Signal that returns +unitY for positive x and zero for negative.
 type Heavyside struct {
 }
 
@@ -125,7 +125,7 @@ func (s Heavyside) property(t x) y {
 	return unitY
 }
 
-// a Signal that smoothly transitions from 0 to +unitY. 
+// a Signal that smoothly transitions from 0 to +unitY.
 // with a maximium gradient (first derivative) at x=0, of Steepness.
 type Sigmoid struct {
 	Steepness x

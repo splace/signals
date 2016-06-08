@@ -56,4 +56,3 @@ type PeriodicLimitedSignal interface {
 	LimitedSignal
 	Period() x
 }
-

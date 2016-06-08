@@ -3,9 +3,6 @@ package signals
 import "encoding/gob"
 
 func init() {
-	gob.Register(Shifted{})
-	gob.Register(Spedup{})
-	gob.Register(SpedupProgressive{})
 	gob.Register(Looped{})
 	gob.Register(Inverted{})
 	gob.Register(Reversed{})
@@ -15,52 +12,106 @@ func init() {
 	gob.Register(Segmented{})
 }
 
-// a Signal that shifts the x of another Signal
-type Shifted struct {
+type shiftedSignal struct {
 	Signal
 	Shift x
 }
 
-func (s Shifted) property(t x) y {
+func (s shiftedSignal) property(t x) y {
 	return s.Signal.property(t - s.Shift)
 }
 
+type shiftedLimitedSignal struct {
+	LimitedSignal
+	Shift x
+}
+
+func (s shiftedLimitedSignal) property(t x) y {
+	return s.LimitedSignal.property(t - s.Shift)
+}
+
+func (s shiftedLimitedSignal) MaxX() x {
+	return s.LimitedSignal.MaxX()-s.Shift
+}
+
+// returns a Signal that is the another Signal shifted
+func Shifted(s Signal,shift x) Signal {
+	switch st := s.(type) {
+	case PeriodicLimitedSignal:
+		return shiftedLimitedSignal{LimitedSignal(st),shift}
+	case LimitedSignal:
+		return shiftedLimitedSignal{st,shift}
+	}
+	return shiftedSignal{s,shift}
+}
+
 // a Signal that scales the x of another Signal
-type Spedup struct {
+type compressedSignal struct {
 	Signal
 	Factor float32
 }
 
-func (s Spedup) property(t x) y {
+func (s compressedSignal) property(t x) y {
 	return s.Signal.property(x(float32(t) * s.Factor))
 }
 
-/*
-// TODO spedup tone should have MaxX and period changed
-// a Signal that scales the x of another Signal
-type Squeeze struct {
+type compressedLimitedSignal struct {
 	LimitedSignal
 	Factor float32
 }
 
-func (s Squeeze) Call(t x) y {
-	return s.LimitedSignal.Call(x(float32(t) * s.Factor))
+func (s compressedLimitedSignal) property(t x) y {
+	return s.LimitedSignal.property(x(float32(t) * s.Factor))
 }
 
-func (s Squeeze) MaxX() x {
-	return x(float32(s.LimitedSignal.MaxX())*s.Factor)
+func (s compressedLimitedSignal) MaxX() x {
+	return s.LimitedSignal.MaxX()* X(s.Factor)
 }
 
-*/
-
-type SpedupProgressive struct {
-	Signal
-	Rate x
+type compressedPeriodicLimitedSignal struct {
+	PeriodicLimitedSignal
+	Factor float32
 }
 
-func (s SpedupProgressive) property(t x) y {
-	return s.Signal.property(t + t*t/s.Rate)
+func (s compressedPeriodicLimitedSignal) property(t x) y {
+	return s.PeriodicLimitedSignal.property(x(float32(t) * s.Factor))
 }
+
+func (s compressedPeriodicLimitedSignal) MaxX() x {
+	return s.PeriodicLimitedSignal.MaxX()* X(s.Factor)
+}
+
+func (s compressedPeriodicLimitedSignal) Period() x {
+	return s.PeriodicLimitedSignal.Period()* X(s.Factor)
+}
+
+type compressedPeriodicSignal struct {
+	PeriodicSignal
+	Factor float32
+}
+
+
+func (s compressedPeriodicSignal) property(t x) y {
+	return s.PeriodicSignal.property(x(float32(t) * s.Factor))
+}
+
+func (s compressedPeriodicSignal) Period() x {
+	return s.PeriodicSignal.Period()* X(s.Factor)
+}
+
+// returns a Signal that is the another Signal shifted
+func Compressed(s Signal,factor float32) Signal {
+	switch st := s.(type) {
+	case PeriodicLimitedSignal:
+		return compressedPeriodicLimitedSignal{st,factor}
+	case LimitedSignal:
+		return compressedLimitedSignal{st,factor}
+	case PeriodicSignal:
+		return compressedPeriodicSignal{st,factor}
+	}
+	return compressedSignal{s,factor}
+}
+
 
 // a PeriodicSignal that is a Signal repeated with Loop length x.
 type Looped struct {
@@ -209,3 +260,5 @@ func (s Triggered) property(t x) y {
 	}
 	return s.Signal.property(t + s.Found.Shift)
 }
+
+

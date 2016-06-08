@@ -139,7 +139,7 @@ func TestSaveLoadSave(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	EncodeLike(wavFile,	noise[0],noise[0])
+	EncodeLike(wavFile, noise[0], noise[0])
 }
 
 func TestPiping(t *testing.T) {
@@ -148,7 +148,7 @@ func TestPiping(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile,NewTone(unitX/200, -6), unitX, 8000, 1)
+	Encode(wavFile, NewTone(unitX/200, -6), unitX, 8000, 1)
 }
 
 func TestRawPCM(t *testing.T) {
@@ -157,7 +157,7 @@ func TestRawPCM(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	PCM16bit{NewPCM(5,  []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Encode(wavFile)
+	PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Encode(wavFile)
 }
 
 func TestSplitPCM(t *testing.T) {
@@ -171,10 +171,7 @@ func TestSplitPCM(t *testing.T) {
 	}
 	defer wavFileHead.Close()
 	defer wavFileTail.Close()
-	sh,st:=PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Split(X(1.01))
+	sh, st := PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Split(X(1.01))
 	sh.Encode(wavFileHead)
 	st.Encode(wavFileTail)
 }
-
-
-

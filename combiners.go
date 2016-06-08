@@ -231,4 +231,3 @@ func PromoteToPeriodicSignals(s interface{}) (out []PeriodicSignal) {
 	}
 	return
 }
-
