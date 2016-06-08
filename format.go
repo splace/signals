@@ -21,8 +21,9 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 	writeHeader(buf, sampleRate, samples, sampleBytes)
 	switch sampleBytes {
 	case 1:
-		if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod {
-			buf.Write(pcm.Data)
+		// shortcut, if already in right encoding
+		if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+			buf.Write(pcm.Data[:samples])
 		} else {
 			for ; i < samples; i++ {
 				err = buf.WriteByte(PCM8bitEncode(s.property(x(i) * samplePeriod)))
@@ -32,8 +33,9 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 			}
 		}
 	case 2:
-		if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod {
-			buf.Write(pcm.Data)
+		// shortcut, if already in right encoding
+		if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+			buf.Write(pcm.Data[:samples*2])
 		} else {
 			for ; i < samples; i++ {
 				b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
@@ -45,8 +47,9 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 			}
 		}
 	case 3:
-		if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod {
-			buf.Write(pcm.Data)
+		// shortcut, if already in right encoding
+		if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+			buf.Write(pcm.Data[:samples*3])
 		} else {
 			for ; i < samples; i++ {
 				b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
@@ -59,8 +62,9 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 			}
 		}
 	case 4:
-		if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod {
-			buf.Write(pcm.Data)
+		// shortcut, if already in right encoding
+		if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+			buf.Write(pcm.Data[:samples*4])
 		} else {
 			for ; i < samples; i++ {
 				b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
@@ -445,3 +449,5 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	}
 	return sampleData, err
 }
+
+
