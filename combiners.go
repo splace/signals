@@ -69,13 +69,6 @@ func (c *Modulated) Load(p io.Reader) error {
 	return gob.NewDecoder(p).Decode(c)
 }
 
-// returns a PeriodicLimitedSignal (type Modulated) based on a sine wave,
-// with peak y set to unitY adjusted by dB,
-// so dB should always be negative.
-func NewTone(period x, dB float64) Modulated {
-	return Modulated{Sine{period}, NewConstant(dB)}
-}
-
 // helper to enable generation from another slice.
 // will in general need to use a slice interface promoter function.
 func NewModulated(c ...Signal) Modulated {

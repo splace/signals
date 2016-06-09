@@ -50,6 +50,25 @@ func (s Sine) Period() x {
 	return s.Cycle
 }
 
+// a PeriodicSignal that varies sinusoidally, repeating with Cycle width.
+type Tone struct {
+	Cycle x
+	Peak y
+}
+
+func (s Tone) property(t x) y {
+	return y(float64(s.Peak)*math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) )
+}
+
+func (s Tone) Period() x {
+	return s.Cycle
+}
+
+// a Tone with peak y set to unitY adjusted by dB, so dB should not be positive.
+func NewTone(period x, dB float64) Tone {
+	return Tone{period, y(maxyfloat64*Vol(dB))}
+}
+
 // a LimitedSignal that produces unitY for a Width, zero otherwise.
 type Pulse struct {
 	Width x
@@ -134,3 +153,5 @@ type Sigmoid struct {
 func (s Sigmoid) property(t x) y {
 	return y(maxyfloat64 / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
 }
+
+
