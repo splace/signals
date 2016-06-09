@@ -12,25 +12,25 @@ func init() {
 	gob.Register(Segmented{})
 }
 
-type shiftedSignal struct {
+type ShiftedSignal struct {
 	Signal
 	Shift x
 }
 
-func (s shiftedSignal) property(t x) y {
+func (s ShiftedSignal) property(t x) y {
 	return s.Signal.property(t - s.Shift)
 }
 
-type shiftedLimitedSignal struct {
+type ShiftedLimitedSignal struct {
 	LimitedSignal
 	Shift x
 }
 
-func (s shiftedLimitedSignal) property(t x) y {
+func (s ShiftedLimitedSignal) property(t x) y {
 	return s.LimitedSignal.property(t - s.Shift)
 }
 
-func (s shiftedLimitedSignal) MaxX() x {
+func (s ShiftedLimitedSignal) MaxX() x {
 	return s.LimitedSignal.MaxX()+s.Shift
 }
 
@@ -38,64 +38,64 @@ func (s shiftedLimitedSignal) MaxX() x {
 func Shifted(s Signal,shift x) Signal {
 	switch st := s.(type) {
 	case PeriodicLimitedSignal:
-		return shiftedLimitedSignal{LimitedSignal(st),shift}
+		return ShiftedLimitedSignal{LimitedSignal(st),shift}
 	case LimitedSignal:
-		return shiftedLimitedSignal{st,shift}
+		return ShiftedLimitedSignal{st,shift}
 	}
-	return shiftedSignal{s,shift}
+	return ShiftedSignal{s,shift}
 }
 
 // a Signal that scales the x of another Signal
-type compressedSignal struct {
+type CompressedSignal struct {
 	Signal
 	Factor float32
 }
 
-func (s compressedSignal) property(t x) y {
+func (s CompressedSignal) property(t x) y {
 	return s.Signal.property(x(float32(t) * s.Factor))
 }
 
-type compressedLimitedSignal struct {
+type CompressedLimitedSignal struct {
 	LimitedSignal
 	Factor float32
 }
 
-func (s compressedLimitedSignal) property(t x) y {
+func (s CompressedLimitedSignal) property(t x) y {
 	return s.LimitedSignal.property(x(float32(t) * s.Factor))
 }
 
-func (s compressedLimitedSignal) MaxX() x {
+func (s CompressedLimitedSignal) MaxX() x {
 	return s.LimitedSignal.MaxX()* X(1/s.Factor)
 }
 
-type compressedPeriodicLimitedSignal struct {
+type CompressedPeriodicLimitedSignal struct {
 	PeriodicLimitedSignal
 	Factor float32
 }
 
-func (s compressedPeriodicLimitedSignal) property(t x) y {
+func (s CompressedPeriodicLimitedSignal) property(t x) y {
 	return s.PeriodicLimitedSignal.property(x(float32(t) * s.Factor))
 }
 
-func (s compressedPeriodicLimitedSignal) MaxX() x {
+func (s CompressedPeriodicLimitedSignal) MaxX() x {
 	return s.PeriodicLimitedSignal.MaxX()* X(1/s.Factor)
 }
 
-func (s compressedPeriodicLimitedSignal) Period() x {
+func (s CompressedPeriodicLimitedSignal) Period() x {
 	return s.PeriodicLimitedSignal.Period()* X(1/s.Factor)
 }
 
-type compressedPeriodicSignal struct {
+type CompressedPeriodicSignal struct {
 	PeriodicSignal
 	Factor float32
 }
 
 
-func (s compressedPeriodicSignal) property(t x) y {
+func (s CompressedPeriodicSignal) property(t x) y {
 	return s.PeriodicSignal.property(x(float32(t) * s.Factor))
 }
 
-func (s compressedPeriodicSignal) Period() x {
+func (s CompressedPeriodicSignal) Period() x {
 	return s.PeriodicSignal.Period()* X(s.Factor)
 }
 
@@ -103,13 +103,13 @@ func (s compressedPeriodicSignal) Period() x {
 func Compressed(s Signal,factor float32) Signal {
 	switch st := s.(type) {
 	case PeriodicLimitedSignal:
-		return compressedPeriodicLimitedSignal{st,factor}
+		return CompressedPeriodicLimitedSignal{st,factor}
 	case LimitedSignal:
-		return compressedLimitedSignal{st,factor}
+		return CompressedLimitedSignal{st,factor}
 	case PeriodicSignal:
-		return compressedPeriodicSignal{st,factor}
+		return CompressedPeriodicSignal{st,factor}
 	}
-	return compressedSignal{s,factor}
+	return CompressedSignal{s,factor}
 }
 
 
@@ -260,5 +260,4 @@ func (s Triggered) property(t x) y {
 	}
 	return s.Signal.property(t + s.Found.Shift)
 }
-
 
