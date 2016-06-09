@@ -65,7 +65,7 @@ func (s CompressedLimitedSignal) property(t x) y {
 }
 
 func (s CompressedLimitedSignal) MaxX() x {
-	return s.LimitedSignal.MaxX()* X(1/s.Factor)
+	return x(float32(s.LimitedSignal.MaxX())/s.Factor)
 }
 
 type CompressedPeriodicLimitedSignal struct {
@@ -78,11 +78,11 @@ func (s CompressedPeriodicLimitedSignal) property(t x) y {
 }
 
 func (s CompressedPeriodicLimitedSignal) MaxX() x {
-	return s.PeriodicLimitedSignal.MaxX()* X(1/s.Factor)
+	return x(float32(s.PeriodicLimitedSignal.MaxX())/s.Factor)
 }
 
 func (s CompressedPeriodicLimitedSignal) Period() x {
-	return s.PeriodicLimitedSignal.Period()* X(1/s.Factor)
+	return x(float32(s.PeriodicLimitedSignal.MaxX())/s.Factor)
 }
 
 type CompressedPeriodicSignal struct {
@@ -96,7 +96,7 @@ func (s CompressedPeriodicSignal) property(t x) y {
 }
 
 func (s CompressedPeriodicSignal) Period() x {
-	return s.PeriodicSignal.Period()* X(s.Factor)
+	return x(float32(s.PeriodicSignal.Period())/s.Factor)
 }
 
 // returns a Signal that is the another Signal shifted
