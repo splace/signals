@@ -50,7 +50,7 @@ func (s Sine) Period() x {
 	return s.Cycle
 }
 
-// a PeriodicSignal that varies sinusoidally, repeating with Cycle width.
+// a PeriodicSignal that varies sinusoidally, repeating with Cycle width, up to a max peak y.
 type Tone struct {
 	Cycle x
 	Peak y
@@ -64,7 +64,7 @@ func (s Tone) Period() x {
 	return s.Cycle
 }
 
-// a Tone with peak y set to unitY adjusted by dB, so dB should not be positive.
+// make a Tone with peak y set to unitY (max value) adjusted by dB, so dB should not be positive.
 func NewTone(period x, dB float64) Tone {
 	return Tone{period, y(maxyfloat64*Vol(dB))}
 }
