@@ -11,6 +11,28 @@ import (
 	"os"
 )
 
+// RIFF file header holder
+type riffHeader struct {
+	C1, C2, C3, C4 byte
+	DataLen        uint32
+	C5, C6, C7, C8 byte
+}
+
+// RIFF chunk header holder
+type chunkHeader struct {
+	C1, C2, C3, C4 byte
+	DataLen        uint32
+}
+
+type formatChunk struct {
+	Code        uint16
+	Channels    uint16
+	SampleRate  uint32
+	ByteRate    uint32
+	SampleBytes uint16
+	Bits        uint16
+}
+
 // Encode a Signal as PCM data, one channel, in a Riff wave container.
 func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint8) {
 	var err error
@@ -18,7 +40,18 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 	buf := bufio.NewWriter(w)
 	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
-	writeHeader(buf, sampleRate, samples, sampleBytes)
+	binary.Write(w, binary.LittleEndian, riffHeader{'R','I','F','F',samples*uint32(sampleBytes)+36,'W','A','V','E'})
+	binary.Write(w, binary.LittleEndian, chunkHeader{'f','m','t',' ',16})
+	binary.Write(w, binary.LittleEndian, formatChunk{
+		Code:1,
+		Channels:1,
+		SampleRate:sampleRate,
+		ByteRate:sampleRate*uint32(sampleBytes),
+		SampleBytes:uint16(sampleBytes),
+		Bits:uint16(8*sampleBytes),
+	})
+	fmt.Fprint(w, "data")
+	binary.Write(w,binary.LittleEndian, samples*uint32(sampleBytes))
 	switch sampleBytes {
 	case 1:
 		// shortcut, if already in right encoding
@@ -85,27 +118,6 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 	}
 }
 
-func writeHeader(w *bufio.Writer, sampleRate uint32, samples uint32, sampleBytes uint8) {
-	binaryWrite := func(w io.Writer, d interface{}) {
-		if err := binary.Write(w, binary.LittleEndian, d); err != nil {
-			log.Println("Encode failure:" + err.Error() + fmt.Sprint(w, d))
-		}
-	}
-	fmt.Fprint(w, "RIFF")
-	binaryWrite(w, samples*uint32(sampleBytes)+36)
-	fmt.Fprint(w, "WAVE")
-	fmt.Fprint(w, "fmt ")
-	binaryWrite(w, uint32(16))
-	binaryWrite(w, uint16(1))
-	binaryWrite(w, uint16(1))
-	binaryWrite(w, sampleRate)
-	binaryWrite(w, sampleRate*uint32(sampleBytes))
-	binaryWrite(w, uint16(sampleBytes))
-	binaryWrite(w, uint16(8*sampleBytes))
-	fmt.Fprint(w, "data")
-	binaryWrite(w, samples*uint32(sampleBytes))
-	return
-}
 
 // encode a LimitedSignal with a sampleRate equal to the Period() of a given PeriodicSignal, and its precision if its a PCM type, otherwise defaults to 16bit.
 func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicSignal) {
@@ -346,28 +358,6 @@ func (e ErrWavParse) Error() string {
 	return fmt.Sprintf("WAVE Parse,%s", e.description)
 }
 
-// RIFF file header holder
-type riffHeader struct {
-	C1, C2, C3, C4 byte
-	DataLen        uint32
-	C5, C6, C7, C8 byte
-}
-
-// RIFF chunk header holder
-type chunkHeader struct {
-	C1, C2, C3, C4 byte
-	DataLen        uint32
-}
-
-// PCM format holder
-type formatChunk struct {
-	Code        uint16
-	Channels    uint16
-	SampleRate  uint32
-	ByteRate    uint32
-	SampleBytes uint16
-	Bits        uint16
-}
 
 func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	var header riffHeader
