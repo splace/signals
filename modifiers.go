@@ -31,7 +31,7 @@ func (s shiftedLimitedSignal) property(t x) y {
 }
 
 func (s shiftedLimitedSignal) MaxX() x {
-	return s.LimitedSignal.MaxX()-s.Shift
+	return s.LimitedSignal.MaxX()+s.Shift
 }
 
 // returns a Signal that is the another Signal shifted
@@ -65,7 +65,7 @@ func (s compressedLimitedSignal) property(t x) y {
 }
 
 func (s compressedLimitedSignal) MaxX() x {
-	return s.LimitedSignal.MaxX()* X(s.Factor)
+	return s.LimitedSignal.MaxX()* X(1/s.Factor)
 }
 
 type compressedPeriodicLimitedSignal struct {
@@ -78,11 +78,11 @@ func (s compressedPeriodicLimitedSignal) property(t x) y {
 }
 
 func (s compressedPeriodicLimitedSignal) MaxX() x {
-	return s.PeriodicLimitedSignal.MaxX()* X(s.Factor)
+	return s.PeriodicLimitedSignal.MaxX()* X(1/s.Factor)
 }
 
 func (s compressedPeriodicLimitedSignal) Period() x {
-	return s.PeriodicLimitedSignal.Period()* X(s.Factor)
+	return s.PeriodicLimitedSignal.Period()* X(1/s.Factor)
 }
 
 type compressedPeriodicSignal struct {
