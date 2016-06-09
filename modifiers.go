@@ -99,7 +99,8 @@ func (s CompressedPeriodicSignal) Period() x {
 	return x(float32(s.PeriodicSignal.Period())/s.Factor)
 }
 
-// returns a Signal that is the another Signal shifted
+// returns a Signal that is the another Signal shifted.
+// the type of the returned Signal interface depends on the type of source Signal.
 func Compressed(s Signal,factor float32) Signal {
 	switch st := s.(type) {
 	case PeriodicLimitedSignal:

@@ -7,8 +7,9 @@ import (
 )
 
 func init() {
-	gob.Register(Sine{})
 	gob.Register(Constant{})
+	gob.Register(Sine{})
+	gob.Register(Tone{})
 	gob.Register(Pulse{})
 	gob.Register(Square{})
 	gob.Register(RampUp{})
