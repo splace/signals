@@ -53,10 +53,9 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 	fmt.Fprint(w, "data")
 	binary.Write(w,binary.LittleEndian, samples*uint32(sampleBytes))
 	switch sampleBytes {
-	//TODO shortcut Shifted and Compressed PCM
 	case 1:
 		// shortcut, if already in right encoding
-		
+	//TODO shortcut Shifted and Compressed PCM
 		if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 			buf.Write(pcm.Data[:samples])
 		} else {
@@ -69,6 +68,10 @@ func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint
 		}
 	case 2:
 		// shortcut, if already in right encoding
+//		if pcms,ok := s.(Shifted).Signal.(PCM16bit);ok && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-s.(Shifted).Shift {
+//			fmt.Print("shortcut")
+//			buf.Write(pcms.Data[uint32((length-s.(Shifted).Shift)*2/samplePeriod):uint32((length-s.(Shifted).Shift )*2/samplePeriod)+samples*2])
+//		} else if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 		if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 			buf.Write(pcm.Data[:samples*2])
 		} else {

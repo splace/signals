@@ -45,7 +45,7 @@ func TestNoiseSave(t *testing.T) {
 //}
 
 func TestSaveWav(t *testing.T) {
-	m := NewTone(unitX/100, -6)
+	m := Modulated{Sine{unitX/100}, NewConstant(-6)}
 
 	var file *os.File
 	var err error
@@ -100,8 +100,8 @@ func TestStackPCMs(t *testing.T) {
 }
 
 func TestMultiplexTones(t *testing.T) {
-	m := NewTone(unitX/1000, -6)
-	m1 := NewTone(unitX/100, -6)
+	m := Modulated{Sine{unitX/1000}, NewConstant(-6)}
+	m1 := Modulated{Sine{unitX/100}, NewConstant(-6)}
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/MultiplexTones.wav"); err != nil {panic(err)}else{defer file.Close()}
@@ -109,7 +109,7 @@ func TestMultiplexTones(t *testing.T) {
 }
 
 func TestSaveLoadSave(t *testing.T) {
-	m := NewTone(unitX/1000, -6)
+	m := Modulated{Sine{unitX/1000}, NewConstant(-6)}
 	wavFile, err := os.Create("./test output/TestSaveLoad.wav")
 	if err != nil {
 		panic(err)
@@ -140,7 +140,7 @@ func TestPiping(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile, NewTone(unitX/200, -6), unitX, 8000, 1)
+	Encode(wavFile, Modulated{Sine{unitX/200}, NewConstant(-6)}, unitX, 8000, 1)
 }
 
 func TestRawPCM(t *testing.T) {
@@ -168,5 +168,14 @@ func TestEnocdePCMToShortLength(t *testing.T) {
 	if file, err = os.Create("./test output/EnocdePCMToShortLength.wav"); err != nil {panic(err)}else{defer file.Close()}
 	Encode(file,PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}, unitX, 5, 2)
 }
+
+
+func TestEnocdeShiftedPCM(t *testing.T) {
+	var file *os.File
+	var err error
+	if file, err = os.Create("./test output/EnocdeShiftedPCM.wav"); err != nil {panic(err)}else{defer file.Close()}
+	Encode(file,Shifted{PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})},unitX}, unitX/2, 5, 2)
+}
+
 
 
