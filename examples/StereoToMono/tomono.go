@@ -87,13 +87,13 @@ func main() {
 		myLog.Fatal( "2 file names required.")
 	}
 	myLog.message="Decode:"+files[0]
-	PCMs:=myLog.errFatal(Decode(in)).([]PeriodicLimitedSignal)
+	PCMs:=myLog.errFatal(Decode(in)).([]Signal)
 	if *format{
 		if *stack{
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			Encode(out,Modulated{NewStack(PromoteToSignals(PCMs)...),NewConstant(float64(-dB))},PCMs[0].MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+			Encode(out,Modulated{NewStack(PCMs...),NewConstant(float64(-dB))},PCMs[0].(LimitedSignal).MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -107,7 +107,7 @@ func main() {
 				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
 				myLog.message="Encode"
-				Encode(out,Modulated{n,NewConstant(float64(-dB))},n.MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+				Encode(out,Modulated{n,NewConstant(float64(-dB))},n.(LimitedSignal).MaxX(),uint32(sampleRate),uint8(sampleBytes))		
 				out.Close()
 			}
 		}
@@ -116,7 +116,7 @@ func main() {
 			myLog.message="File Access"
 			out=myLog.errFatal(os.Create(files[1])).(*os.File)
 			myLog.message="Encode"
-			EncodeLike(out,Modulated{NewStack(PromoteToSignals(PCMs)...),NewConstant(float64(-dB))},PCMs[0])		
+			EncodeLike(out,Modulated{NewStack(PCMs...),NewConstant(float64(-dB))},PCMs[0].(PeriodicSignal))		
 			out.Close()
 		}else{
 			myLog.message="Parse Channels."
@@ -130,11 +130,10 @@ func main() {
 				myLog.message="File Access"
 				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
 				myLog.message="Encode"
-				EncodeLike(out,Modulated{n,NewConstant(float64(-dB))},PCMs[0])	
+				EncodeLike(out,Modulated{n,NewConstant(float64(-dB))},PCMs[0].(PeriodicSignal))	
 				out.Close()
 			}
 		}
 	}
 }
-
 
