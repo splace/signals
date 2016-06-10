@@ -3,6 +3,8 @@ package signals
 import "encoding/gob"
 
 func init() {
+	gob.Register(Shifted{})
+	gob.Register(Compressed{})
 	gob.Register(Looped{})
 	gob.Register(Inverted{})
 	gob.Register(Reversed{})
