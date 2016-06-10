@@ -198,44 +198,6 @@ func ExampleSine() {
 	*/
 }
 
-func ExampleNewTone() {
-	PrintGraph(NewTone(unitX, 0), 0, 2*unitX, unitX/16)
-	/* Output:
-   0.00%                                  X
-  38.27%                                              X
-  70.71%                                                         X
-  92.39%                                                                X
- 100.00%                                                                  X
-  92.39%                                                                X
-  70.71%                                                         X
-  38.27%                                              X
-   0.00%                                  X
- -38.27%                      X
- -70.71%           X
- -92.39%    X
--100.00%  X
- -92.39%    X
- -70.71%           X
- -38.27%                      X
-  -0.00%                                  X
-  38.27%                                              X
-  70.71%                                                         X
-  92.39%                                                                X
- 100.00%                                                                  X
-  92.39%                                                                X
-  70.71%                                                         X
-  38.27%                                              X
-   0.00%                                  X
- -38.27%                      X
- -70.71%           X
- -92.39%    X
--100.00%  X
- -92.39%    X
- -70.71%           X
- -38.27%                      X
-	*/
-}
-
 func ExampleSigmoid() {
 	PrintGraph(Sigmoid{unitX}, -5*unitX, 5*unitX, unitX/2)
 	/* Output:

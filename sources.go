@@ -9,7 +9,6 @@ import (
 func init() {
 	gob.Register(Constant{})
 	gob.Register(Sine{})
-	gob.Register(Tone{})
 	gob.Register(Pulse{})
 	gob.Register(Square{})
 	gob.Register(RampUp{})
@@ -49,25 +48,6 @@ func (s Sine) property(t x) y {
 
 func (s Sine) Period() x {
 	return s.Cycle
-}
-
-// a PeriodicSignal that varies sinusoidally, repeating with Cycle width, and with a max y of Peak.
-type Tone struct {
-	Cycle x
-	Peak y
-}
-
-func (s Tone) property(t x) y {
-	return y(float64(s.Peak)*math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) )
-}
-
-func (s Tone) Period() x {
-	return s.Cycle
-}
-
-// make a Tone with peak y set to unitY (max value) adjusted by dB, so dB should not be positive.
-func NewTone(period x, dB float64) Tone {
-	return Tone{period, y(maxyfloat64*Vol(dB))}
 }
 
 // a LimitedSignal that produces unitY for a Width, zero otherwise.
