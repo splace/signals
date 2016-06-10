@@ -263,7 +263,7 @@ func ExampleSigmoid() {
 }
 
 func ExampleShifted() {
-	PrintGraph(Shifted(NewADSREnvelope(unitX, unitX, unitX, unitY/2, unitX),unitX), 0, 5*unitX, unitX/10)
+	PrintGraph(Shifted{NewADSREnvelope(unitX, unitX, unitX, unitY/2, unitX),unitX}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
    0.00%                                  X

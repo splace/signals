@@ -12,6 +12,21 @@ func init() {
 	gob.Register(Segmented{})
 }
 
+// a Signal that is the another Signal shifted
+type Shifted struct {
+	Signal
+	Shift x
+}
+
+func (s Shifted) property(t x) y {
+	return s.Signal.property(t - s.Shift)
+}
+
+func (s Shifted) MaxX() x {
+	return s.Signal.(LimitedSignal).MaxX()+s.Shift
+}
+
+
 type ShiftedSignal struct {
 	Signal
 	Shift x
@@ -35,7 +50,7 @@ func (s ShiftedLimitedSignal) MaxX() x {
 }
 
 // returns a Signal that is the another Signal shifted
-func Shifted(s Signal,shift x) Signal {
+func Shift(s Signal,shift x) Signal {
 	switch st := s.(type) {
 	case PeriodicLimitedSignal:
 		return ShiftedLimitedSignal{LimitedSignal(st),shift}
@@ -44,6 +59,27 @@ func Shifted(s Signal,shift x) Signal {
 	}
 	return ShiftedSignal{s,shift}
 }
+
+
+// a Signal that scales the x of another Signal
+type Compressed struct {
+	 Signal
+	Factor float32
+}
+
+func (s Compressed) property(t x) y {
+	return s.Signal.property(x(float32(t) * s.Factor))
+}
+
+func (s Compressed) MaxX() x {
+	return x(float32(s.Signal.(LimitedSignal).MaxX())/s.Factor)
+}
+
+func (s Compressed) Period() x {
+	return x(float32(s.Signal.(PeriodicSignal).Period())/s.Factor)
+}
+
+
 
 // a Signal that scales the x of another Signal
 type CompressedSignal struct {
@@ -101,7 +137,7 @@ func (s CompressedPeriodicSignal) Period() x {
 
 // returns a Signal that is the another Signal shifted.
 // the type of the returned Signal interface depends on the type of source Signal.
-func Compressed(s Signal,factor float32) Signal {
+func Compress(s Signal,factor float32) Signal {
 	switch st := s.(type) {
 	case PeriodicLimitedSignal:
 		return CompressedPeriodicLimitedSignal{st,factor}
