@@ -87,7 +87,7 @@ func main() {
 		myLog.Fatal( "2 file names required.")
 	}
 	myLog.message="Decode:"+files[0]
-	PCMs:=myLog.errFatal(Decode(in)).([]PCMSignal)
+	PCMs:=myLog.errFatal(Decode(in)).([]PeriodicLimitedSignal)
 	if *format{
 		if *stack{
 			myLog.message="File Access"
@@ -136,4 +136,5 @@ func main() {
 		}
 	}
 }
+
 
