@@ -26,41 +26,6 @@ func (s Shifted) MaxX() x {
 	return s.Signal.(LimitedSignal).MaxX()+s.Shift
 }
 
-
-type ShiftedSignal struct {
-	Signal
-	Shift x
-}
-
-func (s ShiftedSignal) property(t x) y {
-	return s.Signal.property(t - s.Shift)
-}
-
-type ShiftedLimitedSignal struct {
-	LimitedSignal
-	Shift x
-}
-
-func (s ShiftedLimitedSignal) property(t x) y {
-	return s.LimitedSignal.property(t - s.Shift)
-}
-
-func (s ShiftedLimitedSignal) MaxX() x {
-	return s.LimitedSignal.MaxX()+s.Shift
-}
-
-// returns a Signal that is the another Signal shifted
-func Shift(s Signal,shift x) Signal {
-	switch st := s.(type) {
-	case PeriodicLimitedSignal:
-		return ShiftedLimitedSignal{LimitedSignal(st),shift}
-	case LimitedSignal:
-		return ShiftedLimitedSignal{st,shift}
-	}
-	return ShiftedSignal{s,shift}
-}
-
-
 // a Signal that scales the x of another Signal
 type Compressed struct {
 	 Signal
@@ -79,77 +44,6 @@ func (s Compressed) Period() x {
 	return x(float32(s.Signal.(PeriodicSignal).Period())/s.Factor)
 }
 
-
-
-// a Signal that scales the x of another Signal
-type CompressedSignal struct {
-	Signal
-	Factor float32
-}
-
-func (s CompressedSignal) property(t x) y {
-	return s.Signal.property(x(float32(t) * s.Factor))
-}
-
-type CompressedLimitedSignal struct {
-	LimitedSignal
-	Factor float32
-}
-
-func (s CompressedLimitedSignal) property(t x) y {
-	return s.LimitedSignal.property(x(float32(t) * s.Factor))
-}
-
-func (s CompressedLimitedSignal) MaxX() x {
-	return x(float32(s.LimitedSignal.MaxX())/s.Factor)
-}
-
-type CompressedPeriodicLimitedSignal struct {
-	PeriodicLimitedSignal
-	Factor float32
-}
-
-func (s CompressedPeriodicLimitedSignal) property(t x) y {
-	return s.PeriodicLimitedSignal.property(x(float32(t) * s.Factor))
-}
-
-func (s CompressedPeriodicLimitedSignal) MaxX() x {
-	return x(float32(s.PeriodicLimitedSignal.MaxX())/s.Factor)
-}
-
-func (s CompressedPeriodicLimitedSignal) Period() x {
-	return x(float32(s.PeriodicLimitedSignal.MaxX())/s.Factor)
-}
-
-type CompressedPeriodicSignal struct {
-	PeriodicSignal
-	Factor float32
-}
-
-
-func (s CompressedPeriodicSignal) property(t x) y {
-	return s.PeriodicSignal.property(x(float32(t) * s.Factor))
-}
-
-func (s CompressedPeriodicSignal) Period() x {
-	return x(float32(s.PeriodicSignal.Period())/s.Factor)
-}
-
-// returns a Signal that is the another Signal shifted.
-// the type of the returned Signal interface depends on the type of source Signal.
-func Compress(s Signal,factor float32) Signal {
-	switch st := s.(type) {
-	case PeriodicLimitedSignal:
-		return CompressedPeriodicLimitedSignal{st,factor}
-	case LimitedSignal:
-		return CompressedLimitedSignal{st,factor}
-	case PeriodicSignal:
-		return CompressedPeriodicSignal{st,factor}
-	}
-	return CompressedSignal{s,factor}
-}
-
-
 // a PeriodicSignal that is a Signal repeated with Loop length x.
 type Looped struct {
 	Signal
@@ -164,7 +58,7 @@ func (s Looped) Period() x {
 	return s.Loop
 }
 
-// a PeriodicSignal that is repeating loop of Cycle repeats of another PeriodicSignal.
+// a PeriodicSignal that is repeating loop of Cycles number of repeats of another PeriodicSignal.
 // if the PeriodicSignal is actually precisely repeating, then an integer value of Cycles, results in no change.
 type Repeated struct {
 	PeriodicSignal
@@ -178,6 +72,7 @@ func (s Repeated) Period() x {
 func (s Repeated) property(t x) y {
 	return s.PeriodicSignal.property((t % s.Period()) % s.PeriodicSignal.Period())
 }
+
 
 // a Signal that produces y values that are the negative of another Signals y values
 type Inverted struct {
@@ -221,6 +116,12 @@ func (s RateModulated) property(t x) y {
 	return s.Signal.property(t + MultiplyX(float64(s.Modulation.property(t))/maxyfloat64, s.Factor))
 }
 
+func (s RateModulated) Period() x {
+	// TODO could use shortest of Signal and Modulation periods?
+	return s.Modulation.(PeriodicSignal).Period()
+}
+
+
 // Segmented is a Signal that is a sequence of equal width, uniform gradient, segments, that approximate another Signal.
 // repeated calls within the same segment, are generated from cached end values, so avoiding calls to the embedded Signal.
 type Segmented struct {
@@ -249,6 +150,11 @@ func (s Segmented) property(t x) y {
 		s.cache.l2 = x(s.Signal.property(s.cache.x2))/s.Width - s.cache.l1
 	}
 	return y(s.cache.l1*s.Width + s.cache.l2*temp)
+}
+
+func (s Segmented) Period() x {
+	// TODO could use shortest of width and signal periods?
+	return s.Width
 }
 
 // Triggered shifts a Signal's x so the Signal crosses a trigger y at zero x.
@@ -297,4 +203,5 @@ func (s Triggered) property(t x) y {
 	}
 	return s.Signal.property(t + s.Found.Shift)
 }
+
 
