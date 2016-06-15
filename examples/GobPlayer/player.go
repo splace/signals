@@ -47,7 +47,7 @@ func main() {
 	if err := m1.Load(rr); err != nil {
 		panic("unable to load."+err.Error())
 	}
-	signals.Encode(os.Stdout,m1,signals.X(length),uint32(sampleRate),uint8(samplePrecision))
+	signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.X(length),m1)
 	os.Stdout.Close()
 }
 

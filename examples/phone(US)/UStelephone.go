@@ -16,9 +16,9 @@ func Save(file string,s PeriodicSignal){
 	defer wavFile.Close()
 	// one cycle or at least a seconds worth
 	if s.Period()>OneSecond{
-		Encode(wavFile,s,s.Period(),44100,2)
+		Encode(wavFile,2,44100,s.Period(),s)
 	}else{
-		Encode(wavFile,s,s.Period()*(OneSecond/s.Period()),44100,2)
+		Encode(wavFile,2,44100,s.Period()*(OneSecond/s.Period()),s)
 	}
 }
 
@@ -36,6 +36,5 @@ func main(){
 	Save("LineBusyTone.wav",Modulated{Looped{Pulse{OneSecond/4},OneSecond/2}, Stack{Sine{OneSecond/480},Sine{OneSecond/630}}})
 
 }
-
 
 
