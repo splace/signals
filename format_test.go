@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestNoiseSave(t *testing.T) {
+func TestFormatNoiseSave(t *testing.T) {
 	s := NewNoise()
 	var file *os.File
 	var err error
@@ -17,7 +17,7 @@ func TestNoiseSave(t *testing.T) {
 	Encode(file2, 1, 16000, unitX, s)
 }
 
-//func TestSaveLoad(t *testing.T) {
+//func TestFormatSaveLoad(t *testing.T) {
 //	var file *os.File
 //	var err error
 //	if file, err = os.Create("./test output/multi.gob"); err != nil {
@@ -44,7 +44,7 @@ func TestNoiseSave(t *testing.T) {
 //
 //}
 
-func TestSaveWav(t *testing.T) {
+func TestFormatSaveWav(t *testing.T) {
 	m := Modulated{Sine{unitX/100}, NewConstant(-6)}
 
 	var file *os.File
@@ -53,7 +53,7 @@ func TestSaveWav(t *testing.T) {
 	Encode(file, 3, 8000, unitX, m)
 }
 
-func TestLoad(t *testing.T) {
+func TestFormatLoad(t *testing.T) {
 	file, err := os.Open("middlec.wav")
 	if err != nil {
 		panic(err)
@@ -68,7 +68,7 @@ func TestLoad(t *testing.T) {
 	}
 }
 
-func TestLoadChannels(t *testing.T) {
+func TestFormatLoadChannels(t *testing.T) {
 	stream, err := os.Open("pcm0808s.wav")
 	if err != nil {
 		panic(err)
@@ -83,7 +83,7 @@ func TestLoadChannels(t *testing.T) {
 	}
 }
 
-func TestMultiChannelSave(t *testing.T) {
+func TestFormatMultiChannelSave(t *testing.T) {
 	stream, err := os.Open("pcm0808s.wav")
 	if err != nil {
 		panic(err)
@@ -102,7 +102,7 @@ func TestMultiChannelSave(t *testing.T) {
 }
 
 
-func TestStackPCMs(t *testing.T) {
+func TestFormatStackPCMs(t *testing.T) {
 	stream, err := os.Open("M1F1-uint8-AFsp.wav")
 	if err != nil {
 		panic(err)
@@ -118,7 +118,7 @@ func TestStackPCMs(t *testing.T) {
 	Encode(wavFile, 4, 44100, noise[0].MaxX(), Stack{noise[0], noise[1]})
 }
 
-func TestMultiplexTones(t *testing.T) {
+func TestFormatMultiplexTones(t *testing.T) {
 	m := Modulated{Sine{unitX/1000}, NewConstant(-6)}
 	m1 := Modulated{Sine{unitX/100}, NewConstant(-6)}
 	var file *os.File
@@ -127,7 +127,7 @@ func TestMultiplexTones(t *testing.T) {
 	Encode(file, 1, 44100, 1*unitX, Modulated{m, m1})
 }
 
-func TestSaveLoadSave(t *testing.T) {
+func TestFormatSaveLoadSave(t *testing.T) {
 	m := Modulated{Sine{unitX/1000}, NewConstant(-6)}
 	wavFile, err := os.Create("./test output/TestSaveLoad.wav")
 	if err != nil {
@@ -153,7 +153,7 @@ func TestSaveLoadSave(t *testing.T) {
 	EncodeLike(wavFile, noise[0], noise[0])
 }
 
-func TestPiping(t *testing.T) {
+func TestFormatPiping(t *testing.T) {
 	wavFile, err := os.Create("./test output/TestPiping.wav")
 	if err != nil {
 		panic(err)
@@ -162,14 +162,14 @@ func TestPiping(t *testing.T) {
 	Encode(wavFile, 1, 8000, unitX, Modulated{Sine{unitX/200}, NewConstant(-6)})
 }
 
-func TestRawPCM(t *testing.T) {
+func TestFormatRawPCM(t *testing.T) {
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/TestRaw.wav"); err != nil {panic(err)}else{defer file.Close()}
 	PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Encode(file)
 }
 
-func TestSplitPCM(t *testing.T) {
+func TestFormatSplitPCM(t *testing.T) {
 	var wavFileHead *os.File
 	var wavFileTail *os.File
 	var err error
@@ -181,7 +181,7 @@ func TestSplitPCM(t *testing.T) {
 }
 
 
-func TestEnocdePCMToShortLength(t *testing.T) {
+func TestFormatEnocdePCMToShortLength(t *testing.T) {
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/EnocdePCMToShortLength.wav"); err != nil {panic(err)}else{defer file.Close()}
@@ -189,7 +189,7 @@ func TestEnocdePCMToShortLength(t *testing.T) {
 }
 
 
-func TestEnocdeShiftedPCM(t *testing.T) {
+func TestFormatEnocdeShiftedPCM(t *testing.T) {
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/EnocdeShiftedPCM.wav"); err != nil {panic(err)}else{defer file.Close()}
