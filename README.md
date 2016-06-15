@@ -22,28 +22,25 @@ import (
 var OneSecond = X(1)
 
 func main() {
-	m := Modulated{Sine{OneSecond/100},NewConstant(-6)}
+	signal := Modulated{Sine{OneSecond/100},NewConstant(-6)}
 	// save file named after the go code of the signal
-	file, err := os.Create(fmt.Sprintf("%+v.wav", m)) 
+	file, err := os.Create(fmt.Sprintf("%+v.wav", signal)) 
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, 2, 8000, OneSecond, m)
+	Encode(file, 2, 8000, OneSecond, signal)
 }
 ```
 Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signed PCM (s16), WAV file 
 
-[[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/signals/blob/master/examples/%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
-
 Features:
 
-  * sources:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM{bits}bit
-(PCM sources can be loaded from wav files)
+  * sources:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM{8|16|24|32}bit (PCM sources can be stored in wav files)
 	
   * modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,RateModulated,Triggered,Segmented
 
-  * combiners:- Stack,Composite,Modulate
+  * combiners:- Modulate,Stack,Composite
 
   * extras(non-core):- Depiction,ADSR,Noise
 
