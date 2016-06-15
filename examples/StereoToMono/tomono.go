@@ -1,5 +1,5 @@
 // convert a stereo wav file into a mono by adding sounds together.
-/* 
+/*
 Usage :
  -bytes precision
     	precision in bytes per sample. (requires format option set) (default 2)
@@ -20,120 +20,123 @@ Usage :
 */
 package main
 
-import .  "github.com/splace/signals" //"../../../signals"  //
+import . "github.com/splace/signals" //"../../../signals"  //
 import (
-	"os"
 	"flag"
 	"log"
-	"strings"
+	"os"
 	"strconv"
+	"strings"
 )
 
 // Note: experiment with a fancy bespoke logger
 
-type messageLog struct{
+type messageLog struct {
 	*log.Logger
 	message string
 }
 
-// pick of the standard second arg returned error (second arg.) to simplify handling structure.
-func (ml messageLog) errFatal(result interface{},err error) interface{}{
-	if err!=nil{
+// pick off and handle the returned error (second arg.) to simplify handling structure.
+func (ml messageLog) errFatal(result interface{}, err error) interface{} {
+	if err != nil {
 		ml.Fatal(err.Error())
 	}
 	return result
 }
 
 func (ml messageLog) Fatal(info string) {
-	ml.Logger.Fatal("\t"+os.Args[0]+"\t"+ml.message+"\t"+info)
+	ml.Logger.Fatal("\t" + os.Args[0] + "\t" + ml.message + "\t" + info)
 	return
 }
 
 /*
 DEBUG1..DEBUG5 	Provides successively-more-detailed information for use by developers.
-INFO 	Provides information implicitly requested by the user, e.g., output from VACUUM VERBOSE. 
+INFO 	Provides information implicitly requested by the user, e.g., output from VACUUM VERBOSE.
 NOTICE 	Provides information that might be helpful to users, e.g., notice of truncation of long identifiers.
 WARNING 	Provides warnings of likely problems, e.g., COMMIT outside a transaction block.
-ERROR 	Reports an error that caused the current command to abort. 
-LOG 	Reports information of interest to administrators, e.g., checkpoint activity. 
+ERROR 	Reports an error that caused the current command to abort.
+LOG 	Reports information of interest to administrators, e.g., checkpoint activity.
 FATAL 	Reports an error that caused the current session to abort.
-PANIC 	Reports an error that caused all database sessions to abort. 
+PANIC 	Reports an error that caused all database sessions to abort.
 */
 
 func main() {
-    format := flag.Bool("format", false, "don't use input sample rate and precision for output, use flag(s)")
+	format := flag.Bool("format", false, "don't use input sample rate and precision for output, use flag(s)")
 	stack := flag.Bool("stack", false, "recombine all channels into a mono file.")
-    help := flag.Bool("help", false, "display help/usage.")
+	help := flag.Bool("help", false, "display help/usage.")
 	var dB uint
-	flag.UintVar(&dB,"db", 0, "reduce volume in dB (6 to halve.) stacked channels could clip without.")
-	var channels,namePrefix string
-	flag.StringVar(&channels,"chans","1,2","extract/recombine listed channel number(s) only. ('1,2' for first 2 channels)" )
-	flag.StringVar(&namePrefix,"prefix", "L-,R-,C-,LFE-,LB-,RB-", "add individual prefixes to extracted mono file(s) names.")
-	var sampleRate,sampleBytes uint
+	flag.UintVar(&dB, "db", 0, "reduce volume in dB (6 to halve.) stacked channels could clip without.")
+	var channels, namePrefix string
+	flag.StringVar(&channels, "chans", "1,2", "extract/recombine listed channel number(s) only. ('1,2' for first 2 channels)")
+	flag.StringVar(&namePrefix, "prefix", "L-,R-,C-,LFE-,LB-,RB-", "add individual prefixes to extracted mono file(s) names.")
+	var sampleRate, sampleBytes uint
 	flag.UintVar(&sampleRate, "rate", 44100, "`samples` per second.(requires format option set)")
-	flag.UintVar(&sampleBytes,"bytes", 2, "`precision` in bytes per sample. (requires format option set)")
+	flag.UintVar(&sampleBytes, "bytes", 2, "`precision` in bytes per sample. (requires format option set)")
 	flag.Parse()
 	if *help {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
 	files := flag.Args()
-	myLog := messageLog{log.New(os.Stderr,"ERROR\t",log.LstdFlags),"File access"} // this log will give 'ERROR's and start with file access.
-	var in,out *os.File
-	if len(files)==2 {
-		in=myLog.errFatal(os.Open(files[0])).(*os.File)
+	errorLog := messageLog{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"} // 'ERROR' log for, initially, file access.
+	var in, out *os.File
+	if len(files) == 2 {
+		in = errorLog.errFatal(os.Open(files[0])).(*os.File)
 		defer in.Close()
-	}else{
-		myLog.Fatal( "2 file names required.")
+	} else {
+		errorLog.Fatal("2 file names required.")
 	}
-	myLog.message="Decode:"+files[0]
-	PCMs:=myLog.errFatal(Decode(in)).([]Signal)
-	if *format{
-		if *stack{
-			myLog.message="File Access"
-			out=myLog.errFatal(os.Create(files[1])).(*os.File)
-			myLog.message="Encode"
-			Encode(out,Modulated{NewStack(PCMs...),NewConstant(float64(-dB))},PCMs[0].(LimitedSignal).MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+	errorLog.message = "Decode:" + files[0]
+	PCMs := errorLog.errFatal(Decode(in)).([]PeriodicLimitedSignal)
+	if *format {
+		if *stack {
+			errorLog.message = "File Access"
+			out = errorLog.errFatal(os.Create(files[1])).(*os.File)
+			errorLog.message = "Encode"
+			Encode(out, Modulated{NewStack(PromoteToSignals(PCMs)...), NewConstant(float64(-dB))}, PCMs[0].MaxX(), uint32(sampleRate), uint8(sampleBytes))
 			out.Close()
-		}else{
-			myLog.message="Parse Channels."
-			chs:=map[int]struct{}{}
-			for _,c:=range(strings.Split(channels,",")){
-				chs[int(myLog.errFatal(strconv.ParseUint(c, 10, 16)).(uint64))]=struct{}{}
+		} else {
+			errorLog.message = "Parse Channels."
+			chs := map[int]struct{}{}
+			for _, c := range strings.Split(channels, ",") {
+				chs[int(errorLog.errFatal(strconv.ParseUint(c, 10, 16)).(uint64))] = struct{}{}
 			}
-			prefixes:=strings.Split(namePrefix,",")
-			for i,n:=range(PCMs){
-				if _, ok := chs[i]; !ok{continue}
-				myLog.message="File Access"
-				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
-				myLog.message="Encode"
-				Encode(out,Modulated{n,NewConstant(float64(-dB))},n.(LimitedSignal).MaxX(),uint32(sampleRate),uint8(sampleBytes))		
+			prefixes := strings.Split(namePrefix, ",")
+			for i, n := range PCMs {
+				if _, ok := chs[i]; !ok {
+					continue
+				}
+				errorLog.message = "File Access"
+				out = errorLog.errFatal(os.Create(prefixes[i] + files[1])).(*os.File)
+				errorLog.message = "Encode"
+				Encode(out, Modulated{n, NewConstant(float64(-dB))}, n.MaxX(), uint32(sampleRate), uint8(sampleBytes))
 				out.Close()
 			}
 		}
-	}else{
-		if *stack{
-			myLog.message="File Access"
-			out=myLog.errFatal(os.Create(files[1])).(*os.File)
-			myLog.message="Encode"
-			EncodeLike(out,Modulated{NewStack(PCMs...),NewConstant(float64(-dB))},PCMs[0].(PeriodicSignal))		
+	} else {
+		if *stack {
+			errorLog.message = "File Access"
+			out = errorLog.errFatal(os.Create(files[1])).(*os.File)
+			errorLog.message = "Encode"
+			EncodeLike(out, Modulated{NewStack(PromoteToSignals(PCMs)...), NewConstant(float64(-dB))}, PCMs[0])
 			out.Close()
-		}else{
-			myLog.message="Parse Channels."
-			chs:=map[int]struct{}{}
-			for _,c:=range(strings.Split(channels,",")){
-				chs[int(myLog.errFatal(strconv.ParseUint(c, 10, 16)).(uint64))-1]=struct{}{}
+		} else {
+			errorLog.message = "Parse Channels."
+			chs := map[int]struct{}{}
+			for _, c := range strings.Split(channels, ",") {
+				chs[int(errorLog.errFatal(strconv.ParseUint(c, 10, 16)).(uint64))-1] = struct{}{}
 			}
-			prefixes:=strings.Split(namePrefix,",")
-			for i,n:=range(PCMs){
-				if _, ok := chs[i]; !ok{continue}
-				myLog.message="File Access"
-				out=myLog.errFatal(os.Create(prefixes[i]+files[1])).(*os.File)
-				myLog.message="Encode"
-				EncodeLike(out,Modulated{n,NewConstant(float64(-dB))},PCMs[0].(PeriodicSignal))	
+			prefixes := strings.Split(namePrefix, ",")
+			for i, n := range PCMs {
+				if _, ok := chs[i]; !ok {
+					continue
+				}
+				errorLog.message = "File Access"
+				out = errorLog.errFatal(os.Create(prefixes[i] + files[1])).(*os.File)
+				errorLog.message = "Encode"
+				EncodeLike(out, Modulated{n, NewConstant(float64(-dB))}, PCMs[0])
 				out.Close()
 			}
 		}
 	}
 }
-

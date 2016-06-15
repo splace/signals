@@ -119,8 +119,20 @@ func (s RateModulated) property(t x) y {
 }
 
 func (s RateModulated) Period() x {
-	// TODO could use shortest of Signal and Modulation periods?
-	return s.Modulation.(PeriodicSignal).Period()
+	if  mps,ok:= s.Modulation.(PeriodicSignal);ok {
+		if  ps,ok:= s.Signal.(PeriodicSignal);ok {
+			if mpsp,psp:=mps.Period(),ps.Period(); mpsp>psp {
+				return mpsp
+			}else{ 
+				return psp
+			}	
+		}else{
+			return mps.Period()
+		}
+	}else{
+		s.Signal.(PeriodicSignal).Period()
+	}
+	return 0
 }
 
 
@@ -205,5 +217,6 @@ func (s Triggered) property(t x) y {
 	}
 	return s.Signal.property(t + s.Found.Shift)
 }
+
 
 

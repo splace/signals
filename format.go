@@ -33,117 +33,203 @@ type formatChunk struct {
 	Bits        uint16
 }
 
-// Encode a Signal as PCM data, one channel, in a Riff wave container.
-func Encode(w io.Writer, s Signal, length x, sampleRate uint32, sampleBytes uint8) {
+// Encode Signals as PCM data,in a Riff wave container.
+func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...Signal) {
 	var err error
 	var i uint32
 	buf := bufio.NewWriter(w)
 	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
-	binary.Write(w, binary.LittleEndian, riffHeader{'R','I','F','F',samples*uint32(sampleBytes)+36,'W','A','V','E'})
-	binary.Write(w, binary.LittleEndian, chunkHeader{'f','m','t',' ',16})
+	readPCM8Bit := func(s Signal) io.Reader {
+		r, w := io.Pipe()
+		go func() {
+			// try shortcuts first
+			shifted, ok := s.(Shifted)
+			if pcms, ok2 := shifted.Signal.(PCM8bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
+				w.Write(pcms.Data[uint32(shifted.Shift/samplePeriod) : uint32(shifted.Shift/samplePeriod)+samples])
+			} else if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+				w.Write(pcm.Data[:samples])
+			} else {
+				for ; i < samples; i++ {
+					_, err = w.Write([]byte{PCM8bitEncode(s.property(x(i) * samplePeriod))})
+					if err != nil {
+						break
+					}
+				}
+			}
+			w.Close()
+		}()
+		return r
+	}
+	readPCM16Bit := func(s Signal) io.Reader {
+		r, w := io.Pipe()
+		go func() {
+			// try shortcuts first
+			shifted, ok := s.(Shifted)
+			if pcms, ok2 := shifted.Signal.(PCM16bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
+				w.Write(pcms.Data[uint32(shifted.Shift*2/samplePeriod) : uint32(shifted.Shift*2/samplePeriod)+samples*2])
+			} else if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+				w.Write(pcm.Data[:samples*2])
+			} else {
+				for ; i < samples; i++ {
+					b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
+					_, err = w.Write([]byte{b2, b1})
+					if err != nil {
+						break
+					}
+				}
+			}
+			w.Close()
+		}()
+		return r
+	}
+	readPCM24Bit := func(s Signal) io.Reader {
+		r, w := io.Pipe()
+		go func() {
+			// try shortcuts first
+			shifted, ok := s.(Shifted)
+			if pcms, ok2 := shifted.Signal.(PCM24bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
+				w.Write(pcms.Data[uint32(shifted.Shift*3/samplePeriod) : uint32(shifted.Shift*3/samplePeriod)+samples*3])
+			} else if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+				w.Write(pcm.Data[:samples*3])
+			} else {
+				for ; i < samples; i++ {
+					b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
+					_, err = w.Write([]byte{b3, b2, b1})
+					if err != nil {
+						break
+					}
+				}
+			}
+			w.Close()
+		}()
+		return r
+	}
+	readPCM32Bit := func(s Signal) io.Reader {
+		r, w := io.Pipe()
+		go func() {
+			// try shortcuts first
+			shifted, ok := s.(Shifted)
+			if pcms, ok2 := shifted.Signal.(PCM32bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
+				w.Write(pcms.Data[uint32(shifted.Shift*4/samplePeriod) : uint32(shifted.Shift*4/samplePeriod)+samples*4])
+			} else if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+				w.Write(pcm.Data[:samples*4])
+			} else {
+				for ; i < samples; i++ {
+					b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
+					_, err = w.Write([]byte{b4, b3, b2, b1})
+					if err != nil {
+						break
+					}
+				}
+			}
+			w.Close()
+		}()
+		return r
+	}
+	binary.Write(w, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
+	binary.Write(w, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
 	binary.Write(w, binary.LittleEndian, formatChunk{
-		Code:1,
-		Channels:1,
-		SampleRate:sampleRate,
-		ByteRate:sampleRate*uint32(sampleBytes),
-		SampleBytes:uint16(sampleBytes),
-		Bits:uint16(8*sampleBytes),
+		Code:        1,
+		Channels:    uint16(len(ss)),
+		SampleRate:  sampleRate,
+		ByteRate:    sampleRate * uint32(sampleBytes) *uint32(len(ss)),
+		SampleBytes: uint16(sampleBytes)*uint16(len(ss)),
+		Bits:        uint16(8 * sampleBytes)*uint16(len(ss)),
 	})
 	fmt.Fprint(w, "data")
-	binary.Write(w,binary.LittleEndian, samples*uint32(sampleBytes))
+	binary.Write(w, binary.LittleEndian, samples*uint32(sampleBytes))
+	readers:=make([]io.Reader,len(ss))
 	switch sampleBytes {
 	case 1:
-		// shortcut, if already in right format
-		shifted,ok := s.(Shifted)
-		if pcms,ok2:=shifted.Signal.(PCM8bit);ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-			buf.Write(pcms.Data[uint32(shifted.Shift/samplePeriod):uint32(shifted.Shift/samplePeriod)+samples])
-		} else if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
-			buf.Write(pcm.Data[:samples])
-		} else {
-			for ; i < samples; i++ {
-				err = buf.WriteByte(PCM8bitEncode(s.property(x(i) * samplePeriod)))
-				if err != nil {
-					break
+		for i,_:=range(readers){
+			readers[i]=readPCM8Bit(ss[i])
+		}
+		if len(readers)==1{
+			_,err=io.Copy(buf, readers[0])
+			if err!=nil{
+				panic(err)
+			}
+		}else{
+			for err==nil{
+				for i,_:=range(readers){
+					_,err=io.CopyN(buf,readers[i],1)
 				}
 			}
+			if err==io.EOF{err=nil}
 		}
 	case 2:
-		// shortcut, if already in right format
-		shifted,ok := s.(Shifted)
-		if pcms,ok2:=shifted.Signal.(PCM16bit);ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-			buf.Write(pcms.Data[uint32(shifted.Shift*2/samplePeriod):uint32(shifted.Shift*2/samplePeriod)+samples*2])
-		} else if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
-			buf.Write(pcm.Data[:samples*2])
-		} else {
-			for ; i < samples; i++ {
-				b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
-				err = buf.WriteByte(b2)
-				err = buf.WriteByte(b1)
-				if err != nil {
-					break
+		for i,_:=range(readers){
+			readers[i]=readPCM16Bit(ss[i])
+		}
+		if len(readers)==1{
+			_,err=io.Copy(buf, readers[0])
+			if err!=nil{
+				panic(err)
+			}
+		}else{
+			for err==nil{
+				for i,_:=range(readers){
+					_,err=io.CopyN(buf,readers[i],2)
 				}
 			}
+			if err==io.EOF{err=nil}
 		}
 	case 3:
-		// shortcut, if already in right format
-		shifted,ok := s.(Shifted)
-		if pcms,ok2:=shifted.Signal.(PCM24bit);ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-			buf.Write(pcms.Data[uint32(shifted.Shift*3/samplePeriod):uint32(shifted.Shift*3/samplePeriod)+samples*3])
-		} else if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
-			buf.Write(pcm.Data[:samples*3])
-		} else {
-			for ; i < samples; i++ {
-				b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
-				err = buf.WriteByte(b3)
-				err = buf.WriteByte(b2)
-				err = buf.WriteByte(b1)
-				if err != nil {
-					break
+		for i,_:=range(readers){
+			readers[i]=readPCM24Bit(ss[i])
+		}
+		if len(readers)==1{
+			_,err=io.Copy(buf, readers[0])
+			if err!=nil{
+				panic(err)
+			}
+		}else{
+			for err==nil{
+				for i,_:=range(readers){
+					_,err=io.CopyN(buf,readers[i],3)
 				}
 			}
+			if err==io.EOF{err=nil}
 		}
 	case 4:
-		// shortcut, if already in right encoding
-		shifted,ok := s.(Shifted)
-		if pcms,ok2:=shifted.Signal.(PCM32bit);ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-			buf.Write(pcms.Data[uint32(shifted.Shift*4/samplePeriod):uint32(shifted.Shift*4/samplePeriod)+samples*4])
-		} else if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
-			buf.Write(pcm.Data[:samples*4])
-		} else {
-			for ; i < samples; i++ {
-				b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
-				err = buf.WriteByte(b4)
-				err = buf.WriteByte(b3)
-				err = buf.WriteByte(b2)
-				err = buf.WriteByte(b1)
-				if err != nil {
-					break
+		for i,_:=range(readers){
+			readers[i]=readPCM32Bit(ss[i])
+		}
+		if len(readers)==1{
+			_,err=io.Copy(buf, readers[0])
+			if err!=nil{
+				panic(err)
+			}
+		}else{
+			for err==nil{
+				for i,_:=range(readers){
+					_,err=io.CopyN(buf,readers[i],4)
 				}
 			}
+			if err==io.EOF{err=nil}
 		}
 	}
 	if err != nil {
-		log.Println("Encode failure:" + err.Error() + fmt.Sprint(buf))
+		log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
 	} else {
 		buf.Flush()
 	}
 }
 
-
 // encode a LimitedSignal with a sampleRate equal to the Period() of a given PeriodicSignal, and its precision if its a PCM type, otherwise defaults to 16bit.
-func EncodeLike(w io.Writer, p LimitedSignal, s PeriodicSignal) {
-	switch f := s.(type) {
+func EncodeLike(w io.Writer, s PeriodicSignal, p LimitedSignal) {
+	switch s.(type) {
 	case PCM8bit:
-		Encode(w, p, p.MaxX(), uint32(unitX/f.Period()), 1)
+		Encode(w, 1, uint32(unitX/s.Period()), p.MaxX(), p)
 	case PCM16bit:
-		Encode(w, p, p.MaxX(), uint32(unitX/f.Period()), 2)
+		Encode(w, 2, uint32(unitX/s.Period()), p.MaxX(), p)
 	case PCM24bit:
-		Encode(w, p, p.MaxX(), uint32(unitX/f.Period()), 3)
+		Encode(w, 3, uint32(unitX/s.Period()), p.MaxX(), p)
 	case PCM32bit:
-		Encode(w, p, p.MaxX(), uint32(unitX/f.Period()), 4)
+		Encode(w, 4, uint32(unitX/s.Period()), p.MaxX(), p)
 	default:
-		Encode(w, p, p.MaxX(), uint32(unitX/f.Period()), 2)
+		Encode(w, 2, uint32(unitX/s.Period()), p.MaxX(), p)
 	}
 	return
 }
@@ -184,7 +270,6 @@ type ErrWavParse struct {
 func (e ErrWavParse) Error() string {
 	return fmt.Sprintf("WAVE Parse,%s", e.description)
 }
-
 
 func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	var header riffHeader
@@ -267,4 +352,177 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	return sampleData, err
 }
 
+
+
+/*  Hal3 Wed Jun 15 00:02:29 BST 2016 go version go1.5.1 linux/amd64
+=== RUN   TestNoiseSave
+--- PASS: TestNoiseSave (0.92s)
+=== RUN   TestSaveWav
+--- PASS: TestSaveWav (0.03s)
+=== RUN   TestLoad
+--- PASS: TestLoad (0.02s)
+=== RUN   TestLoadChannels
+--- PASS: TestLoadChannels (0.08s)
+=== RUN   TestMultiChannelSave
+--- PASS: TestMultiChannelSave (0.75s)
+=== RUN   TestStackPCMs
+--- PASS: TestStackPCMs (0.33s)
+=== RUN   TestMultiplexTones
+--- PASS: TestMultiplexTones (0.12s)
+=== RUN   TestSaveLoadSave
+--- PASS: TestSaveLoadSave (0.15s)
+=== RUN   TestPiping
+--- PASS: TestPiping (0.02s)
+=== RUN   TestRawPCM
+--- PASS: TestRawPCM (0.00s)
+=== RUN   TestSplitPCM
+--- PASS: TestSplitPCM (0.00s)
+=== RUN   TestEnocdePCMToShortLength
+--- PASS: TestEnocdePCMToShortLength (0.00s)
+=== RUN   TestEnocdeShiftedPCM
+--- PASS: TestEnocdeShiftedPCM (0.00s)
+=== RUN   TestImagingSine
+--- PASS: TestImagingSine (0.27s)
+=== RUN   TestImaging
+--- PASS: TestImaging (0.28s)
+=== RUN   TestComposable
+--- PASS: TestComposable (1.50s)
+=== RUN   TestStackimage
+--- PASS: TestStackimage (0.93s)
+=== RUN   TestMultiplexImage
+--- PASS: TestMultiplexImage (0.91s)
+=== RUN   ExampleADSREnvelope
+--- PASS: ExampleADSREnvelope (0.00s)
+=== RUN   ExamplePulsePattern
+--- PASS: ExamplePulsePattern (0.00s)
+=== RUN   ExampleNoise
+--- PASS: ExampleNoise (0.00s)
+=== RUN   ExampleConstantZero
+--- PASS: ExampleConstantZero (0.00s)
+=== RUN   ExampleConstantUnity
+--- PASS: ExampleConstantUnity (0.00s)
+=== RUN   ExampleSquare
+--- PASS: ExampleSquare (0.00s)
+=== RUN   ExamplePulse
+--- PASS: ExamplePulse (0.00s)
+=== RUN   ExampleRampUpDown
+--- PASS: ExampleRampUpDown (0.00s)
+=== RUN   ExampleHeavyside
+--- PASS: ExampleHeavyside (0.00s)
+=== RUN   ExampleSine
+--- PASS: ExampleSine (0.00s)
+=== RUN   ExampleSigmoid
+--- PASS: ExampleSigmoid (0.00s)
+=== RUN   ExampleShifted
+--- PASS: ExampleShifted (0.00s)
+=== RUN   ExampleReflected
+--- PASS: ExampleReflected (0.00s)
+=== RUN   ExamplePower
+--- PASS: ExamplePower (0.00s)
+=== RUN   ExampleModulated
+--- PASS: ExampleModulated (0.00s)
+=== RUN   ExampleStack
+--- PASS: ExampleStack (0.00s)
+=== RUN   ExampleTriggered
+--- PASS: ExampleTriggered (0.00s)
+=== RUN   ExampleSegmented
+--- PASS: ExampleSegmented (0.00s)
+=== RUN   ExampleSegmented_makeSawtooth
+--- PASS: ExampleSegmented_makeSawtooth (0.00s)
+=== RUN   ExampleRateModulated
+--- PASS: ExampleRateModulated (0.00s)
+=== RUN   ExampleLooped
+--- PASS: ExampleLooped (0.00s)
+=== RUN   ExampleRepeated
+--- PASS: ExampleRepeated (0.00s)
+PASS
+ok  	_/home/simon/Dropbox/github/working/signals	6.381s
+Wed Jun 15 00:02:38 BST 2016 */
+/*  Hal3 Wed Jun 15 00:06:23 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Wed Jun 15 00:06:24 BST 2016 */
+/*  Hal3 Wed Jun 15 00:06:32 BST 2016 go version go1.5.1 linux/amd64
+=== RUN   TestNoiseSave
+--- PASS: TestNoiseSave (0.91s)
+=== RUN   TestSaveWav
+--- PASS: TestSaveWav (0.03s)
+=== RUN   TestLoad
+--- PASS: TestLoad (0.02s)
+=== RUN   TestLoadChannels
+--- PASS: TestLoadChannels (0.07s)
+=== RUN   TestMultiChannelSave
+--- PASS: TestMultiChannelSave (0.76s)
+=== RUN   TestStackPCMs
+--- PASS: TestStackPCMs (0.40s)
+=== RUN   TestMultiplexTones
+--- PASS: TestMultiplexTones (0.11s)
+=== RUN   TestSaveLoadSave
+--- PASS: TestSaveLoadSave (0.14s)
+=== RUN   TestPiping
+--- PASS: TestPiping (0.02s)
+=== RUN   TestRawPCM
+--- PASS: TestRawPCM (0.00s)
+=== RUN   TestSplitPCM
+--- PASS: TestSplitPCM (0.00s)
+=== RUN   TestEnocdePCMToShortLength
+--- PASS: TestEnocdePCMToShortLength (0.00s)
+=== RUN   TestEnocdeShiftedPCM
+--- PASS: TestEnocdeShiftedPCM (0.00s)
+=== RUN   TestImagingSine
+--- PASS: TestImagingSine (0.30s)
+=== RUN   TestImaging
+--- PASS: TestImaging (0.33s)
+=== RUN   TestComposable
+--- PASS: TestComposable (1.57s)
+=== RUN   TestStackimage
+--- PASS: TestStackimage (0.92s)
+=== RUN   TestMultiplexImage
+--- PASS: TestMultiplexImage (0.91s)
+=== RUN   ExampleADSREnvelope
+--- PASS: ExampleADSREnvelope (0.00s)
+=== RUN   ExamplePulsePattern
+--- PASS: ExamplePulsePattern (0.00s)
+=== RUN   ExampleNoise
+--- PASS: ExampleNoise (0.01s)
+=== RUN   ExampleConstantZero
+--- PASS: ExampleConstantZero (0.00s)
+=== RUN   ExampleConstantUnity
+--- PASS: ExampleConstantUnity (0.00s)
+=== RUN   ExampleSquare
+--- PASS: ExampleSquare (0.00s)
+=== RUN   ExamplePulse
+--- PASS: ExamplePulse (0.00s)
+=== RUN   ExampleRampUpDown
+--- PASS: ExampleRampUpDown (0.00s)
+=== RUN   ExampleHeavyside
+--- PASS: ExampleHeavyside (0.00s)
+=== RUN   ExampleSine
+--- PASS: ExampleSine (0.00s)
+=== RUN   ExampleSigmoid
+--- PASS: ExampleSigmoid (0.00s)
+=== RUN   ExampleShifted
+--- PASS: ExampleShifted (0.00s)
+=== RUN   ExampleReflected
+--- PASS: ExampleReflected (0.00s)
+=== RUN   ExamplePower
+--- PASS: ExamplePower (0.00s)
+=== RUN   ExampleModulated
+--- PASS: ExampleModulated (0.00s)
+=== RUN   ExampleStack
+--- PASS: ExampleStack (0.00s)
+=== RUN   ExampleTriggered
+--- PASS: ExampleTriggered (0.00s)
+=== RUN   ExampleSegmented
+--- PASS: ExampleSegmented (0.00s)
+=== RUN   ExampleSegmented_makeSawtooth
+--- PASS: ExampleSegmented_makeSawtooth (0.00s)
+=== RUN   ExampleRateModulated
+--- PASS: ExampleRateModulated (0.00s)
+=== RUN   ExampleLooped
+--- PASS: ExampleLooped (0.00s)
+=== RUN   ExampleRepeated
+--- PASS: ExampleRepeated (0.00s)
+PASS
+ok  	_/home/simon/Dropbox/github/working/signals	6.544s
+Wed Jun 15 00:06:41 BST 2016 */
 

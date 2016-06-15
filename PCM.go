@@ -59,7 +59,7 @@ func PCM8bitEncode(y y) byte {
 }
 
 func (s PCM8bit) Encode(w io.Writer) {
-	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 1)
+	Encode(w, 1, uint32(unitX/s.Period()), s.MaxX(), s)
 }
 
 func (p PCM8bit) MaxX() x {
@@ -96,7 +96,7 @@ func PCM16bitEncode(y y) (byte, byte) {
 }
 
 func (s PCM16bit) Encode(w io.Writer) {
-	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 2)
+	Encode(w, 2, uint32(unitX/s.Period()), s.MaxX(), s)
 }
 func (p PCM16bit) MaxX() x {
 	return p.PCM.samplePeriod * x(len(p.PCM.Data)-2) / 2
@@ -131,7 +131,7 @@ func PCM24bitEncode(y y) (byte, byte, byte) {
 }
 
 func (s PCM24bit) Encode(w io.Writer) {
-	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 3)
+	Encode(w, 3, uint32(unitX/s.Period()), s.MaxX(), s)
 }
 func (p PCM24bit) MaxX() x {
 	return p.PCM.samplePeriod * x(len(p.PCM.Data)-3) / 3
@@ -166,7 +166,7 @@ func PCM32bitEncode(y y) (byte, byte, byte, byte) {
 }
 
 func (s PCM32bit) Encode(w io.Writer) {
-	Encode(w, s, s.MaxX(), uint32(unitX/s.Period()), 4)
+	Encode(w, 4, uint32(unitX/s.Period()), s.MaxX(), s)
 }
 func (p PCM32bit) MaxX() x {
 	return p.PCM.samplePeriod * x(len(p.PCM.Data)-4) / 4
@@ -181,11 +181,12 @@ func (p PCM32bit) Split(position x) (PCM32bit, PCM32bit) {
 func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PeriodicLimitedSignal {
 	out, in := io.Pipe()
 	go func() {
-		Encode(in, s, length, sampleRate, sampleBytes)
+		Encode(in, sampleBytes, sampleRate, length, s)
 		in.Close()
 	}()
 	channels, _ := Decode(out)
 	out.Close()
 	return channels[0]
 }
+
 

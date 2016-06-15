@@ -865,7 +865,7 @@ func BenchmarkSignalsSine(b *testing.B) {
 	s := Sine{unitX}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		Encode(ioutil.Discard, s, unitX, 44100, 1)
+		Encode(ioutil.Discard, 1, 44100, unitX, s)
 	}
 
 }
@@ -875,7 +875,7 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 	s := NewSegmented(Sine{unitX}, unitX/512)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		Encode(ioutil.Discard, s, unitX, 44100, 1)
+		Encode(ioutil.Discard, 1, 44100, unitX, s)
 	}
 
 }
