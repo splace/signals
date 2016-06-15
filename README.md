@@ -22,19 +22,19 @@ import (
 var OneSecond = X(1)
 
 func main() {
-	m := NewTone(OneSecond/100, -6)
-	file, err := os.Create(fmt.Sprintf("Sine%+v.wav", m)) // file named after go code of generating Function
+	m := Modulated{Sine{OneSecond/100},NewConstant(-6)}
+	// save file named after the go code of the signal
+	file, err := os.Create(fmt.Sprintf("%+v.wav", m)) 
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
-	Encode(file, m, OneSecond, 8000, 2)
+	Encode(file, 2, 8000, OneSecond, m)
 }
-
 ```
 Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signed PCM (s16), WAV file 
 
-[Sine[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/signals/blob/master/examples/Sine%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
+[[{Cycle:     0.01s} {Constant:    50.00%}].wav](https://github.com/splace/signals/blob/master/examples/%5B%7BCycle:%20%20%20%20%200.01s%7D%20%7BConstant:%20%20%20%2050.00%25%7D%5D.wav)
 
 Features:
 
