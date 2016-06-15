@@ -36,7 +36,6 @@ type formatChunk struct {
 // Encode Signals as PCM data,in a Riff wave container.
 func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...Signal) {
 	var err error
-	var i uint32
 	buf := bufio.NewWriter(w)
 	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
@@ -50,6 +49,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples])
 			} else {
+				var i uint32
 				for ; i < samples; i++ {
 					_, err = w.Write([]byte{PCM8bitEncode(s.property(x(i) * samplePeriod))})
 					if err != nil {
@@ -71,6 +71,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*2])
 			} else {
+				var i uint32
 				for ; i < samples; i++ {
 					b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b2, b1})
@@ -93,6 +94,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*3])
 			} else {
+				var i uint32
 				for ; i < samples; i++ {
 					b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b3, b2, b1})
@@ -115,6 +117,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*4])
 			} else {
+				var i uint32
 				for ; i < samples; i++ {
 					b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b4, b3, b2, b1})
@@ -135,10 +138,10 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		SampleRate:  sampleRate,
 		ByteRate:    sampleRate * uint32(sampleBytes) *uint32(len(ss)),
 		SampleBytes: uint16(sampleBytes)*uint16(len(ss)),
-		Bits:        uint16(8 * sampleBytes)*uint16(len(ss)),
+		Bits:        uint16(8 * sampleBytes),
 	})
 	fmt.Fprint(w, "data")
-	binary.Write(w, binary.LittleEndian, samples*uint32(sampleBytes))
+	binary.Write(w, binary.LittleEndian, samples*uint32(sampleBytes)*uint32(len(ss)))
 	readers:=make([]io.Reader,len(ss))
 	switch sampleBytes {
 	case 1:

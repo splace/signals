@@ -98,7 +98,7 @@ func TestMultiChannelSave(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile, 4, 44100, noises[0].MaxX(), noises[0], noises[1])
+	Encode(wavFile,4, 44100, noises[0].MaxX(), noises[0],noises[1])
 }
 
 
@@ -195,6 +195,4 @@ func TestEnocdeShiftedPCM(t *testing.T) {
 	if file, err = os.Create("./test output/EnocdeShiftedPCM.wav"); err != nil {panic(err)}else{defer file.Close()}
 	Encode(file, 2, 5, unitX/2,Shifted{PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})},unitX})
 }
-
-
 
