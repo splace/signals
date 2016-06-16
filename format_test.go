@@ -162,37 +162,3 @@ func TestFormatPiping(t *testing.T) {
 	Encode(wavFile, 1, 8000, unitX, Modulated{Sine{unitX/200}, NewConstant(-6)})
 }
 
-func TestFormatRawPCM(t *testing.T) {
-	var file *os.File
-	var err error
-	if file, err = os.Create("./test output/TestRaw.wav"); err != nil {panic(err)}else{defer file.Close()}
-	PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Encode(file)
-}
-
-func TestFormatSplitPCM(t *testing.T) {
-	var wavFileHead *os.File
-	var wavFileTail *os.File
-	var err error
-	if wavFileHead, err = os.Create("./test output/TestSplitHead.wav"); err != nil {panic(err)}else{defer wavFileHead.Close()}
-	if wavFileTail, err = os.Create("./test output/TestSplitTail.wav"); err != nil {panic(err)}else{defer wavFileTail.Close()}
-	sh, st := PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}.Split(X(1.01))
-	sh.Encode(wavFileHead)
-	st.Encode(wavFileTail)
-}
-
-
-func TestFormatEnocdePCMToShortLength(t *testing.T) {
-	var file *os.File
-	var err error
-	if file, err = os.Create("./test output/EnocdePCMToShortLength.wav"); err != nil {panic(err)}else{defer file.Close()}
-	Encode(file, 2, 5, unitX,PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})})
-}
-
-
-func TestFormatEnocdeShiftedPCM(t *testing.T) {
-	var file *os.File
-	var err error
-	if file, err = os.Create("./test output/EnocdeShiftedPCM.wav"); err != nil {panic(err)}else{defer file.Close()}
-	Encode(file, 2, 5, unitX/2,Shifted{PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})},unitX})
-}
-

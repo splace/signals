@@ -45,7 +45,7 @@ Features:
   * extras(non-core):- Depiction,ADSR,Noise
 
 
-Extras examples: Depiction of Stack{Sine{unitX/100}, Sine{unitX/50}}, red/black,(3200px.600px) for 4 * unitX. 
+Extras examples: Depiction of "Stack{Sine{unitX/100}, Sine{unitX/50}}", red/black,(3200px.600px) for 4 * unitX. 
 
 (see ![image tests](https://github.com/splace/signals/blob/master/image_test.go) )
 

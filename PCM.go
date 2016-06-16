@@ -67,7 +67,7 @@ func (p PCM8bit) MaxX() x {
 }
 
 func (p PCM8bit) Split(position x) (PCM8bit, PCM8bit) {
-	head, tail := p.PCM.Split(uint32(uint64(len(p.PCM.Data))*uint64(position)/uint64(p.MaxX()))+1, 1)
+	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 1)
 	return PCM8bit{head}, PCM8bit{tail}
 }
 
@@ -103,7 +103,7 @@ func (p PCM16bit) MaxX() x {
 }
 
 func (p PCM16bit) Split(position x) (PCM16bit, PCM16bit) {
-	head, tail := p.PCM.Split(uint32(uint64(len(p.PCM.Data)/2)*uint64(position)/uint64(p.MaxX()))+1, 2)
+	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 2)
 	return PCM16bit{head}, PCM16bit{tail}
 }
 
@@ -138,7 +138,7 @@ func (p PCM24bit) MaxX() x {
 }
 
 func (p PCM24bit) Split(position x) (PCM24bit, PCM24bit) {
-	head, tail := p.PCM.Split(uint32(uint64(len(p.PCM.Data)/3)*uint64(position)/uint64(p.MaxX()))+1, 3)
+	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 3)
 	return PCM24bit{head}, PCM24bit{tail}
 }
 
@@ -173,7 +173,7 @@ func (p PCM32bit) MaxX() x {
 }
 
 func (p PCM32bit) Split(position x) (PCM32bit, PCM32bit) {
-	head, tail := p.PCM.Split(uint32(uint64(len(p.PCM.Data)/4)*uint64(position)/uint64(p.MaxX()))+1, 4)
+	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 4)
 	return PCM32bit{head}, PCM32bit{tail}
 }
 
