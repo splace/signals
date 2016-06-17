@@ -9,13 +9,22 @@ import (
 
 var OneSecond = X(1)
 
-func Save(file string,s PeriodicSignal){
-	wavFile, err := os.Create(file)
+func Saves(file string,s PeriodicSignal){
+	wavFile, err := os.Create(file+".wav")
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
+	GOBFile, err := os.Create(file+".gob")
+	if err != nil {
+		panic(err)
+	}
+	defer GOBFile.Close()
 	// one cycle or at least a seconds worth
+	err=Save(GOBFile,s)
+	if err != nil {
+		panic(err)
+	}
 	if s.Period()>OneSecond{
 		Encode(wavFile,2,44100,s.Period(),s)
 	}else{
@@ -41,11 +50,12 @@ Notes
 */
 
 func main(){
-	Save("BusyTone.wav",Modulated{Looped{Pulse{OneSecond*375/1000},OneSecond*75/100}, Sine{OneSecond/400}})
-	Save("EngagedTone.wav",Looped{Modulated{Composite{Modulated{Pulse{OneSecond*4/10},NewConstant(-6)},Shifted{Pulse{OneSecond*225/1000},OneSecond*75/100}}, Sine{OneSecond/400}}, OneSecond*15/10})
-	Save("RingingTone.wav",Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond*4/10}, OneSecond*6/10}, Stack{Sine{OneSecond/450},Sine{OneSecond/400}}}, OneSecond*3})
-	Save("NumberUnobtainableTone.wav",Sine{OneSecond/400})
-	Save("dialTone.wav",Stack{Sine{OneSecond/450},Sine{OneSecond/350}})
+	Saves("BusyTone",Modulated{Looped{Pulse{OneSecond*375/1000},OneSecond*75/100}, Sine{OneSecond/400}})
+	Saves("EngagedTone",Looped{Modulated{Composite{Modulated{Pulse{OneSecond*4/10},NewConstant(-6)},Shifted{Pulse{OneSecond*225/1000},OneSecond*75/100}}, Sine{OneSecond/400}}, OneSecond*15/10})
+	Saves("RingingTone",Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond*4/10}, OneSecond*6/10}, Stack{Sine{OneSecond/450},Sine{OneSecond/400}}}, OneSecond*3})
+	Saves("NumberUnobtainableTone",Sine{OneSecond/400})
+	Saves("dialTone",Stack{Sine{OneSecond/450},Sine{OneSecond/350}})
 
 }
+
 

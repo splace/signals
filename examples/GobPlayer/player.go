@@ -42,13 +42,12 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
-	m1 := signals.Modulated{}
 	rr := bufio.NewReader(os.Stdin)
-	m1,err := Load(rr)
+	m1,err := signals.Load(rr)
 	if err != nil {
 		panic("unable to load."+err.Error())
 	}
-	signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.X(length),m1)
+	signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.X(length),m1.(signals.Signal))
 	os.Stdout.Close()
 }
 

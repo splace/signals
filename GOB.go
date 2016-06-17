@@ -6,13 +6,13 @@ import (
 )
 
 // write Gob encoding
-func Save(p io.Writer,c interface{}) error {
+func Save(p io.Writer,c Signal) error {
 	return gob.NewEncoder(p).Encode(&c)
 }
 
 // read Gob encoding
-func Load(p io.Reader) (interface{},error) {
-	var c interface{}
+func Load(p io.Reader) (Signal,error) {
+	var c Signal
 	err:=gob.NewDecoder(p).Decode(&c)
 	return c,err
 }
