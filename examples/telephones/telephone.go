@@ -20,11 +20,11 @@ func Saves(file string,s PeriodicSignal){
 		panic(err)
 	}
 	defer GOBFile.Close()
-	// one cycle or at least a seconds worth
 	err=Save(GOBFile,s)
 	if err != nil {
 		panic(err)
 	}
+	// one cycle or at least a seconds worth
 	if s.Period()>OneSecond{
 		Encode(wavFile,2,44100,s.Period(),s)
 	}else{

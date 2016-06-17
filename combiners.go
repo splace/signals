@@ -2,7 +2,6 @@ package signals
 
 import (
 	"encoding/gob"
-	"io"
 )
 
 func init() {
@@ -59,16 +58,6 @@ func (c Modulated) MaxX() (min x) {
 	return
 }
 
-// write Gob encoding
-func (c Modulated) Save(p io.Writer) error {
-	return gob.NewEncoder(p).Encode(&c)
-}
-
-// read Gob encoding
-func (c *Modulated) Load(p io.Reader) error {
-	return gob.NewDecoder(p).Decode(c)
-}
-
 // helper to enable generation from another slice.
 // will in general need to use a slice interface promoter function.
 func NewModulated(c ...Signal) Modulated {
@@ -111,16 +100,6 @@ func (c Composite) MaxX() (max x) {
 	return
 }
 
-// write Gob encoding
-func (c Composite) Save(p io.Writer) error {
-	return gob.NewEncoder(p).Encode(&c)
-}
-
-// read Gob encoding
-func (c *Composite) Load(p io.Reader) error {
-	return gob.NewDecoder(p).Decode(c)
-}
-
 // helper to enable generation from another slice.
 // will in general need to use a slice interface promoter function.
 func NewComposite(c ...Signal) Composite {
@@ -158,16 +137,6 @@ func (c Stack) MaxX() (max x) {
 		}
 	}
 	return
-}
-
-// write Gob encoding
-func (c Stack) Save(p io.Writer) error {
-	return gob.NewEncoder(p).Encode(&c)
-}
-
-// read Gob encoding
-func (c *Stack) Load(p io.Reader) error {
-	return gob.NewDecoder(p).Decode(c)
 }
 
 // helper to enable generation from another slice.
