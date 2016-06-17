@@ -52,8 +52,9 @@ func (s PCM8bit) property(offset x) y {
 }
 
 func PCM8bitDecode(b byte) y {
-	return y(b-128) * (unitY >> 7)
+	return y(b-128) << (yBits-8)
 }
+
 func PCM8bitEncode(y y) byte {
 	return byte(y>>(yBits-8) + 128)
 }
@@ -89,7 +90,7 @@ func (s PCM16bit) property(offset x) y {
 }
 
 func PCM16bitDecode(b1, b2 byte) y {
-	return y(int16(b1)|int16(b2)<<8) * (unitY >> 15)
+	return y(int16(b1)|int16(b2)<<8) << (yBits-16)
 }
 func PCM16bitEncode(y y) (byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF)
@@ -124,7 +125,7 @@ func (s PCM24bit) property(offset x) y {
 	return PCM24bitDecode(s.Data[index], s.Data[index+1], s.Data[index+2])
 }
 func PCM24bitDecode(b1, b2, b3 byte) y {
-	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) * (unitY >> 23)
+	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) << (yBits-24)
 }
 func PCM24bitEncode(y y) (byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF)
@@ -159,7 +160,7 @@ func (s PCM32bit) property(offset x) y {
 	return PCM32bitDecode(s.Data[index], s.Data[index+1], s.Data[index+2], s.Data[index+3])
 }
 func PCM32bitDecode(b1, b2, b3, b4 byte) y {
-	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) * (unitY >> 31)
+	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) << (yBits-32)
 }
 func PCM32bitEncode(y y) (byte, byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF), byte(y >> (yBits - 32) & 0xFF)
