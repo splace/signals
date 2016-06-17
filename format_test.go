@@ -17,32 +17,6 @@ func TestFormatNoiseSave(t *testing.T) {
 	Encode(file2, 1, 16000, unitX, s)
 }
 
-//func TestFormatSaveLoad(t *testing.T) {
-//	var file *os.File
-//	var err error
-//	if file, err = os.Create("./test output/multi.gob"); err != nil {
-//		panic(err)
-//	}
-//	m := NewModulated(NewTone(unitX/1000, -6))
-//	if err := m.Save(file); err != nil {
-//		panic("unable to save")
-//	}
-//	file.Close()
-//
-//	if file, err = os.Open("./test output/multi.gob"); err != nil {
-//		panic(err)
-//	}
-//	defer file.Close()
-//
-//	m1 := Modulated{}
-//	if err := m1.Load(file); err != nil {
-//		panic("unable to load")
-//	}
-//	if fmt.Sprintf("%#v", m1) != fmt.Sprintf("%#v", m) {
-//		t.Errorf("%#v != %#v", m, m1)
-//	}
-//
-//}
 
 func TestFormatSaveWav(t *testing.T) {
 	m := Modulated{Sine{unitX/100}, NewConstant(-6)}

@@ -44,7 +44,8 @@ func main() {
 	}
 	m1 := signals.Modulated{}
 	rr := bufio.NewReader(os.Stdin)
-	if err := m1.Load(rr); err != nil {
+	m1,err := Load(rr)
+	if err != nil {
 		panic("unable to load."+err.Error())
 	}
 	signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.X(length),m1)
