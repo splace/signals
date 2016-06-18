@@ -47,24 +47,23 @@ func main() {
 	if err != nil {
 		panic("unable to load."+err.Error())
 	}
-	duration :=signals.X(0)
 	switch st:=s.(type) {
 	case signals.LimitedSignal:
 		if st.MaxX()<=0{
-			duration=signals.X(length)
+			signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.X(length),s)
 		}else{
-			duration=st.MaxX()
+			signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),st.MaxX(),s)
 		}
 	case signals.PeriodicSignal:
 		if st.Period()<signals.X(1){
-			duration=st.Period()*(signals.MultiplyX(length,signals.X(1))/st.Period())
+			signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),st.Period()*(signals.MultiplyX(length,signals.X(1))/st.Period()),s)
 			}else{
-			duration=signals.MultiplyX(length,st.Period())
+			signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.MultiplyX(length,st.Period()),s)
 		}
 	case signals.Signal:
-			duration=signals.X(length)
+		signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.X(length),s)
 	}
-	signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),duration,s)
+	
 	os.Stdout.Close()
 }
 
