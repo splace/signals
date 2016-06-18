@@ -58,4 +58,6 @@ func main(){
 
 }
 
+/*  Hal3 Sat Jun 18 00:38:41 BST 2016 go version go1.5.1 linux/amd64
+Sat Jun 18 00:38:43 BST 2016 */
 

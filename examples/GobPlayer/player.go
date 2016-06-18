@@ -36,18 +36,35 @@ func main() {
 	var samplePrecision uint
 	flag.UintVar(&samplePrecision, "bytes", 2, "`bytes` per sample.")
 	var length float64
-	flag.Float64Var(&length, "length", 1, "length in `units`")
+	flag.Float64Var(&length, "length", 1, "length in `units` or Cycles.")
 	flag.Parse()
 	if *help {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
 	rr := bufio.NewReader(os.Stdin)
-	m1,err := signals.Load(rr)
+	s,err := signals.Load(rr)
 	if err != nil {
 		panic("unable to load."+err.Error())
 	}
-	signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.X(length),m1.(signals.Signal))
+	duration :=signals.X(0)
+	switch st:=s.(type) {
+	case signals.LimitedSignal:
+		if st.MaxX()<=0{
+			duration=signals.X(length)
+		}else{
+			duration=st.MaxX()
+		}
+	case signals.PeriodicSignal:
+		if st.Period()<signals.X(1){
+			duration=st.Period()*(signals.MultiplyX(length,signals.X(1))/st.Period())
+			}else{
+			duration=signals.MultiplyX(length,st.Period())
+		}
+	case signals.Signal:
+			duration=signals.X(length)
+	}
+	signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),duration,s)
 	os.Stdout.Close()
 }
 
