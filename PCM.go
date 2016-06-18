@@ -4,8 +4,9 @@ import (
 	"io"
 )
 
-// PCM is the state and behaviour common to all PCM. Its not a Signal, specific PCM<<precison>> types embed this, and then are Signal's.
-// the specific precision types, the Signals, return continuous property values that step from one PCM value to the next, Segmented could be used to get interpolated property values.
+// PCM is the state and behaviour common to all PCM, it doesn't include encoding information, so cannot return a property and so its not a Signal.
+// Specific PCM<<encoding>> types embed this, and then are Signal's.
+// these specific precision types, the Signals, return continuous property values that step from one PCM value to the next, Segmented could be used to get interpolated property values.
 type PCM struct {
 	samplePeriod x
 	Data         []byte
@@ -90,10 +91,10 @@ func (s PCM16bit) property(offset x) y {
 }
 
 func decodePCM16bit(b1, b2 byte) y {
-	return y(int16(b1)|int16(b2)<<8) << (yBits-16)
+	return y(int32(b1)|int32(b2)<<8) << (yBits-16)
 }
 func encodePCM16bit(y y) (byte, byte) {
-	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF)
+	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16))
 }
 
 func (s PCM16bit) Encode(w io.Writer) {
@@ -128,7 +129,7 @@ func decodePCM24bit(b1, b2, b3 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16) << (yBits-24)
 }
 func encodePCM24bit(y y) (byte, byte, byte) {
-	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF)
+	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16)), byte(y >> (yBits - 24))
 }
 
 func (s PCM24bit) Encode(w io.Writer) {
@@ -163,7 +164,7 @@ func decodePCM32bit(b1, b2, b3, b4 byte) y {
 	return y(int32(b1)|int32(b2)<<8|int32(b3)<<16|int32(b4)<<24) << (yBits-32)
 }
 func encodePCM32bit(y y) (byte, byte, byte, byte) {
-	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16) & 0xFF), byte(y >> (yBits - 24) & 0xFF), byte(y >> (yBits - 32) & 0xFF)
+	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16)), byte(y >> (yBits - 24)), byte(y >> (yBits - 32))
 }
 
 func (s PCM32bit) Encode(w io.Writer) {
@@ -189,5 +190,6 @@ func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) Peri
 	out.Close()
 	return channels[0]
 }
+
 
 
