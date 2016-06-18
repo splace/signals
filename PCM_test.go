@@ -112,6 +112,8 @@ func BenchmarkPCM32bitDecode(b *testing.B) {
 	}
 }
 
+
+
 /*  Hal3 Sat Jun 18 21:23:16 BST 2016 go version go1.5.1 linux/amd64
 PASS
 BenchmarkPCM8bitEncode-2 	2000000000	         0.81 ns/op
