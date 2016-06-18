@@ -51,7 +51,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else {
 				var i uint32
 				for ; i < samples; i++ {
-					_, err = w.Write([]byte{PCM8bitEncode(s.property(x(i) * samplePeriod))})
+					_, err = w.Write([]byte{encodePCM8bit(s.property(x(i) * samplePeriod))})
 					if err != nil {
 						break
 					}
@@ -73,7 +73,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else {
 				var i uint32
 				for ; i < samples; i++ {
-					b1, b2 := PCM16bitEncode(s.property(x(i) * samplePeriod))
+					b1, b2 := encodePCM16bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b2, b1})
 					if err != nil {
 						break
@@ -96,7 +96,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else {
 				var i uint32
 				for ; i < samples; i++ {
-					b1, b2, b3 := PCM24bitEncode(s.property(x(i) * samplePeriod))
+					b1, b2, b3 := encodePCM24bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b3, b2, b1})
 					if err != nil {
 						break
@@ -119,7 +119,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else {
 				var i uint32
 				for ; i < samples; i++ {
-					b1, b2, b3, b4 := PCM32bitEncode(s.property(x(i) * samplePeriod))
+					b1, b2, b3, b4 := encodePCM32bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b4, b3, b2, b1})
 					if err != nil {
 						break

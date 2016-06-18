@@ -55,9 +55,9 @@ func main() {
 			signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),st.MaxX(),s)
 		}
 	case signals.PeriodicSignal:
-		if st.Period()<signals.X(1){
+		if signals.MultiplyX(length,st.Period())<signals.X(1){
 			signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),st.Period()*(signals.MultiplyX(length,signals.X(1))/st.Period()),s)
-			}else{
+		}else{
 			signals.Encode(os.Stdout,uint8(samplePrecision),uint32(sampleRate),signals.MultiplyX(length,st.Period()),s)
 		}
 	case signals.Signal:

@@ -29,7 +29,7 @@ an 'x' value of zero is normally regarded as its start.
 
 PeriodicSignal :- a Signal with an additional method Period(), returning the repeat dx, or the reciprocal of any fundamental frequency, or the sample spacing for onr of te PCM Signal types.
 
-PeriodicLimitedSignal :- both above, implemented by the PCM Signal types.
+PeriodicLimitedSignal :- both above, and is implemented by the PCM Signal types.
 
 */
 package signals
