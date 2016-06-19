@@ -11,10 +11,9 @@ func Save(p io.Writer,c Signal) error {
 }
 
 // read Gob encoding
-func Load(p io.Reader) (Signal,error) {
-	var c Signal
-	err:=gob.NewDecoder(p).Decode(&c)
-	return c,err
+func Load(p io.Reader) (s Signal,err error) {
+	err=gob.NewDecoder(p).Decode(&s)
+	return
 }
 
 
