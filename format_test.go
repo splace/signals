@@ -23,8 +23,10 @@ func TestFormatSaveWav(t *testing.T) {
 
 	var file *os.File
 	var err error
-	if file, err = os.Create(fmt.Sprintf("./test output/Sine%+v.wav", m)); err != nil {panic(err)}else{defer file.Close()}
-	Encode(file, 3, 8000, unitX, m)
+	for _,bytes:=range([]uint8{1,2,3,4,6}){
+		if file, err = os.Create(fmt.Sprintf("./test output/%vbit-Sine%+v.wav",bytes*8, m)); err != nil {panic(err)}else{defer file.Close()}
+		Encode(file, bytes, 8000, unitX, m)
+	}
 }
 
 func TestFormatLoad(t *testing.T) {
@@ -93,12 +95,10 @@ func TestFormatStackPCMs(t *testing.T) {
 }
 
 func TestFormatMultiplexTones(t *testing.T) {
-	m := Modulated{Sine{unitX/1000}, NewConstant(-6)}
-	m1 := Modulated{Sine{unitX/100}, NewConstant(-6)}
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/MultiplexTones.wav"); err != nil {panic(err)}else{defer file.Close()}
-	Encode(file, 1, 44100, 1*unitX, Modulated{m, m1})
+	Encode(file, 1, 44100, 1*unitX, Modulated{Sine{unitX/1000}, Sine{unitX/100}})
 }
 
 func TestFormatSaveLoadSave(t *testing.T) {
@@ -135,4 +135,5 @@ func TestFormatPiping(t *testing.T) {
 	defer wavFile.Close()
 	Encode(wavFile, 1, 8000, unitX, Modulated{Sine{unitX/200}, NewConstant(-6)})
 }
+
 

@@ -49,8 +49,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples])
 			} else {
-				var i uint32
-				for ; i < samples; i++ {
+				for i:=uint32(0); i < samples; i++ {
 					_, err = w.Write([]byte{encodePCM8bit(s.property(x(i) * samplePeriod))})
 					if err != nil {
 						break
@@ -71,8 +70,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*2])
 			} else {
-				var i uint32
-				for ; i < samples; i++ {
+				for i:=uint32(0); i < samples; i++ {
 					b1, b2 := encodePCM16bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b2, b1})
 					if err != nil {
@@ -94,8 +92,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*3])
 			} else {
-				var i uint32
-				for ; i < samples; i++ {
+				for i:=uint32(0); i < samples; i++ {
 					b1, b2, b3 := encodePCM24bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b3, b2, b1})
 					if err != nil {
@@ -117,10 +114,31 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			} else if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*4])
 			} else {
-				var i uint32
-				for ; i < samples; i++ {
+				for i:=uint32(0); i < samples; i++ {
 					b1, b2, b3, b4 := encodePCM32bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b4, b3, b2, b1})
+					if err != nil {
+						break
+					}
+				}
+			}
+			w.Close()
+		}()
+		return r
+	}
+	readPCM48Bit := func(s Signal) io.Reader {
+		r, w := io.Pipe()
+		go func() {
+			// try shortcuts first
+			shifted, ok := s.(Shifted)
+			if pcms, ok2 := shifted.Signal.(PCM48bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
+				w.Write(pcms.Data[uint32(shifted.Shift*6/samplePeriod) : uint32(shifted.Shift*6/samplePeriod)+samples*6])
+			} else if pcm, ok := s.(PCM48bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+				w.Write(pcm.Data[:samples*6])
+			} else {
+				for i:=uint32(0); i < samples; i++ {
+					b1, b2, b3, b4, b5, b6 := encodePCM48bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write([]byte{b6, b5, b4, b3, b2, b1})
 					if err != nil {
 						break
 					}
@@ -212,6 +230,23 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			}
 			if err==io.EOF{err=nil}
 		}
+	case 6:
+		for i,_:=range(readers){
+			readers[i]=readPCM48Bit(ss[i])
+		}
+		if len(readers)==1{
+			_,err=io.Copy(buf, readers[0])
+			if err!=nil{
+				panic(err)
+			}
+		}else{
+			for err==nil{
+				for i,_:=range(readers){
+					_,err=io.CopyN(buf,readers[i],6)
+				}
+			}
+			if err==io.EOF{err=nil}
+		}
 	}
 	if err != nil {
 		log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
@@ -231,6 +266,8 @@ func EncodeLike(w io.Writer, s PeriodicSignal, p LimitedSignal) {
 		Encode(w, 3, uint32(unitX/s.Period()), p.MaxX(), p)
 	case PCM32bit:
 		Encode(w, 4, uint32(unitX/s.Period()), p.MaxX(), p)
+	case PCM48bit:
+		Encode(w, 6, uint32(unitX/s.Period()), p.MaxX(), p)
 	default:
 		Encode(w, 2, uint32(unitX/s.Period()), p.MaxX(), p)
 	}
@@ -250,8 +287,7 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 		return nil, err
 	}
 	pcms := make([]PeriodicLimitedSignal, format.Channels)
-	var c uint32
-	for ; c < uint32(format.Channels); c++ {
+	for c:=uint32(0); c < uint32(format.Channels); c++ {
 		switch format.Bits {
 		case 8:
 			pcms[c] = PCM8bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples : (c+1)*samples]}}
@@ -261,6 +297,8 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 			pcms[c] = PCM24bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*3 : (c+1)*samples*3]}}
 		case 32:
 			pcms[c] = PCM32bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*4 : (c+1)*samples*4]}}
+		case 48:
+			pcms[c] = PCM48bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*6 : (c+1)*samples*6]}}
 		}
 	}
 	return pcms, nil
@@ -341,12 +379,10 @@ func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
 
 func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32) ([]byte, error) {
 	sampleData := make([]byte, samples*channels*sampleBytes)
-	var s uint32
 	var err error
-	for ; s < samples; s++ {
+	for s:=uint32(0); s < samples; s++ {
 		// deinterlace channels by reading directly into separate regions of a byte slice
-		var c uint32
-		for ; c < uint32(channels); c++ {
+		for c:=uint32(0); c < uint32(channels); c++ {
 			if n, err := wav.Read(sampleData[(c*samples+s)*sampleBytes : (c*samples+s+1)*sampleBytes]); err != nil || n != int(sampleBytes) {
 				return nil, ErrWavParse{fmt.Sprintf("data incomplete %v of %v", s, samples)}
 			}
