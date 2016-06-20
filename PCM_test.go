@@ -15,6 +15,15 @@ func TestPCMscale(t *testing.T) {
 	if encodePCM8bit(Y(0))!=0x80{t.Error(encodePCM8bit(Y(0)))}
 	if encodePCM8bit(Y(1))!=0xFF{t.Error(encodePCM8bit(Y(1)))}
 	if encodePCM8bit(Y(-1))!=0x00{t.Error(encodePCM8bit(Y(-1)))}
+
+	if Y(0)!= decodePCM16bit(encodePCM16bit(Y(0))) {t.Error(decodePCM16bit(encodePCM16bit(Y(0))))}
+	if Y(1)!= decodePCM16bit(encodePCM16bit(Y(1))) {t.Error(decodePCM16bit(encodePCM16bit(Y(1))))}
+	if Y(-1)!= decodePCM16bit(encodePCM16bit(Y(-1))) {t.Error(decodePCM16bit(encodePCM16bit(Y(-1))))}
+
+	if Y(0)!= decodePCM32bit(encodePCM32bit(Y(0))) {t.Error(decodePCM32bit(encodePCM32bit(Y(0))))}
+	if Y(1)!= decodePCM32bit(encodePCM32bit(Y(1))) {t.Error(decodePCM32bit(encodePCM32bit(Y(1))))}
+	if Y(-1)!= decodePCM32bit(encodePCM32bit(Y(-1))) {t.Error(decodePCM32bit(encodePCM32bit(Y(-1))))}
+
 	
 }
 

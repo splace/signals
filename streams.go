@@ -6,7 +6,7 @@ import (
 	"errors"
 )
 
-const bufferSize = 16 // 2880   // multiple of ALL possible PCM types. (so always whole number of samples.)
+const bufferSize = 2880   // multiple of ALL possible PCM types. (so always whole number of samples.)
 
 type Wav struct {
 	PeriodicLimitedSignal
@@ -66,7 +66,7 @@ func PCMReader(source string) (io.Reader, uint16, uint32, error) {
 	if resp.Header["Content-Type"][0] == "audio/l16;rate=8000" {
 		return resp.Body, 2, 8000, nil
 	}
-	return nil, 0, 0, errors.New("Source in unrecognised format.")
+	return nil, 0, 0, errors.New("Source in unrecognized format.")
 }
 
 
