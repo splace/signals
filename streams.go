@@ -41,8 +41,9 @@ func NewWav(URL string) (*Wav, error) {
 
 func (s Wav) property(offset x) y {
 	if offset>*s.shift+s.MaxX(){
-		n,err:=s.reader.Read(s.buf)   //TODO shorten slice to how many read
+		n,err:=s.reader.Read(s.buf)  
 		if n<len(s.buf) || err != nil {
+			//if err == EOF s.r.Close()
 			panic(err)
 		}
 		*s.shift=*s.shift+s.MaxX()
