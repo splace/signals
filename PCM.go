@@ -94,7 +94,7 @@ func encodePCM16bit(y y) (byte, byte) {
 }
 
 func decodePCM16bit(b1, b2 byte) y {
-	return y(int32(b1) << (yBits-16)|int32(b2) << (yBits-16))
+	return y(int64(b1) << (yBits-16)|int64(b2) << (yBits-8))
 }
 
 func (s PCM16bit) Encode(w io.Writer) {
@@ -129,7 +129,7 @@ func encodePCM24bit(y y) (byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16)), byte(y >> (yBits - 24))
 }
 func decodePCM24bit(b1, b2, b3 byte) y {
-	return y(int32(b1) << (yBits-24)|int32(b2) << (yBits-16)|int32(b3) << (yBits-8))
+	return y(int64(b1) << (yBits-24)|int64(b2) << (yBits-16)|int64(b3) << (yBits-8))
 }
 
 func (s PCM24bit) Encode(w io.Writer) {
@@ -164,7 +164,7 @@ func encodePCM32bit(y y) (byte, byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16)), byte(y >> (yBits - 24)), byte(y >> (yBits - 32))
 }
 func decodePCM32bit(b1, b2, b3, b4 byte) y {
-	return y(int32(b1) << (yBits-32)|int32(b2) << (yBits-24)|int32(b3) << (yBits-16)|int32(b4) << (yBits-8))
+	return y(int64(b1) << (yBits-32)|int64(b2) << (yBits-24)|int64(b3) << (yBits-16)|int64(b4) << (yBits-8))
 }
 
 func (s PCM32bit) Encode(w io.Writer) {
@@ -199,7 +199,7 @@ func encodePCM48bit(y y) (byte, byte, byte, byte, byte, byte) {
 	return byte(y >> (yBits - 8)), byte(y >> (yBits - 16)), byte(y >> (yBits - 24)), byte(y >> (yBits - 32)), byte(y >> (yBits - 40)), byte(y >> (yBits - 48))
 }
 func decodePCM48bit(b1, b2, b3, b4, b5, b6 byte) y {
-	return y(int32(b1) << (yBits-48)|int32(b2) << (yBits-40)|int32(b3) << (yBits-32)|int32(b4) << (yBits-24)|int32(b5) << (yBits-16)|int32(b6) << (yBits-8))
+	return y(int64(b1) << (yBits-48)|int64(b2) << (yBits-40)|int64(b3) << (yBits-32)|int64(b4) << (yBits-24)|int64(b5) << (yBits-16)|int64(b6) << (yBits-8))
 }
 
 func (s PCM48bit) Encode(w io.Writer) {
