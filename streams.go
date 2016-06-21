@@ -9,6 +9,8 @@ import (
 
 const bufferSize = 12 // 2880 // multiple of ALL possible PCM types. (so always whole number of samples.)
 
+// a Signal read, as required, from a URL.
+// needs to be queried for property values only for increasing x values.
 type Wav struct {
 	PeriodicLimitedSignal
 	reader io.Reader
@@ -22,7 +24,7 @@ func NewWav(URL string) (*Wav, error) {
 		return nil, err
 	}
 	if channels != 1 {
-		return nil, errors.New(URL+":Not mono.")
+		return nil, errors.New(URL+":Needs to be mono.")
 	}
 	
 	//b:=bufio.NewReaderSize(reader,bufferSize)
