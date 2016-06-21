@@ -46,7 +46,7 @@ func NewPCM8bit(sampleRate uint32, Data []byte) PCM8bit {
 
 func (s PCM8bit) property(offset x) y {
 	index := int(offset / s.samplePeriod)
-	if index < 0 || index >= len(s.Data)-1 {
+	if index < 0 || index >= len(s.Data){
 		return 0
 	}
 	return decodePCM8bit(s.Data[index])
@@ -84,7 +84,7 @@ func NewPCM16bit(sampleRate uint32, Data []byte) PCM16bit {
 
 func (s PCM16bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 2
-	if index < 0 || index >= len(s.Data)-3 {
+	if index < 0 || index >= len(s.Data)-1 {
 		return 0
 	}
 	return decodePCM16bit(s.Data[index], s.Data[index+1])
@@ -121,7 +121,7 @@ func NewPCM24bit(sampleRate uint32, Data []byte) PCM24bit {
 
 func (s PCM24bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 3
-	if index < 0 || index >= len(s.Data)-4 {
+	if index < 0 || index >= len(s.Data)-2 {
 		return 0
 	}
 	return decodePCM24bit(s.Data[index], s.Data[index+1], s.Data[index+2])
@@ -156,7 +156,7 @@ func NewPCM32bit(sampleRate uint32, Data []byte) PCM32bit {
 
 func (s PCM32bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 4
-	if index < 0 || index >= len(s.Data)-5 {
+	if index < 0 || index >= len(s.Data)-3 {
 		return 0
 	}
 	return decodePCM32bit(s.Data[index], s.Data[index+1], s.Data[index+2], s.Data[index+3])
@@ -191,7 +191,7 @@ func NewPCM48bit(sampleRate uint32, Data []byte) PCM48bit {
 
 func (s PCM48bit) property(offset x) y {
 	index := int(offset/s.samplePeriod) * 6
-	if index < 0 || index >= len(s.Data)-7 {
+	if index < 0 || index >= len(s.Data)-5 {
 		return 0
 	}
 	return decodePCM48bit(s.Data[index], s.Data[index+1], s.Data[index+2], s.Data[index+3], s.Data[index+4], s.Data[index+5])
@@ -226,12 +226,4 @@ func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) Peri
 	out.Close()
 	return channels[0]
 }
-
-
-/*  Hal3 Tue Jun 21 20:43:09 BST 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Tue Jun 21 20:43:10 BST 2016 */
-/*  Hal3 Tue Jun 21 20:44:47 BST 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Tue Jun 21 20:44:48 BST 2016 */
 

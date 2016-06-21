@@ -7,65 +7,12 @@ import (
 	//"fmt"
 )
 
-const bufferSize = 12 // 2880 // multiple of ALL possible PCM types. (so always whole number of samples.)
+const bufferSize = 12 
 
-// a Signal read, as required, from a URL.
-// needs to be queried for property values only for increasing x values.
-type Wav struct {
-	PeriodicLimitedSignal
-	reader io.Reader
-	buf    []byte
-	shift  *x
-}
-
-func NewWav(URL string) (*Wav, error) {
-	r, channels, bytes, rate, err := PCMReader(URL)
-	if err != nil {
-		return nil, err
-	}
-	if channels != 1 {
-		return nil, errors.New(URL+":Needs to be mono.")
-	}
-	
-	//b:=bufio.NewReaderSize(reader,bufferSize)
-	b := make([]byte, bufferSize)
-	_, err = r.Read(b)
-	var s x
-	switch bytes {
-	case 1:
-		return &Wav{NewPCM8bit(rate, b), r, b, &s}, nil
-	case 2:
-		return &Wav{NewPCM16bit(rate, b), r, b, &s}, nil
-	case 3:
-		return &Wav{NewPCM24bit(rate, b), r, b, &s}, nil
-	case 4:
-		return &Wav{NewPCM32bit(rate, b), r, b, &s}, nil
-	case 6:
-		return &Wav{NewPCM48bit(rate, b), r, b, &s}, nil
-	}
-	return nil, ErrWavParse{"Source bit rate not supported."}
-}
-
-func (s Wav) property(offset x) y {
-	if offset > *s.shift+s.MaxX() {
-		n, err := s.reader.Read(s.buf)
-		if n < len(s.buf){
-			b:=s.buf[n:]
-			for n<len(b) && err==nil {
-				n, err = s.reader.Read(b)
-				b=b[n:]
-			}
-		}		
-		if err != nil {
-			panic(err)
-		}
-		*s.shift = *s.shift + s.MaxX()
-	}
-	return s.PeriodicLimitedSignal.property(offset - *s.shift)
-}
-
+// a PCM-Signal read, as required, from a URL.
+// if queried for its property value for an x that is more than 24 samples lower than a previous query, will return zero.
 type Wave struct{
-	PeriodicLimitedSignal
+	Shifted
 	reader io.Reader
 }
 
@@ -77,27 +24,93 @@ func NewWave(URL string) (*Wave, error) {
 	if channels != 1 {
 		return nil, errors.New(URL+":Needs to be mono.")
 	}
-	
-	//b:=bufio.NewReaderSize(reader,bufferSize)
-	b := make([]byte, bufferSize)
-	_, err = r.Read(b)
+	b := make([]byte, bufferSize*bytes)
+	n, err := r.Read(b)
+	if err != nil {
+		return nil, err
+	}
+	b=b[:n]
 	switch bytes {
 	case 1:
-		return &Wave{NewPCM8bit(rate, b), r}, nil
+		return &Wave{Shifted{NewPCM8bit(rate, b),0},r}, nil
 	case 2:
-		return &Wave{NewPCM16bit(rate, b), r}, nil
+		return &Wave{Shifted{NewPCM16bit(rate, b),0},r}, nil
 	case 3:
-		return &Wave{NewPCM24bit(rate, b), r}, nil
+		return &Wave{Shifted{NewPCM24bit(rate, b),0},r}, nil
 	case 4:
-		return &Wave{NewPCM32bit(rate, b), r}, nil
+		return &Wave{Shifted{NewPCM32bit(rate, b),0},r}, nil
 	case 6:
-		return &Wave{NewPCM48bit(rate, b), r}, nil
+		return &Wave{Shifted{NewPCM48bit(rate, b),0},r}, nil
 	}
 	return nil, ErrWavParse{"Source bit rate not supported."}
 }
 
 func (s *Wave) property(offset x) y {
-	return s.PeriodicLimitedSignal.property(offset)
+	if offset > s.MaxX() {
+		switch st:=s.Shifted.Signal.(type) {
+		case PCM8bit:
+			b:=make([]byte,bufferSize)
+			st.Data=append(st.Data,b...)
+			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize:])
+			if err != nil {
+				panic(err)
+			}
+			st.Data=st.Data[:len(st.Data)-bufferSize+n]
+			if len(st.Data)>bufferSize*3{
+				st.Data=st.Data[bufferSize:]
+				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			}
+		case PCM16bit:
+			b:=make([]byte,bufferSize*2)
+			st.Data=append(st.Data,b...)
+			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*2:])
+			if err != nil {
+				panic(err)
+			}
+			st.Data=st.Data[:len(st.Data)-bufferSize*2+n]
+			if len(st.Data)>bufferSize*6{
+				st.Data=st.Data[bufferSize*2:]
+				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			}
+		case PCM24bit:
+			b:=make([]byte,bufferSize*3)
+			st.Data=append(st.Data,b...)
+			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*3:])
+			if err != nil {
+				panic(err)
+			}
+			st.Data=st.Data[:len(st.Data)-bufferSize*3+n]
+			if len(st.Data)>bufferSize*9{
+				st.Data=st.Data[bufferSize*3:]
+				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			}
+		case PCM32bit:
+			b:=make([]byte,bufferSize*4)
+			st.Data=append(st.Data,b...)
+			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*4:])
+			if err != nil {
+				panic(err)
+			}
+			st.Data=st.Data[:len(st.Data)-bufferSize*4+n]
+			if len(st.Data)>bufferSize*12{
+				st.Data=st.Data[bufferSize*4:]
+				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			}
+		case PCM48bit:
+			b:=make([]byte,bufferSize*6)
+			st.Data=append(st.Data,b...)
+			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*6:])
+			if err != nil {
+				panic(err)
+			}
+			st.Data=st.Data[:len(st.Data)-bufferSize*6+n]
+			if len(st.Data)>bufferSize*18{
+				st.Data=st.Data[bufferSize*6:]
+				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			}
+		}
+	}
+	return s.Shifted.property(offset)
 }
 
 func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
