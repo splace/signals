@@ -13,8 +13,8 @@ type PCM struct {
 }
 
 // make a PCM type, from raw bytes.
-func NewPCM(sampleRate uint32, Data []byte) PCM {
-	return PCM{X(1 / float32(sampleRate)), Data}
+func NewPCM(sampleRate uint32, Data []byte) *PCM {
+	return &PCM{X(1 / float32(sampleRate)), Data}
 }
 
 func (p PCM) Period() x {
@@ -34,10 +34,10 @@ func (p PCM) Split(sample uint32, sampleBytes uint8) (head PCM, tail PCM) {
 	return
 }
 
-// 8 bit PCMSignal.
+// 8 bit PCM Signal.
 // unlike the other precisions of PCM, that use signed data, 8bit uses un-signed. (the default OpenAL and wave file representation for 8bit precision.)
 type PCM8bit struct {
-	PCM
+	*PCM
 }
 
 func NewPCM8bit(sampleRate uint32, Data []byte) PCM8bit {
@@ -70,12 +70,12 @@ func (s PCM8bit) Encode(w io.Writer) {
 }
 func (p PCM8bit) Split(position x) (PCM8bit, PCM8bit) {
 	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 1)
-	return PCM8bit{head}, PCM8bit{tail}
+	return PCM8bit{&head}, PCM8bit{&tail}
 }
 
 // 16 bit PCM Signal
 type PCM16bit struct {
-	PCM
+	*PCM
 }
 
 func NewPCM16bit(sampleRate uint32, Data []byte) PCM16bit {
@@ -107,12 +107,12 @@ func (p PCM16bit) MaxX() x {
 
 func (p PCM16bit) Split(position x) (PCM16bit, PCM16bit) {
 	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 2)
-	return PCM16bit{head}, PCM16bit{tail}
+	return PCM16bit{&head}, PCM16bit{&tail}
 }
 
 // 24 bit PCM Signal
 type PCM24bit struct {
-	PCM
+	*PCM
 }
 
 func NewPCM24bit(sampleRate uint32, Data []byte) PCM24bit {
@@ -142,12 +142,12 @@ func (p PCM24bit) MaxX() x {
 
 func (p PCM24bit) Split(position x) (PCM24bit, PCM24bit) {
 	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 3)
-	return PCM24bit{head}, PCM24bit{tail}
+	return PCM24bit{&head}, PCM24bit{&tail}
 }
 
 // 32 bit PCM Signal
 type PCM32bit struct {
-	PCM
+	*PCM
 }
 
 func NewPCM32bit(sampleRate uint32, Data []byte) PCM32bit {
@@ -177,12 +177,12 @@ func (p PCM32bit) MaxX() x {
 
 func (p PCM32bit) Split(position x) (PCM32bit, PCM32bit) {
 	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 4)
-	return PCM32bit{head}, PCM32bit{tail}
+	return PCM32bit{&head}, PCM32bit{&tail}
 }
 
 // 48 bit PCM Signal
 type PCM48bit struct {
-	PCM
+	*PCM
 }
 
 func NewPCM48bit(sampleRate uint32, Data []byte) PCM48bit {
@@ -212,7 +212,7 @@ func (p PCM48bit) MaxX() x {
 
 func (p PCM48bit) Split(position x) (PCM48bit, PCM48bit) {
 	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 6)
-	return PCM48bit{head}, PCM48bit{tail}
+	return PCM48bit{&head}, PCM48bit{&tail}
 }
 
 // make a PeriodicLimitedSignal by sampling from another Signal, using provided parameters.
@@ -228,4 +228,10 @@ func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) Peri
 }
 
 
+/*  Hal3 Tue Jun 21 20:43:09 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Tue Jun 21 20:43:10 BST 2016 */
+/*  Hal3 Tue Jun 21 20:44:47 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Tue Jun 21 20:44:48 BST 2016 */
 

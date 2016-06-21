@@ -290,15 +290,15 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 	for c:=uint32(0); c < uint32(format.Channels); c++ {
 		switch format.Bits {
 		case 8:
-			pcms[c] = PCM8bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples : (c+1)*samples]}}
+			pcms[c] = PCM8bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples : (c+1)*samples]}}
 		case 16:
-			pcms[c] = PCM16bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*2 : (c+1)*samples*2]}}
+			pcms[c] = PCM16bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*2 : (c+1)*samples*2]}}
 		case 24:
-			pcms[c] = PCM24bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*3 : (c+1)*samples*3]}}
+			pcms[c] = PCM24bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*3 : (c+1)*samples*3]}}
 		case 32:
-			pcms[c] = PCM32bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*4 : (c+1)*samples*4]}}
+			pcms[c] = PCM32bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*4 : (c+1)*samples*4]}}
 		case 48:
-			pcms[c] = PCM48bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*6 : (c+1)*samples*6]}}
+			pcms[c] = PCM48bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*6 : (c+1)*samples*6]}}
 		}
 	}
 	return pcms, nil

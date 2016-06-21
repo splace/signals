@@ -64,6 +64,42 @@ func (s Wav) property(offset x) y {
 	return s.PeriodicLimitedSignal.property(offset - *s.shift)
 }
 
+type Wave struct{
+	PeriodicLimitedSignal
+	reader io.Reader
+}
+
+func NewWave(URL string) (*Wave, error) {
+	r, channels, bytes, rate, err := PCMReader(URL)
+	if err != nil {
+		return nil, err
+	}
+	if channels != 1 {
+		return nil, errors.New(URL+":Needs to be mono.")
+	}
+	
+	//b:=bufio.NewReaderSize(reader,bufferSize)
+	b := make([]byte, bufferSize)
+	_, err = r.Read(b)
+	switch bytes {
+	case 1:
+		return &Wave{NewPCM8bit(rate, b), r}, nil
+	case 2:
+		return &Wave{NewPCM16bit(rate, b), r}, nil
+	case 3:
+		return &Wave{NewPCM24bit(rate, b), r}, nil
+	case 4:
+		return &Wave{NewPCM32bit(rate, b), r}, nil
+	case 6:
+		return &Wave{NewPCM48bit(rate, b), r}, nil
+	}
+	return nil, ErrWavParse{"Source bit rate not supported."}
+}
+
+func (s *Wave) property(offset x) y {
+	return s.PeriodicLimitedSignal.property(offset)
+}
+
 func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
 	resp, err := http.Get(source)
 	if err != nil {
