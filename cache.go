@@ -25,5 +25,5 @@ func (s Cached) property(offset x) y {
 	return v
 }
 
-
+// TODO encode and stream back to create windowed, potentially lossy cache.
 
