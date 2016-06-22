@@ -6,15 +6,17 @@ import (
 	"net"
 	"net/url"
 )
+const testURL="http://www.nch.com.au/acm/8k8bitpcm.wav"
+// const testURL="http://localhost:8086/wavs/s16/4.wav?f=8000"
 
 func TestStreamsRemoteSave(t *testing.T) {
-	s,err:=NewWave("http://www.nch.com.au/acm/8k8bitpcm.wav")
+	s,err:=NewWave(testURL)
 	if err!=nil{
 		if ue,ok:=err.(*url.Error);ok {
 			if oe,ok:=ue.Err.(*net.OpError);ok{
 				if se,ok:=oe.Err.(*os.SyscallError);ok{
 					if se.Err.Error()=="connection refused"{
-						t.Skip(se.Err.Error())
+						t.Skip(ue.Error()+se.Err.Error())
 					}
 				}
 			}
@@ -29,13 +31,13 @@ func TestStreamsRemoteSave(t *testing.T) {
 }
 
 func TestStreamsLocalSave(t *testing.T) {
-	s,err:=NewWave("http://localhost:8086/wavs/s16/4.wav?f=8000")
+	s,err:=NewWave(testURL)
 	if err!=nil{
 		if ue,ok:=err.(*url.Error);ok {
 			if oe,ok:=ue.Err.(*net.OpError);ok{
 				if se,ok:=oe.Err.(*os.SyscallError);ok{
 					if se.Err.Error()=="connection refused"{
-						t.Skip(se.Err.Error())
+						t.Skip(ue.Error()+se.Err.Error())
 					}
 				}
 			}
@@ -51,7 +53,7 @@ func TestStreamsLocalSave(t *testing.T) {
 
 
 func TestStreamsLocalRampUpSave(t *testing.T) {
-	s,err:=NewWave("http://localhost:8086/wavs/s16/4.wav?f=8000")
+	s,err:=NewWave(testURL)
 	if err!=nil{
 		if ue,ok:=err.(*url.Error);ok {
 			if oe,ok:=ue.Err.(*net.OpError);ok{
@@ -71,5 +73,4 @@ func TestStreamsLocalRampUpSave(t *testing.T) {
 	defer file.Close()
 	Encode(file, 1, 8000, unitX*3, fs)
 }
-
 

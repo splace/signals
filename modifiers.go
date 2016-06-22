@@ -28,10 +28,6 @@ func (s Shifted) MaxX() x {
 	return s.Signal.(LimitedSignal).MaxX()+s.Shift
 }
 
-func (p Shifted) Period() x {
-	return p.Signal.(PeriodicSignal).Period()
-}
-
 // a Signal that scales the x of another Signal
 type Compressed struct {
 	 Signal

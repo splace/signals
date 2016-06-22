@@ -7,10 +7,10 @@ import (
 	//"fmt"
 )
 
-const bufferSize = 12 
+const bufferSize = 16 
 
 // a PCM-Signal read, as required, from a URL.
-// if queried for its property value for an x that is more than 24 samples lower than a previous query, will return zero.
+// if queried for its property value for an x that is more than 32 samples lower than a previous query, will return zero.
 type Wave struct{
 	Shifted
 	reader io.Reader
