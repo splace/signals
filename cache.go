@@ -14,14 +14,14 @@ func NewCached(s Signal) Cached {
 
 func (s Cached) property(offset x) y {
 	if v,ok:=s.cache[offset];ok {return v}
-	v:=s.Signal.property(offset)
-	s.cache[offset]=v
 	if len(s.cache)>cacheSize+10{
 		for i:=range(s.cache){
 			delete(s.cache,i)
 			if len(s.cache)<=cacheSize{break}
 		}
 	}
+	v:=s.Signal.property(offset)
+	s.cache[offset]=v
 	return v
 }
 
