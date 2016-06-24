@@ -23,7 +23,9 @@ type Wave struct{
 
 func NewWave(URL string) (*Wave, error) {
 	r, channels, bytes, rate, err := PCMReader(URL)
-	failOn(err)
+	if err!=nil {
+		return nil,err
+	}	
 	if channels != 1 {
 		return nil, errors.New(URL+":Needs to be mono.")
 	}
@@ -56,8 +58,7 @@ func (s *Wave) property(offset x) y {
 	if offset > s.MaxX() {
 		switch st:=s.Shifted.Signal.(type) {
 		case PCM8bit:
-			b:=make([]byte,bufferSize)
-			st.Data=append(st.Data,b...)
+			st.Data=append(st.Data,make([]byte,bufferSize)...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize:])
 			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize+n]
@@ -66,8 +67,7 @@ func (s *Wave) property(offset x) y {
 				s.Shifted.Shift+=bufferSize*st.samplePeriod
 			}
 		case PCM16bit:
-			b:=make([]byte,bufferSize*2)
-			st.Data=append(st.Data,b...)
+			st.Data=append(st.Data,make([]byte,bufferSize*2)...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*2:])
 			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize*2+n]
@@ -76,8 +76,7 @@ func (s *Wave) property(offset x) y {
 				s.Shifted.Shift+=bufferSize*st.samplePeriod
 			}
 		case PCM24bit:
-			b:=make([]byte,bufferSize*3)
-			st.Data=append(st.Data,b...)
+			st.Data=append(st.Data,make([]byte,bufferSize*3)...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*3:])
 			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize*3+n]
@@ -86,8 +85,7 @@ func (s *Wave) property(offset x) y {
 				s.Shifted.Shift+=bufferSize*st.samplePeriod
 			}
 		case PCM32bit:
-			b:=make([]byte,bufferSize*4)
-			st.Data=append(st.Data,b...)
+			st.Data=append(st.Data,make([]byte,bufferSize*4)...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*4:])
 			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize*4+n]
@@ -96,8 +94,7 @@ func (s *Wave) property(offset x) y {
 				s.Shifted.Shift+=bufferSize*st.samplePeriod
 			}
 		case PCM48bit:
-			b:=make([]byte,bufferSize*6)
-			st.Data=append(st.Data,b...)
+			st.Data=append(st.Data,make([]byte,bufferSize*6)...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*6:])
 			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize*6+n]
@@ -110,12 +107,23 @@ func (s *Wave) property(offset x) y {
 	return s.Shifted.property(offset)
 }
 
+
+//func updateShifted(s Shifted, r io.Reader, b *[]byte, blockSize int) (err error){
+//	b=append(b,make([]byte,bufferSize*blockSize)...)
+//	n, err := r.Read(b[len(b)-bufferSize*blockSize:])
+//	failOn(err)
+//	b=b[:len(b)-bufferSize*blockSize+n]
+//	if len(b)>bufferSize*blockSize*3{
+//		b=b[bufferSize*blockSize:]
+//		s.Shift+=bufferSize*s.samplePeriod
+//	}
+//}
+
 func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
 	resp, err := http.Get(source)
 	if err != nil {
 		return nil, 0, 0, 0, err
 	}
-	//fmt.Println(resp.Header)
 	if resp.Header["Content-Type"][0] == "sound/wav" || resp.Header["Content-Type"][0] == "audio/x-wav" {
 		_, format, err := readHeader(resp.Body)
 		if err != nil {

@@ -15,7 +15,7 @@ func TestStreamsRemoteSave(t *testing.T) {
 			if oe,ok:=ue.Err.(*net.OpError);ok{
 				if se,ok:=oe.Err.(*os.SyscallError);ok{
 					if se.Err.Error()=="connection refused"{
-						t.Skip(ue.Error()+se.Err.Error())
+						t.Skip(ue.Error())
 					}
 				}
 			}
@@ -29,13 +29,13 @@ func TestStreamsRemoteSave(t *testing.T) {
 }
 
 func TestStreamsLocalSave(t *testing.T) {
-	s,err:=NewWave(testLocalURL))
+	s,err:=NewWave(testLocalURL)
 	if err!=nil{
 		if ue,ok:=err.(*url.Error);ok {
 			if oe,ok:=ue.Err.(*net.OpError);ok{
 				if se,ok:=oe.Err.(*os.SyscallError);ok{
 					if se.Err.Error()=="connection refused"{
-						t.Skip(ue.Error()+se.Err.Error())
+						t.Skip(ue.Error())
 					}
 				}
 			}
@@ -50,7 +50,7 @@ func TestStreamsLocalSave(t *testing.T) {
 
 
 func TestStreamsLocalRampUpSave(t *testing.T) {
-	fs:=Modulated{&Wave{URL:testLocalURL)},RampUp{unitX}}
+	fs:=Modulated{&Wave{URL:testLocalURL},RampUp{unitX}}
 	file, err := os.Create("./test output/localFadeInStream.wav")
 	if err != nil {panic(err)}
 	defer file.Close()
@@ -61,7 +61,7 @@ func TestStreamsGOBSaveLoadWave(t *testing.T) {
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/wave.gob"); err != nil {panic(err)}else{defer file.Close()}
-	m := Modulated{&Wave{URL:testLocalURL)},RampUp{unitX}}
+	m := Modulated{&Wave{URL:testLocalURL},RampUp{unitX}}
 	if err := Save(file,m); err != nil {
 		panic(err)
 	}

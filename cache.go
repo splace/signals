@@ -33,8 +33,6 @@ type Buffered struct {
 	reader io.Reader
 }
 
-
-
 func NewBuffered(s LimitedSignal,sampleBytes uint8,sampleRate uint32) Buffered {
 	r, w := io.Pipe()
 	Encode(w, sampleBytes, sampleRate, s.MaxX(), s)

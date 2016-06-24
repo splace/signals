@@ -23,12 +23,12 @@ func TestCacheStreamsSave(t *testing.T) {
 		}
 		t.Fatal(err)
 	}
-	t.Logf("%v\n",s)
+	//t.Logf("%v\n",s)
 	fs:=NewCached(s)
 	file, err := os.Create("./test output/cachedStream.wav")
 	if err != nil {panic(err)}
-	defer file.Close()
 	Encode(file, 1, 8000, unitX*3, fs)
+	file.Close()
 
 }
 
