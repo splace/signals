@@ -1,5 +1,5 @@
 /*
-Package signals generates, stores and manipulates abstract signals, when its imported it can then be used with specific real-world quantities.
+Package signals generates, stores, downloads and manipulates abstract signals, when its imported it can then be used with specific real-world quantities.
 
 
 Definition of signal

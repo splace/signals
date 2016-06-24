@@ -38,11 +38,11 @@ Features:
 
   * sources:- Sine,Square,Pulse,Heavyside,Bittrain,RampUp,RampDown,Sigmoid,PCM{8|16|24|32}bit (PCM sources can be stored in wav files)
 	
-  * modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,RateModulated,Triggered,Segmented
+  * modifiers:- Delayed,Spedup,Looped,Inverted,Reversed,Cached,RateModulated,Triggered,Segmented
 
   * combiners:- Modulate,Stack,Composite
 
-  * extras(non-core):- Depiction,ADSR,Noise
+  * extras(non-core):- Depiction,ADSR,Noise,Streamed
 
 
 Extras examples: Depiction of "Stack{Sine{unitX/100}, Sine{unitX/50}}", red/black,(3200px.600px) for 4 * unitX. 
