@@ -39,20 +39,21 @@ func (l y) String() string {
 	return fmt.Sprintf("%7.2f%%", 100*float32(l)/float32(unitY))
 }
 
-// LimitedSignals are Signals that are assumed to have zero y after MaxX().
+// a LimitedSignal is a Signal that is assumed to have zero y after MaxX().
 type LimitedSignal interface {
 	Signal
 	MaxX() x
 }
 
-// PeriodicSignals are Signals that repeat, that is, they give the same y, if x changes by the amount returned by Period().
+// a PeriodicSignal is a Signal that repeats, that is, gives the same y, if x changes by the amount returned by Period().
 type PeriodicSignal interface {
 	Signal
 	Period() x
 }
 
-// PeriodicLimitedSignal are Signals that repeat over Period() and dont exceed MaxX().
+// a PeriodicLimitedSignal is a Signal that repeats over Period() and doesn't exceed MaxX().
 type PeriodicLimitedSignal interface {
-	LimitedSignal
+	Signal
+	MaxX() x
 	Period() x
 }
