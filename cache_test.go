@@ -24,7 +24,7 @@ func TestCacheStreamsSave(t *testing.T) {
 		t.Fatal(err)
 	}
 	//t.Logf("%v\n",s)
-	fs:=NewCached(s)
+	fs:=Cached{s,make(map[x]y)}
 	file, err := os.Create("./test output/cachedStream.wav")
 	if err != nil {panic(err)}
 	Encode(file, 1, 8000, unitX*3, fs)
