@@ -4,8 +4,12 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"encoding/gob"
 	//"fmt"
 )
+func init() {
+	gob.Register(&Wave{})
+}
 
 const bufferSize = 16 
 
@@ -13,48 +17,49 @@ const bufferSize = 16
 // if queried for its property value for an x that is more than 32 samples lower than a previous query, will return zero.
 type Wave struct{
 	Shifted
+	URL string
 	reader io.Reader
 }
 
 func NewWave(URL string) (*Wave, error) {
 	r, channels, bytes, rate, err := PCMReader(URL)
-	if err != nil {
-		return nil, err
-	}
+	failOn(err)
 	if channels != 1 {
 		return nil, errors.New(URL+":Needs to be mono.")
 	}
 	b := make([]byte, bufferSize*bytes)
 	n, err := r.Read(b)
-	if err != nil {
-		return nil, err
-	}
+	failOn(err)
 	b=b[:n]
 	switch bytes {
 	case 1:
-		return &Wave{Shifted{NewPCM8bit(rate, b),0},r}, nil
+		return &Wave{Shifted{NewPCM8bit(rate, b),0},URL,r}, nil
 	case 2:
-		return &Wave{Shifted{NewPCM16bit(rate, b),0},r}, nil
+		return &Wave{Shifted{NewPCM16bit(rate, b),0},URL,r}, nil
 	case 3:
-		return &Wave{Shifted{NewPCM24bit(rate, b),0},r}, nil
+		return &Wave{Shifted{NewPCM24bit(rate, b),0},URL,r}, nil
 	case 4:
-		return &Wave{Shifted{NewPCM32bit(rate, b),0},r}, nil
+		return &Wave{Shifted{NewPCM32bit(rate, b),0},URL,r}, nil
 	case 6:
-		return &Wave{Shifted{NewPCM48bit(rate, b),0},r}, nil
+		return &Wave{Shifted{NewPCM48bit(rate, b),0},URL,r}, nil
 	}
 	return nil, ErrWavParse{"Source bit rate not supported."}
 }
 
 func (s *Wave) property(offset x) y {
+	if s.reader==nil{
+		wav,err:=NewWave(s.URL)
+		failOn(err)
+		s.Shifted=wav.Shifted
+		s.reader=wav.reader
+	}
 	if offset > s.MaxX() {
 		switch st:=s.Shifted.Signal.(type) {
 		case PCM8bit:
 			b:=make([]byte,bufferSize)
 			st.Data=append(st.Data,b...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize:])
-			if err != nil {
-				panic(err)
-			}
+			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize+n]
 			if len(st.Data)>bufferSize*3{
 				st.Data=st.Data[bufferSize:]
@@ -64,9 +69,7 @@ func (s *Wave) property(offset x) y {
 			b:=make([]byte,bufferSize*2)
 			st.Data=append(st.Data,b...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*2:])
-			if err != nil {
-				panic(err)
-			}
+			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize*2+n]
 			if len(st.Data)>bufferSize*6{
 				st.Data=st.Data[bufferSize*2:]
@@ -76,9 +79,7 @@ func (s *Wave) property(offset x) y {
 			b:=make([]byte,bufferSize*3)
 			st.Data=append(st.Data,b...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*3:])
-			if err != nil {
-				panic(err)
-			}
+			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize*3+n]
 			if len(st.Data)>bufferSize*9{
 				st.Data=st.Data[bufferSize*3:]
@@ -88,9 +89,7 @@ func (s *Wave) property(offset x) y {
 			b:=make([]byte,bufferSize*4)
 			st.Data=append(st.Data,b...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*4:])
-			if err != nil {
-				panic(err)
-			}
+			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize*4+n]
 			if len(st.Data)>bufferSize*12{
 				st.Data=st.Data[bufferSize*4:]
@@ -100,9 +99,7 @@ func (s *Wave) property(offset x) y {
 			b:=make([]byte,bufferSize*6)
 			st.Data=append(st.Data,b...)
 			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*6:])
-			if err != nil {
-				panic(err)
-			}
+			failOn(err)
 			st.Data=st.Data[:len(st.Data)-bufferSize*6+n]
 			if len(st.Data)>bufferSize*18{
 				st.Data=st.Data[bufferSize*6:]
@@ -132,4 +129,6 @@ func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
 	return nil, 0, 0, 0, errors.New("Source in unrecognized format.")
 }
 
-
+func failOn(e error){
+	if e!=nil {panic(e)}
+}

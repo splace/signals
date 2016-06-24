@@ -2,7 +2,7 @@ package signals
 
 const cacheSize = 256
 
-// a Signal that stores, some, property values, rather than always getting them from the embedded Signal.
+// a Signal that stores and reuses, some, random property values, rather than always getting them from the embedded Signal.
 type Cached struct {
 	Signal
 	cache map[x] y
@@ -25,5 +25,9 @@ func (s Cached) property(offset x) y {
 	return v
 }
 
-// TODO encode and stream back to create windowed, potentially lossy cache.
+// a Signal that stores and reuses, recent sequential and evenly spaced, property values, rather than always getting them from the embedded Signal.
+//type Buffered struct {
+//	Signal
+//	cache map[x] y
+//}
 

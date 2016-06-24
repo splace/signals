@@ -39,7 +39,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 	buf := bufio.NewWriter(w)
 	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
-	readPCM8Bit := func(s Signal) io.Reader {
+	readerForPCM8Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
@@ -60,7 +60,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}()
 		return r
 	}
-	readPCM16Bit := func(s Signal) io.Reader {
+	readerForPCM16Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
@@ -82,7 +82,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}()
 		return r
 	}
-	readPCM24Bit := func(s Signal) io.Reader {
+	readerForPCM24Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
@@ -104,7 +104,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}()
 		return r
 	}
-	readPCM32Bit := func(s Signal) io.Reader {
+	readerForPCM32Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
@@ -126,7 +126,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}()
 		return r
 	}
-	readPCM48Bit := func(s Signal) io.Reader {
+	readerForPCM48Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
@@ -164,7 +164,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 	switch sampleBytes {
 	case 1:
 		for i,_:=range(readers){
-			readers[i]=readPCM8Bit(ss[i])
+			readers[i]=readerForPCM8Bit(ss[i])
 		}
 		if len(readers)==1{
 			_,err=io.Copy(buf, readers[0])
@@ -181,7 +181,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}
 	case 2:
 		for i,_:=range(readers){
-			readers[i]=readPCM16Bit(ss[i])
+			readers[i]=readerForPCM16Bit(ss[i])
 		}
 		if len(readers)==1{
 			_,err=io.Copy(buf, readers[0])
@@ -198,7 +198,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}
 	case 3:
 		for i,_:=range(readers){
-			readers[i]=readPCM24Bit(ss[i])
+			readers[i]=readerForPCM24Bit(ss[i])
 		}
 		if len(readers)==1{
 			_,err=io.Copy(buf, readers[0])
@@ -215,7 +215,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}
 	case 4:
 		for i,_:=range(readers){
-			readers[i]=readPCM32Bit(ss[i])
+			readers[i]=readerForPCM32Bit(ss[i])
 		}
 		if len(readers)==1{
 			_,err=io.Copy(buf, readers[0])
@@ -232,7 +232,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}
 	case 6:
 		for i,_:=range(readers){
-			readers[i]=readPCM48Bit(ss[i])
+			readers[i]=readerForPCM48Bit(ss[i])
 		}
 		if len(readers)==1{
 			_,err=io.Copy(buf, readers[0])
