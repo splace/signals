@@ -319,24 +319,34 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 		return nil, err
 	}
 	pcms := make([]PeriodicLimitedSignal, format.Channels)
-	for c:=uint32(0); c < uint32(format.Channels); c++ {
-		switch format.Bits {
-		case 8:
+	switch format.Bits {
+	case 8:
+		for c:=uint32(0); c < uint32(format.Channels); c++ {
 			pcms[c] = PCM8bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples : (c+1)*samples]}}
-		case 16:
-			pcms[c] = PCM16bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*2 : (c+1)*samples*2]}}
-		case 24:
-			pcms[c] = PCM24bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*3 : (c+1)*samples*3]}}
-		case 32:
-			pcms[c] = PCM32bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*4 : (c+1)*samples*4]}}
-		case 48:
-			pcms[c] = PCM48bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*6 : (c+1)*samples*6]}}
-		case 64:
-			pcms[c] = PCM64bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*8 : (c+1)*samples*8]}}
-		case default:
-			return nil,ErrWavParse{Sprintf("Unsupported bit depth:%i.",format.bits)}
 		}
-	}
+	case 16:
+		for c:=uint32(0); c < uint32(format.Channels); c++ {
+			pcms[c] = PCM16bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*2 : (c+1)*samples*2]}}
+		}
+	case 24:
+		for c:=uint32(0); c < uint32(format.Channels); c++ {
+			pcms[c] = PCM24bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*3 : (c+1)*samples*3]}}
+		}
+	case 32:
+		for c:=uint32(0); c < uint32(format.Channels); c++ {
+			pcms[c] = PCM32bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*4 : (c+1)*samples*4]}}
+		}
+	case 48:
+		for c:=uint32(0); c < uint32(format.Channels); c++ {
+			pcms[c] = PCM48bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*6 : (c+1)*samples*6]}}
+		}
+	case 64:
+		for c:=uint32(0); c < uint32(format.Channels); c++ {
+			pcms[c] = PCM64bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*8 : (c+1)*samples*8]}}
+		}
+	default:
+			return nil,ErrWavParse{fmt.Sprintf("Unsupported bit depth (%i).",format.Bits)}
+		}
 	return pcms, nil
 }
 
