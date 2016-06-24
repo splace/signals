@@ -6,11 +6,10 @@ import (
 	"net"
 	"net/url"
 )
-const testURL="http://www.nch.com.au/acm/8k8bitpcm.wav"
-// const testURL="http://localhost:8086/wavs/s16/4.wav?f=8000"
+const testRemoteURL="http://www.nch.com.au/acm/8k8bitpcm.wav"
 
 func TestStreamsRemoteSave(t *testing.T) {
-	s,err:=NewWave(testURL)
+	s,err:=NewWave(testRemoteURL)
 	if err!=nil{
 		if ue,ok:=err.(*url.Error);ok {
 			if oe,ok:=ue.Err.(*net.OpError);ok{
@@ -30,7 +29,7 @@ func TestStreamsRemoteSave(t *testing.T) {
 }
 
 func TestStreamsLocalSave(t *testing.T) {
-	s,err:=NewWave("http://localhost:8086/wavs/s16/4.wav?f=8000")
+	s,err:=NewWave(testLocalURL))
 	if err!=nil{
 		if ue,ok:=err.(*url.Error);ok {
 			if oe,ok:=ue.Err.(*net.OpError);ok{
@@ -51,7 +50,7 @@ func TestStreamsLocalSave(t *testing.T) {
 
 
 func TestStreamsLocalRampUpSave(t *testing.T) {
-	fs:=Modulated{&Wave{URL:"http://localhost:8086/wavs/s16/4.wav?f=8000"},RampUp{unitX}}
+	fs:=Modulated{&Wave{URL:testLocalURL)},RampUp{unitX}}
 	file, err := os.Create("./test output/localFadeInStream.wav")
 	if err != nil {panic(err)}
 	defer file.Close()
@@ -62,7 +61,7 @@ func TestStreamsGOBSaveLoadWave(t *testing.T) {
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/wave.gob"); err != nil {panic(err)}else{defer file.Close()}
-	m := Modulated{&Wave{URL:"http://localhost:8086/wavs/s16/4.wav?f=8000"},RampUp{unitX}}
+	m := Modulated{&Wave{URL:testLocalURL)},RampUp{unitX}}
 	if err := Save(file,m); err != nil {
 		panic(err)
 	}

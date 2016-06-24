@@ -148,9 +148,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}()
 		return r
 	}
-	binary.Write(w, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
-	binary.Write(w, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
-	binary.Write(w, binary.LittleEndian, formatChunk{
+	binary.Write(buf, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
+	binary.Write(buf, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
+	binary.Write(buf, binary.LittleEndian, formatChunk{
 		Code:        1,
 		Channels:    uint16(len(ss)),
 		SampleRate:  sampleRate,
@@ -158,101 +158,59 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		SampleBytes: uint16(sampleBytes)*uint16(len(ss)),
 		Bits:        uint16(8 * sampleBytes),
 	})
-	fmt.Fprint(w, "data")
-	binary.Write(w, binary.LittleEndian, samples*uint32(sampleBytes)*uint32(len(ss)))
+	fmt.Fprint(buf, "data")
+	binary.Write(buf, binary.LittleEndian, samples*uint32(sampleBytes)*uint32(len(ss)))
 	readers:=make([]io.Reader,len(ss))
 	switch sampleBytes {
 	case 1:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM8Bit(ss[i])
 		}
-		if len(readers)==1{
-			_,err=io.Copy(buf, readers[0])
-			if err!=nil{
-				panic(err)
-			}
-		}else{
-			for err==nil{
-				for i,_:=range(readers){
-					_,err=io.CopyN(buf,readers[i],1)
-				}
-			}
-			if err==io.EOF{err=nil}
-		}
+		err=interleavedWrite(buf,readers,1)
 	case 2:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM16Bit(ss[i])
 		}
-		if len(readers)==1{
-			_,err=io.Copy(buf, readers[0])
-			if err!=nil{
-				panic(err)
-			}
-		}else{
-			for err==nil{
-				for i,_:=range(readers){
-					_,err=io.CopyN(buf,readers[i],2)
-				}
-			}
-			if err==io.EOF{err=nil}
-		}
+		err=interleavedWrite(buf,readers,2)
 	case 3:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM24Bit(ss[i])
 		}
-		if len(readers)==1{
-			_,err=io.Copy(buf, readers[0])
-			if err!=nil{
-				panic(err)
-			}
-		}else{
-			for err==nil{
-				for i,_:=range(readers){
-					_,err=io.CopyN(buf,readers[i],3)
-				}
-			}
-			if err==io.EOF{err=nil}
-		}
+		err=interleavedWrite(buf,readers,3)
 	case 4:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM32Bit(ss[i])
 		}
-		if len(readers)==1{
-			_,err=io.Copy(buf, readers[0])
-			if err!=nil{
-				panic(err)
-			}
-		}else{
-			for err==nil{
-				for i,_:=range(readers){
-					_,err=io.CopyN(buf,readers[i],4)
-				}
-			}
-			if err==io.EOF{err=nil}
-		}
+		err=interleavedWrite(buf,readers,4)
 	case 6:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM48Bit(ss[i])
 		}
-		if len(readers)==1{
-			_,err=io.Copy(buf, readers[0])
-			if err!=nil{
-				panic(err)
-			}
-		}else{
-			for err==nil{
-				for i,_:=range(readers){
-					_,err=io.CopyN(buf,readers[i],6)
-				}
-			}
-			if err==io.EOF{err=nil}
-		}
+		err=interleavedWrite(buf,readers,6)
 	}
 	if err != nil {
-		log.Println("Encode failure:" + err.Error() + fmt.Sprint(w))
+		log.Println("Encode failure:" + err.Error())
 	} else {
 		buf.Flush()
 	}
+}
+
+
+func interleavedWrite(w io.Writer, rs []io.Reader, size int64) (err error) {
+	if len(rs)==1{
+		_,err=io.Copy(w, rs[0])
+		if err!=nil{
+			panic(err)
+		}
+	}else{
+		for err==nil{
+			for i,_:=range(rs){
+				_,err=io.CopyN(w,rs[i],size)
+			}
+		}
+		if err==io.EOF{err=nil}
+	}
+	return
 }
 
 // encode a LimitedSignal with a sampleRate equal to the Period() of a given PeriodicSignal, and its precision if its a PCM type, otherwise defaults to 16bit.
