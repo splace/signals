@@ -11,7 +11,7 @@ func init() {
 	gob.Register(Reflected{})
 	gob.Register(RateModulated{})
 	gob.Register(Triggered{})
-	gob.Register(Segmented{})
+	gob.Register(&Segmented{})
 }
 
 // a Signal that is the another Signal shifted
@@ -141,29 +141,20 @@ func (s RateModulated) Period() x {
 type Segmented struct {
 	Signal
 	Width x
-	cache *segmentCache // by being a pointer this is mutable in methods, without needing a pointer receiver.
-
+	x1, x2, l1, l2 x
 }
 
-type segmentCache struct {
-	x1, x2 x
-	l1, l2 x
-}
 
-func NewSegmented(s Signal, w x) Segmented {
-	return Segmented{s, w, &segmentCache{}}
-}
-
-func (s Segmented) property(offset x) y {
+func (s *Segmented) property(offset x) y {
 	temp := offset % s.Width
-	if offset-temp != s.cache.x1 || offset+s.Width-temp != s.cache.x2 {
+	if offset-temp != s.x1 || offset+s.Width-temp != s.x2 {
 		// TODO reuse by swap ends
-		s.cache.x1 = offset - temp
-		s.cache.x2 = offset + s.Width - temp
-		s.cache.l1 = x(s.Signal.property(s.cache.x1)) / s.Width
-		s.cache.l2 = x(s.Signal.property(s.cache.x2))/s.Width - s.cache.l1
+		s.x1 = offset - temp
+		s.x2 = offset + s.Width - temp
+		s.l1 = x(s.Signal.property(s.x1)) / s.Width
+		s.l2 = x(s.Signal.property(s.x2))/s.Width - s.l1
 	}
-	return y(s.cache.l1*s.Width + s.cache.l2*temp)
+	return y(s.l1*s.Width + s.l2*temp)
 }
 
 func (s Segmented) Period() x {

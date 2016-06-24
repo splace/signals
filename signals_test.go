@@ -610,7 +610,7 @@ func ExampleTriggered() {
 }
 
 func ExampleSegmented() {
-	PrintGraph(NewSegmented(Sine{unitX * 10}, unitX), 0, 5*unitX, unitX/10)
+	PrintGraph(&Segmented{Signal:Sine{unitX * 10}, Width:unitX}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
    5.88%                                   X
@@ -667,7 +667,7 @@ func ExampleSegmented() {
 }
 
 func ExampleSegmented_makeSawtooth() {
-	PrintGraph(NewSegmented(Square{unitX}, unitX/2), 0, 2*unitX, unitX/10)
+	PrintGraph(&Segmented{Signal:Square{unitX}, Width:unitX/2}, 0, 2*unitX, unitX/10)
 	/* Output:
  100.00%                                                                  X
   60.00%                                                     X
@@ -872,12 +872,13 @@ func BenchmarkSignalsSine(b *testing.B) {
 
 func BenchmarkSignalsSineSegmented(b *testing.B) {
 	b.StopTimer()
-	s := NewSegmented(Sine{unitX}, unitX/512)
+	s := &Segmented{Signal:Sine{unitX}, Width:unitX/512}
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		Encode(ioutil.Discard, 1, 44100, unitX, s)
 	}
 
 }
+
 
 
