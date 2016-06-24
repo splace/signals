@@ -27,16 +27,16 @@ func (s Cached) property(offset x) y {
 	return v
 }
 
-// a Signal that stores and reuses, recent sequential and evenly spaced, property values, rather than always getting them from the embedded Signal.
-type Buffered struct {
-	Shifted
-	reader io.Reader
-}
-
-func NewBuffered(s LimitedSignal,sampleBytes uint8,sampleRate uint32) Buffered {
-	r, w := io.Pipe()
-	Encode(w, sampleBytes, sampleRate, s.MaxX(), s)
-	return Buffered{Shifted{s,0},r}
-}
-
+// a Signal that stores and reuses, sequential and evenly spaced, recent property values, rather than always getting them from the embedded Signal.
+//type Buffered struct {
+//	Shifted
+//	reader io.Reader
+//}
+//
+//func NewBuffered(s LimitedSignal,sampleBytes uint8,sampleRate uint32) Buffered {
+//	r, w := io.Pipe()
+//	Encode(w, sampleBytes, sampleRate, s.MaxX(), s)
+//	return Buffered{Shifted{s,0},r}
+//}
+//
 
