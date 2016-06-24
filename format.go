@@ -188,6 +188,36 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}()
 		return r
 	}
+	readerForPCM64Bit := func(s Signal) io.Reader {
+		r, w := io.Pipe()
+		go func() {
+			// try shortcuts first
+			shifted, ok := s.(Shifted)
+			if pcms, ok2 := shifted.Signal.(PCM64bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
+				w.Write(pcms.Data[uint32(shifted.Shift*8/samplePeriod) : uint32(shifted.Shift*8/samplePeriod)+samples*8])
+			} else if pcm, ok := s.(PCM64bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
+				w.Write(pcm.Data[:samples*8])
+			} else {
+				defer func(){
+					e:=recover()
+					if e!=nil{
+						w.CloseWithError(e.(error))
+					}else{
+						w.Close()
+					}
+				}()
+				for i:=uint32(0); i < samples; i++ {
+					b1, b2, b3, b4, b5, b6, b7, b8 := encodePCM64bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write([]byte{ b1, b2, b3, b4,b5 ,b6, b7, b8})
+					if err != nil {
+						break
+					}
+				}
+			}
+			w.Close()
+		}()
+		return r
+	}
 	binary.Write(buf, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
 	binary.Write(buf, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
 	binary.Write(buf, binary.LittleEndian, formatChunk{
@@ -227,6 +257,11 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			readers[i]=readerForPCM48Bit(ss[i])
 		}
 		err=interleavedWrite(buf,readers,6)
+	case 8:
+		for i,_:=range(readers){
+			readers[i]=readerForPCM64Bit(ss[i])
+		}
+		err=interleavedWrite(buf,readers,8)
 	}
 	if err != nil {
 		log.Println("Encode failure:" + err.Error())
@@ -263,6 +298,8 @@ func EncodeLike(w io.Writer, s PeriodicSignal, p LimitedSignal) {
 		Encode(w, 4, uint32(unitX/s.Period()), p.MaxX(), p)
 	case PCM48bit:
 		Encode(w, 6, uint32(unitX/s.Period()), p.MaxX(), p)
+	case PCM64bit:
+		Encode(w, 8, uint32(unitX/s.Period()), p.MaxX(), p)
 	default:
 		Encode(w, 2, uint32(unitX/s.Period()), p.MaxX(), p)
 	}
@@ -294,6 +331,8 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 			pcms[c] = PCM32bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*4 : (c+1)*samples*4]}}
 		case 48:
 			pcms[c] = PCM48bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*6 : (c+1)*samples*6]}}
+		case 64:
+			pcms[c] = PCM64bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*8 : (c+1)*samples*8]}}
 		}
 	}
 	return pcms, nil
@@ -386,4 +425,13 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	return sampleData, err
 }
 
+/*  Hal3 Sat Jun 25 00:13:54 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Sat Jun 25 00:13:54 BST 2016 */
+/*  Hal3 Sat Jun 25 00:15:28 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Sat Jun 25 00:15:29 BST 2016 */
+/*  Hal3 Sat Jun 25 00:18:13 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Sat Jun 25 00:18:13 BST 2016 */
 

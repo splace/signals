@@ -44,6 +44,8 @@ func NewWave(URL string) (*Wave, error) {
 		return &Wave{Shifted{NewPCM32bit(rate, b),0},URL,r}, nil
 	case 6:
 		return &Wave{Shifted{NewPCM48bit(rate, b),0},URL,r}, nil
+	case 8:
+		return &Wave{Shifted{NewPCM64bit(rate, b),0},URL,r}, nil
 	}
 	return nil, ErrWavParse{"Source bit rate not supported."}
 }

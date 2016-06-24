@@ -215,6 +215,41 @@ func (p PCM48bit) Split(position x) (PCM48bit, PCM48bit) {
 	return PCM48bit{&head}, PCM48bit{&tail}
 }
 
+// 64 bit PCM Signal
+type PCM64bit struct {
+	*PCM
+}
+
+func NewPCM64bit(sampleRate uint32, Data []byte) PCM64bit {
+	return PCM64bit{NewPCM(sampleRate, Data)}
+}
+
+func (s PCM64bit) property(offset x) y {
+	index := int(offset/s.samplePeriod) * 8
+	if index < 0 || index >= len(s.Data)-7 {
+		return 0
+	}
+	return decodePCM64bit(s.Data[index], s.Data[index+1], s.Data[index+2], s.Data[index+3], s.Data[index+4], s.Data[index+5], s.Data[index+6], s.Data[index+7])
+}
+func encodePCM64bit(y y) (byte, byte, byte, byte, byte, byte, byte, byte) {
+	return byte(y >> (yBits - 64)), byte(y >> (yBits - 56)),byte(y >> (yBits - 48)), byte(y >> (yBits - 40)), byte(y >> (yBits - 32)), byte(y >> (yBits - 24)), byte(y >> (yBits - 16)), byte(y >> (yBits - 8))
+}
+func decodePCM64bit(b1, b2, b3, b4, b5, b6 , b7, b8 byte) y {
+	return y(b1) << (yBits-64)|y(b1) << (yBits-56)|y(b1) << (yBits-48)|y(b2) << (yBits-40)|y(b3) << (yBits-32)|y(b4) << (yBits-24)|y(b5) << (yBits-16)|y(b6) << (yBits-8)
+}
+
+func (s PCM64bit) Encode(w io.Writer) {
+	Encode(w, 8, uint32(unitX/s.Period()), s.MaxX(), s)
+}
+func (p PCM64bit) MaxX() x {
+	return p.PCM.samplePeriod * x(len(p.PCM.Data)-8) / 8
+}
+
+func (p PCM64bit) Split(position x) (PCM64bit, PCM64bit) {
+	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 8)
+	return PCM64bit{&head}, PCM64bit{&tail}
+}
+
 // make a PeriodicLimitedSignal by sampling from another Signal, using provided parameters.
 func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PeriodicLimitedSignal {
 	out, in := io.Pipe()
