@@ -4,7 +4,7 @@ import "io"
 
 const cacheSize = 256
 
-// a Signal that stores and reuses, some, random property values, rather than always getting them from the embedded Signal.
+// a Signal that stores and reuses, some, recent property values, rather than always getting them from the embedded Signal.
 type Cached struct {
 	Signal
 	cache map[x] y
