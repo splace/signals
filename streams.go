@@ -104,6 +104,15 @@ func (s *Wave) property(offset x) y {
 				st.Data=st.Data[bufferSize*6:]
 				s.Shifted.Shift+=bufferSize*st.samplePeriod
 			}
+		case PCM64bit:
+			st.Data=append(st.Data,make([]byte,bufferSize*8)...)
+			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*8:])
+			failOn(err)
+			st.Data=st.Data[:len(st.Data)-bufferSize*8+n]
+			if len(st.Data)>bufferSize*24{
+				st.Data=st.Data[bufferSize*8:]
+				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			}
 		}
 	}
 	return s.Shifted.property(offset)

@@ -333,6 +333,8 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 			pcms[c] = PCM48bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*6 : (c+1)*samples*6]}}
 		case 64:
 			pcms[c] = PCM64bit{&PCM{unitX / x(format.SampleRate), sampleData[c*samples*8 : (c+1)*samples*8]}}
+		case default:
+			return nil,ErrWavParse{Sprintf("Unsupported bit depth:%i.",format.bits)}
 		}
 	}
 	return pcms, nil
@@ -425,13 +427,5 @@ func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32
 	return sampleData, err
 }
 
-/*  Hal3 Sat Jun 25 00:13:54 BST 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Sat Jun 25 00:13:54 BST 2016 */
-/*  Hal3 Sat Jun 25 00:15:28 BST 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Sat Jun 25 00:15:29 BST 2016 */
-/*  Hal3 Sat Jun 25 00:18:13 BST 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Sat Jun 25 00:18:13 BST 2016 */
+
 
