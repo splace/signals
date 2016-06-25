@@ -6,7 +6,11 @@ import (
 	"net"
 	"net/url"
 )
-const testRemoteURL="http://www.nch.com.au/acm/8k8bitpcm.wav"
+
+const testLocalURL="http://localhost:8086/wavs/s16/4.wav?f=8000"
+
+const testRemoteURL="http://www.nch.com.au/acm/8k8bitpcm.wav"  //const testRemoteURL="http://localhost:8086/wavs/s16/4.wav?f=8000"  //
+
 
 func TestStreamsRemoteSave(t *testing.T) {
 	s,err:=NewWave(testRemoteURL)
@@ -61,7 +65,7 @@ func TestStreamsGOBSaveLoadWave(t *testing.T) {
 	var file *os.File
 	var err error
 	if file, err = os.Create("./test output/wave.gob"); err != nil {panic(err)}else{defer file.Close()}
-	m := Modulated{&Wave{URL:testLocalURL},RampUp{unitX}}
+	m := Modulated{&Wave{URL:testRemoteURL},RampUp{unitX}}
 	if err := Save(file,m); err != nil {
 		panic(err)
 	}

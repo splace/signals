@@ -7,8 +7,6 @@ import (
 	"net/url"
 )
 
-const testLocalURL="http://localhost:8086/wavs/s16/4.wav?f=8000"
-
 func TestCacheStreamsSave(t *testing.T) {
 	s,err:=NewWave(testLocalURL)
 	if err!=nil{
@@ -16,7 +14,7 @@ func TestCacheStreamsSave(t *testing.T) {
 			if oe,ok:=ue.Err.(*net.OpError);ok{
 				if se,ok:=oe.Err.(*os.SyscallError);ok{
 					if se.Err.Error()=="connection refused"{
-						t.Skip(ue.Error()+se.Err.Error())
+						t.Skip(ue.Error())
 					}
 				}
 			}

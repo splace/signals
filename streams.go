@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"encoding/gob"
-	//"fmt"
 )
 func init() {
 	gob.Register(&Wave{})
@@ -60,58 +59,75 @@ func (s *Wave) property(offset x) y {
 	if offset > s.MaxX() {
 		switch st:=s.Shifted.Signal.(type) {
 		case PCM8bit:
-			st.Data=append(st.Data,make([]byte,bufferSize)...)
-			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize:])
+			sd:=PCM8bit{st.PCM}
+			sd.Data=append(sd.Data,make([]byte,bufferSize)...)
+			n, err := s.reader.Read(sd.Data[len(sd.Data)-bufferSize:])
 			failOn(err)
-			st.Data=st.Data[:len(st.Data)-bufferSize+n]
-			if len(st.Data)>bufferSize*3{
-				st.Data=st.Data[bufferSize:]
+			sd.Data=sd.Data[:len(sd.Data)-bufferSize+n]
+			if len(sd.Data)>bufferSize*3{
+				sd.Data=sd.Data[bufferSize:]
 				s.Shifted.Shift+=bufferSize*st.samplePeriod
 			}
+			s.Shifted=Shifted{sd,s.Shifted.Shift}
 		case PCM16bit:
-			st.Data=append(st.Data,make([]byte,bufferSize*2)...)
-			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*2:])
+			sd:=PCM16bit{st.PCM}
+			sd.Data=append(sd.Data,make([]byte,bufferSize*2)...)
+			n, err := s.reader.Read(sd.Data[len(sd.Data)-bufferSize*2:])
 			failOn(err)
-			st.Data=st.Data[:len(st.Data)-bufferSize*2+n]
-			if len(st.Data)>bufferSize*6{
-				st.Data=st.Data[bufferSize*2:]
-				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			sd.Data=sd.Data[:len(sd.Data)-bufferSize*2+n]
+			if len(sd.Data)>bufferSize*2*3{
+				sd.Data=sd.Data[bufferSize*2:]
+				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				}else{
+				s.Shifted=Shifted{sd,s.Shifted.Shift}
 			}
 		case PCM24bit:
-			st.Data=append(st.Data,make([]byte,bufferSize*3)...)
-			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*3:])
+			sd:=PCM24bit{st.PCM}
+			sd.Data=append(sd.Data,make([]byte,bufferSize*3)...)
+			n, err := s.reader.Read(sd.Data[len(sd.Data)-bufferSize*3:])
 			failOn(err)
-			st.Data=st.Data[:len(st.Data)-bufferSize*3+n]
-			if len(st.Data)>bufferSize*9{
-				st.Data=st.Data[bufferSize*3:]
-				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			sd.Data=sd.Data[:len(sd.Data)-bufferSize*3+n]
+			if len(sd.Data)>bufferSize*3*3{
+				sd.Data=sd.Data[bufferSize*3:]
+				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				}else{
+				s.Shifted=Shifted{sd,s.Shifted.Shift}
 			}
 		case PCM32bit:
-			st.Data=append(st.Data,make([]byte,bufferSize*4)...)
-			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*4:])
+			sd:=PCM16bit{st.PCM}
+			sd.Data=append(sd.Data,make([]byte,bufferSize*4)...)
+			n, err := s.reader.Read(sd.Data[len(sd.Data)-bufferSize*4:])
 			failOn(err)
-			st.Data=st.Data[:len(st.Data)-bufferSize*4+n]
-			if len(st.Data)>bufferSize*12{
-				st.Data=st.Data[bufferSize*4:]
-				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			sd.Data=sd.Data[:len(sd.Data)-bufferSize*4+n]
+			if len(sd.Data)>bufferSize*4*3{
+				sd.Data=sd.Data[bufferSize*4:]
+				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				}else{
+				s.Shifted=Shifted{sd,s.Shifted.Shift}
 			}
 		case PCM48bit:
-			st.Data=append(st.Data,make([]byte,bufferSize*6)...)
-			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*6:])
+			sd:=PCM48bit{st.PCM}
+			sd.Data=append(sd.Data,make([]byte,bufferSize*6)...)
+			n, err := s.reader.Read(sd.Data[len(sd.Data)-bufferSize*6:])
 			failOn(err)
-			st.Data=st.Data[:len(st.Data)-bufferSize*6+n]
-			if len(st.Data)>bufferSize*18{
-				st.Data=st.Data[bufferSize*6:]
-				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			sd.Data=sd.Data[:len(sd.Data)-bufferSize*6+n]
+			if len(sd.Data)>bufferSize*6*3{
+				sd.Data=sd.Data[bufferSize*6:]
+				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				}else{
+				s.Shifted=Shifted{sd,s.Shifted.Shift}
 			}
 		case PCM64bit:
-			st.Data=append(st.Data,make([]byte,bufferSize*8)...)
-			n, err := s.reader.Read(st.Data[len(st.Data)-bufferSize*8:])
+			sd:=PCM64bit{st.PCM}
+			sd.Data=append(sd.Data,make([]byte,bufferSize*8)...)
+			n, err := s.reader.Read(sd.Data[len(sd.Data)-bufferSize*8:])
 			failOn(err)
-			st.Data=st.Data[:len(st.Data)-bufferSize*8+n]
-			if len(st.Data)>bufferSize*24{
-				st.Data=st.Data[bufferSize*8:]
-				s.Shifted.Shift+=bufferSize*st.samplePeriod
+			sd.Data=sd.Data[:len(sd.Data)-bufferSize*8+n]
+			if len(sd.Data)>bufferSize*8*3{
+				sd.Data=sd.Data[bufferSize*8:]
+				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				}else{
+				s.Shifted=Shifted{sd,s.Shifted.Shift}
 			}
 		}
 	}
