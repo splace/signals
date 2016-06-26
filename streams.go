@@ -13,7 +13,7 @@ func init() {
 const bufferSize = 16 
 
 // a PCM-Signal read, as required, from a URL.
-// if queried for a property value for an x that is more than 32 samples lower than a previous query, will return zero.
+// if queried for a property value from an x that is more than 32 samples lower than a previous query, will return zero.
 type Wave struct{
 	Shifted
 	URL string
@@ -69,9 +69,10 @@ func (s *Wave) property(offset x) y {
 			sd.Data=sd.Data[:len(sd.Data)-bufferSize+n]
 			if len(sd.Data)>bufferSize*3{
 				sd.Data=sd.Data[bufferSize:]
-				s.Shifted.Shift+=bufferSize*st.samplePeriod
+				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				}else{
+				s.Shifted=Shifted{sd,s.Shifted.Shift}
 			}
-			s.Shifted=Shifted{sd,s.Shifted.Shift}
 		case PCM16bit:
 			sd:=PCM16bit{st.PCM}
 			sd.Data=append(sd.Data,make([]byte,bufferSize*2)...)
