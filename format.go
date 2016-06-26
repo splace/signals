@@ -43,9 +43,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
-			shifted, ok := s.(Shifted)
-			if pcms, ok2 := shifted.Signal.(PCM8bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-				w.Write(pcms.Data[uint32(shifted.Shift/samplePeriod) : uint32(shifted.Shift/samplePeriod)+samples])
+			offset, ok := s.(Offset)
+			if pcms, ok2 := offset.LimitedSignal.(PCM8bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
+				w.Write(pcms.Data[uint32(offset.Offset/samplePeriod) : uint32(offset.Offset/samplePeriod)+samples])
 			} else if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples])
 			} else {
@@ -72,9 +72,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
-			shifted, ok := s.(Shifted)
-			if pcms, ok2 := shifted.Signal.(PCM16bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-				w.Write(pcms.Data[uint32(shifted.Shift*2/samplePeriod) : uint32(shifted.Shift*2/samplePeriod)+samples*2])
+			offset, ok := s.(Offset)
+			if pcms, ok2 := offset.LimitedSignal.(PCM16bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
+				w.Write(pcms.Data[uint32(offset.Offset*2/samplePeriod) : uint32(offset.Offset*2/samplePeriod)+samples*2])
 			} else if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*2])
 			} else {
@@ -102,9 +102,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
-			shifted, ok := s.(Shifted)
-			if pcms, ok2 := shifted.Signal.(PCM24bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-				w.Write(pcms.Data[uint32(shifted.Shift*3/samplePeriod) : uint32(shifted.Shift*3/samplePeriod)+samples*3])
+			offset, ok := s.(Offset)
+			if pcms, ok2 := offset.LimitedSignal.(PCM24bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
+				w.Write(pcms.Data[uint32(offset.Offset*3/samplePeriod) : uint32(offset.Offset*3/samplePeriod)+samples*3])
 			} else if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*3])
 			} else {
@@ -132,9 +132,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
-			shifted, ok := s.(Shifted)
-			if pcms, ok2 := shifted.Signal.(PCM32bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-				w.Write(pcms.Data[uint32(shifted.Shift*4/samplePeriod) : uint32(shifted.Shift*4/samplePeriod)+samples*4])
+			offset, ok := s.(Offset)
+			if pcms, ok2 := offset.LimitedSignal.(PCM32bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
+				w.Write(pcms.Data[uint32(offset.Offset*4/samplePeriod) : uint32(offset.Offset*4/samplePeriod)+samples*4])
 			} else if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*4])
 			} else {
@@ -162,9 +162,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
-			shifted, ok := s.(Shifted)
-			if pcms, ok2 := shifted.Signal.(PCM48bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-				w.Write(pcms.Data[uint32(shifted.Shift*6/samplePeriod) : uint32(shifted.Shift*6/samplePeriod)+samples*6])
+			offset, ok := s.(Offset)
+			if pcms, ok2 := offset.LimitedSignal.(PCM48bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
+				w.Write(pcms.Data[uint32(offset.Offset*6/samplePeriod) : uint32(offset.Offset*6/samplePeriod)+samples*6])
 			} else if pcm, ok := s.(PCM48bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*6])
 			} else {
@@ -192,9 +192,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
-			shifted, ok := s.(Shifted)
-			if pcms, ok2 := shifted.Signal.(PCM64bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-shifted.Shift {
-				w.Write(pcms.Data[uint32(shifted.Shift*8/samplePeriod) : uint32(shifted.Shift*8/samplePeriod)+samples*8])
+			offset, ok := s.(Offset)
+			if pcms, ok2 := offset.LimitedSignal.(PCM64bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
+				w.Write(pcms.Data[uint32(offset.Offset*8/samplePeriod) : uint32(offset.Offset*8/samplePeriod)+samples*8])
 			} else if pcm, ok := s.(PCM64bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*8])
 			} else {

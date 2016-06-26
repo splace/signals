@@ -4,6 +4,7 @@ import "encoding/gob"
 
 func init() {
 	gob.Register(Shifted{})
+	gob.Register(Offset{})
 	gob.Register(Compressed{})
 	gob.Register(Looped{})
 	gob.Register(Inverted{})
@@ -14,7 +15,7 @@ func init() {
 	gob.Register(&Segmented{})
 }
 
-// a Signal that is the another Signal shifted
+// a Signal whos property values are those of another Signal but at an offset x.
 type Shifted struct {
 	Signal
 	Shift x
@@ -24,8 +25,18 @@ func (s Shifted) property(offset x) y {
 	return s.Signal.property(offset - s.Shift)
 }
 
-func (s Shifted) MaxX() x {
-	return s.Signal.(LimitedSignal).MaxX()+s.Shift
+// a Signal whos property values are those of another Signal but at an offset x.
+// unlike Shifted its MaxX is also offset. 
+type Offset struct {
+	LimitedSignal
+	Offset x
+}
+
+func (s Offset) property(offset x) y {
+	return s.LimitedSignal.property(offset - s.Offset)
+}
+func (s Offset) MaxX() x {
+	return s.LimitedSignal.MaxX()+s.Offset
 }
 
 // a Signal that scales the x of another Signal

@@ -15,7 +15,7 @@ const bufferSize = 16
 // a PCM-Signal read, as required, from a URL.
 // if queried for a property value from an x that is more than 32 samples lower than a previous query, will return zero.
 type Wave struct{
-	Shifted
+	Offset
 	URL string
 	reader io.Reader
 }
@@ -34,17 +34,17 @@ func NewWave(URL string) (*Wave, error) {
 	b=b[:n]
 	switch bytes {
 	case 1:
-		return &Wave{Shifted{NewPCM8bit(rate, b),0},URL,r}, nil
+		return &Wave{Offset{NewPCM8bit(rate, b),0},URL,r}, nil
 	case 2:
-		return &Wave{Shifted{NewPCM16bit(rate, b),0},URL,r}, nil
+		return &Wave{Offset{NewPCM16bit(rate, b),0},URL,r}, nil
 	case 3:
-		return &Wave{Shifted{NewPCM24bit(rate, b),0},URL,r}, nil
+		return &Wave{Offset{NewPCM24bit(rate, b),0},URL,r}, nil
 	case 4:
-		return &Wave{Shifted{NewPCM32bit(rate, b),0},URL,r}, nil
+		return &Wave{Offset{NewPCM32bit(rate, b),0},URL,r}, nil
 	case 6:
-		return &Wave{Shifted{NewPCM48bit(rate, b),0},URL,r}, nil
+		return &Wave{Offset{NewPCM48bit(rate, b),0},URL,r}, nil
 	case 8:
-		return &Wave{Shifted{NewPCM64bit(rate, b),0},URL,r}, nil
+		return &Wave{Offset{NewPCM64bit(rate, b),0},URL,r}, nil
 	}
 	return nil, ErrWavParse{"Source bit rate not supported."}
 }
@@ -53,14 +53,14 @@ func (s *Wave) property(offset x) y {
 	if s.reader==nil{
 		wav,err:=NewWave(s.URL)
 		failOn(err)
-		s.Shifted=wav.Shifted
+		s.Offset=wav.Offset
 		s.reader=wav.reader
 	}
 	for offset > s.MaxX() {
 		// append available data onto the PCM slice.
 		// also possibly shift off some data, shortening the PCM slice, retaining at least two buffer lengths.
 		// semi-samples are read but not accessed by property.
-		switch st:=s.Shifted.Signal.(type) {
+		switch st:=s.Offset.LimitedSignal.(type) {
 		case PCM8bit:
 			sd:=PCM8bit{st.PCM}
 			sd.Data=append(sd.Data,make([]byte,bufferSize)...)
@@ -69,9 +69,9 @@ func (s *Wave) property(offset x) y {
 			sd.Data=sd.Data[:len(sd.Data)-bufferSize+n]
 			if len(sd.Data)>bufferSize*3{
 				sd.Data=sd.Data[bufferSize:]
-				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				s.Offset=Offset{sd,s.Offset.Offset+bufferSize*st.samplePeriod}
 				}else{
-				s.Shifted=Shifted{sd,s.Shifted.Shift}
+				s.Offset=Offset{sd,s.Offset.Offset}
 			}
 		case PCM16bit:
 			sd:=PCM16bit{st.PCM}
@@ -81,9 +81,9 @@ func (s *Wave) property(offset x) y {
 			sd.Data=sd.Data[:len(sd.Data)-bufferSize*2+n]
 			if len(sd.Data)>bufferSize*2*3{
 				sd.Data=sd.Data[bufferSize*2:]
-				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				s.Offset=Offset{sd,s.Offset.Offset+bufferSize*st.samplePeriod}
 				}else{
-				s.Shifted=Shifted{sd,s.Shifted.Shift}
+				s.Offset=Offset{sd,s.Offset.Offset}
 			}
 		case PCM24bit:
 			sd:=PCM24bit{st.PCM}
@@ -93,9 +93,9 @@ func (s *Wave) property(offset x) y {
 			sd.Data=sd.Data[:len(sd.Data)-bufferSize*3+n]
 			if len(sd.Data)>bufferSize*3*3{
 				sd.Data=sd.Data[bufferSize*3:]
-				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				s.Offset=Offset{sd,s.Offset.Offset+bufferSize*st.samplePeriod}
 				}else{
-				s.Shifted=Shifted{sd,s.Shifted.Shift}
+				s.Offset=Offset{sd,s.Offset.Offset}
 			}
 		case PCM32bit:
 			sd:=PCM16bit{st.PCM}
@@ -105,9 +105,9 @@ func (s *Wave) property(offset x) y {
 			sd.Data=sd.Data[:len(sd.Data)-bufferSize*4+n]
 			if len(sd.Data)>bufferSize*4*3{
 				sd.Data=sd.Data[bufferSize*4:]
-				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				s.Offset=Offset{sd,s.Offset.Offset+bufferSize*st.samplePeriod}
 				}else{
-				s.Shifted=Shifted{sd,s.Shifted.Shift}
+				s.Offset=Offset{sd,s.Offset.Offset}
 			}
 		case PCM48bit:
 			sd:=PCM48bit{st.PCM}
@@ -117,9 +117,9 @@ func (s *Wave) property(offset x) y {
 			sd.Data=sd.Data[:len(sd.Data)-bufferSize*6+n]
 			if len(sd.Data)>bufferSize*6*3{
 				sd.Data=sd.Data[bufferSize*6:]
-				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				s.Offset=Offset{sd,s.Offset.Offset+bufferSize*st.samplePeriod}
 				}else{
-				s.Shifted=Shifted{sd,s.Shifted.Shift}
+				s.Offset=Offset{sd,s.Offset.Offset}
 			}
 		case PCM64bit:
 			sd:=PCM64bit{st.PCM}
@@ -129,13 +129,13 @@ func (s *Wave) property(offset x) y {
 			sd.Data=sd.Data[:len(sd.Data)-bufferSize*8+n]
 			if len(sd.Data)>bufferSize*8*3{
 				sd.Data=sd.Data[bufferSize*8:]
-				s.Shifted=Shifted{sd,s.Shifted.Shift+bufferSize*st.samplePeriod}
+				s.Offset=Offset{sd,s.Offset.Offset+bufferSize*st.samplePeriod}
 				}else{
-				s.Shifted=Shifted{sd,s.Shifted.Shift}
+				s.Offset=Offset{sd,s.Offset.Offset}
 			}
 		}
 	}
-	return s.Shifted.property(offset)
+	return s.Offset.property(offset)
 }
 
 
@@ -146,7 +146,7 @@ func (s *Wave) property(offset x) y {
 //	b=b[:len(b)-bufferSize*blockSize+n]
 //	if len(b)>bufferSize*blockSize*3{
 //		b=b[bufferSize*blockSize:]
-//		s.Shift+=bufferSize*s.samplePeriod
+//		s.Offset+=bufferSize*s.samplePeriod
 //	}
 //}
 
