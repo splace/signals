@@ -59,7 +59,7 @@ func (s *Wave) property(offset x) y {
 	for offset > s.MaxX() {
 		// append available data onto the PCM slice.
 		// also possibly shift off some data, shortening the PCM slice, retaining at least two buffer lengths.
-		// semi-samples are read but not accessed by property
+		// semi-samples are read but not accessed by property.
 		switch st:=s.Shifted.Signal.(type) {
 		case PCM8bit:
 			sd:=PCM8bit{st.PCM}
