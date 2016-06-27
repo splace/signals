@@ -20,35 +20,6 @@ type Wave struct{
 	reader io.Reader
 }
 
-func NewWave(URL string) (*Wave, error) {
-	r, channels, bytes, rate, err := PCMReader(URL)
-	if err!=nil {
-		return nil,err
-	}	
-	if channels != 1 {
-		return nil, errors.New(URL+":Needs to be mono.")
-	}
-	b := make([]byte, bufferSize*bytes)
-	n, err := r.Read(b)
-	failOn(err)
-	b=b[:n]
-	switch bytes {
-	case 1:
-		return &Wave{Offset{NewPCM8bit(rate, b),0},URL,r}, nil
-	case 2:
-		return &Wave{Offset{NewPCM16bit(rate, b),0},URL,r}, nil
-	case 3:
-		return &Wave{Offset{NewPCM24bit(rate, b),0},URL,r}, nil
-	case 4:
-		return &Wave{Offset{NewPCM32bit(rate, b),0},URL,r}, nil
-	case 6:
-		return &Wave{Offset{NewPCM48bit(rate, b),0},URL,r}, nil
-	case 8:
-		return &Wave{Offset{NewPCM64bit(rate, b),0},URL,r}, nil
-	}
-	return nil, ErrWavParse{"Source bit rate not supported."}
-}
-
 func (s *Wave) property(offset x) y {
 	if s.reader==nil{
 		wav,err:=NewWave(s.URL)
@@ -150,6 +121,36 @@ func (s *Wave) property(offset x) y {
 //	}
 //}
 
+func NewWave(URL string) (*Wave, error) {
+	r, channels, bytes, rate, err := PCMReader(URL)
+	if err!=nil {
+		return nil,err
+	}	
+	if channels != 1 {
+		return nil, errors.New(URL+":Needs to be mono.")
+	}
+	b := make([]byte, bufferSize*bytes)
+	n, err := r.Read(b)
+	failOn(err)
+	b=b[:n]
+	switch bytes {
+	case 1:
+		return &Wave{Offset{NewPCM8bit(rate, b),0},URL,r}, nil
+	case 2:
+		return &Wave{Offset{NewPCM16bit(rate, b),0},URL,r}, nil
+	case 3:
+		return &Wave{Offset{NewPCM24bit(rate, b),0},URL,r}, nil
+	case 4:
+		return &Wave{Offset{NewPCM32bit(rate, b),0},URL,r}, nil
+	case 6:
+		return &Wave{Offset{NewPCM48bit(rate, b),0},URL,r}, nil
+	case 8:
+		return &Wave{Offset{NewPCM64bit(rate, b),0},URL,r}, nil
+	}
+	return nil, ErrWavParse{"Source bit rate not supported."}
+}
+
+// returns a reader from a source file, along with its Channel count, Precision (bytes) and Samples per second.
 func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
 	resp, err := http.Get(source)
 	if err != nil {
