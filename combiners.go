@@ -2,7 +2,6 @@ package signals
 
 import (
 	"encoding/gob"
-	"fmt"
 )
 
 func init() {
@@ -156,7 +155,6 @@ func PromoteToSignals(s interface{}) []Signal {
 	case []LimitedSignal:
 		out := make([]Signal, len(st))
 		for i := range out {
-			fmt.Println(st[i].(Signal))
 			out[i] = st[i].(Signal)
 		}
 	case []PeriodicLimitedSignal:
