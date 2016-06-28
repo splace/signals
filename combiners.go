@@ -153,17 +153,17 @@ func PromoteToSignals(s interface{}) []Signal {
 	var out []Signal 
 	switch st := s.(type) {
 	case []LimitedSignal:
-		out := make([]Signal, len(st))
+		out = make([]Signal, len(st))
 		for i := range out {
 			out[i] = st[i].(Signal)
 		}
 	case []PeriodicLimitedSignal:
-		out := make([]Signal, len(st))
+		out = make([]Signal, len(st))
 		for i := range out {
 			out[i] = st[i].(Signal)
 		}
 	case []PeriodicSignal:
-		out := make([]Signal, len(st))
+		out = make([]Signal, len(st))
 		for i := range out {
 			out[i] = st[i].(Signal)
 		}
