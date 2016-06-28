@@ -59,7 +59,7 @@ func TestFormatLoadChannels(t *testing.T) {
 	}
 }
 
-func TestFormatMultiChannelSave(t *testing.T) {
+func TestFormatPCMMultiChannelSave(t *testing.T) {
 	stream, err := os.Open("pcm0808s.wav")
 	if err != nil {
 		panic(err)
@@ -76,6 +76,17 @@ func TestFormatMultiChannelSave(t *testing.T) {
 	defer wavFile.Close()
 	Encode(wavFile,4, 44100, noises[0].MaxX(), noises[0],noises[1])
 }
+
+func TestFormatProceduralMultiChannelSave(t *testing.T) {
+	wavFile, err := os.Create("./test output/StereoTwoTone.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer wavFile.Close()
+	ss:=[]LimitedSignal{Modulated{Sine{unitX/200}, Pulse{X(1)}},Modulated{Sine{unitX/250}, Pulse{X(1)}}}
+	Encode(wavFile, 1, 8000, ss[0].MaxX(), PromoteToSignals(ss)...)
+}
+
 
 
 func TestFormatStackPCMs(t *testing.T) {
@@ -135,6 +146,5 @@ func TestFormatPiping(t *testing.T) {
 	defer wavFile.Close()
 	Encode(wavFile, 1, 8000, unitX, Modulated{Sine{unitX/200}, NewConstant(-6)})
 }
-
 
 

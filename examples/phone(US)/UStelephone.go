@@ -8,7 +8,7 @@ import (
 )
 var OneSecond = X(1)
 
-func Save(file string,s PeriodicSignal){
+func save(file string,s PeriodicSignal){
 	wavFile, err := os.Create(file)
 	if err != nil {
 		panic(err)
@@ -30,10 +30,10 @@ Line Busy Tone is 480 Hz and 630 Hz that is on and off every .5 seconds.
 */
 
 func main(){
-	Save("AudibleRingTone.wav",Looped{Modulated{Pulse{OneSecond*2},Stack{Sine{OneSecond/440},Sine{OneSecond/480}}},OneSecond*6})
-	Save("ReceiverOffHookTone.wav",Modulated{Looped{Pulse{OneSecond/10},OneSecond/5}, Stack{Sine{OneSecond/1400},Sine{OneSecond/2060}, Sine{OneSecond/2450}, Sine{OneSecond/2600}}})
-	Save("NoSuchNumberTone.wav",Stack{Sine{OneSecond/200},Sine{OneSecond/400}})
-	Save("LineBusyTone.wav",Modulated{Looped{Pulse{OneSecond/4},OneSecond/2}, Stack{Sine{OneSecond/480},Sine{OneSecond/630}}})
+	save("AudibleRingTone.wav",Looped{Modulated{Pulse{OneSecond*2},Stack{Sine{OneSecond/440},Sine{OneSecond/480}}},OneSecond*6})
+	save("ReceiverOffHookTone.wav",Modulated{Looped{Pulse{OneSecond/10},OneSecond/5}, Stack{Sine{OneSecond/1400},Sine{OneSecond/2060}, Sine{OneSecond/2450}, Sine{OneSecond/2600}}})
+	save("NoSuchNumberTone.wav",Stack{Sine{OneSecond/200},Sine{OneSecond/400}})
+	save("LineBusyTone.wav",Modulated{Looped{Pulse{OneSecond/4},OneSecond/2}, Stack{Sine{OneSecond/480},Sine{OneSecond/630}}})
 
 }
 

@@ -230,6 +230,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 	})
 	fmt.Fprint(buf, "data")
 	binary.Write(buf, binary.LittleEndian, samples*uint32(sampleBytes)*uint32(len(ss)))
+	buf.Flush()
 	readers:=make([]io.Reader,len(ss))
 	switch sampleBytes {
 	case 1:
@@ -345,7 +346,7 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 			pcms[c] = PCM64bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*8 : (c+1)*samples*8]}}
 		}
 	default:
-			return nil,ErrWavParse{fmt.Sprintf("Unsupported bit depth (%i).",format.Bits)}
+			return nil,ErrWavParse{fmt.Sprintf("Unsupported bit depth (%d).",format.Bits)}
 		}
 	return pcms, nil
 }
