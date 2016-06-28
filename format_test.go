@@ -103,13 +103,13 @@ func TestFormatMultiplexTones(t *testing.T) {
 
 func TestFormatSaveLoadSave(t *testing.T) {
 	m := Modulated{Sine{unitX/1000}, NewConstant(-6)}
-	wavFile, err := os.Create("./test output/TestSaveLoad.wav")
+	wavFile, err := os.Create("./test output/SaveLoad.wav")
 	if err != nil {
 		panic(err)
 	}
 	Encode(wavFile, 2, 44100, unitX, m)
 	wavFile.Close()
-	stream, err := os.Open("./test output/TestSaveLoad.wav")
+	stream, err := os.Open("./test output/SaveLoad.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -119,7 +119,7 @@ func TestFormatSaveLoadSave(t *testing.T) {
 	}
 
 	stream.Close()
-	wavFile, err = os.Create("./test output/TestSaveLoadSave.wav")
+	wavFile, err = os.Create("./test output/SaveLoadSave.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -128,12 +128,13 @@ func TestFormatSaveLoadSave(t *testing.T) {
 }
 
 func TestFormatPiping(t *testing.T) {
-	wavFile, err := os.Create("./test output/TestPiping.wav")
+	wavFile, err := os.Create("./test output/Piping.wav")
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
 	Encode(wavFile, 1, 8000, unitX, Modulated{Sine{unitX/200}, NewConstant(-6)})
 }
+
 
 

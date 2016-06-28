@@ -12,7 +12,7 @@ func init() {
 
 const bufferSize = 16 
 
-// a PCM-Signal read, as required, from a URL.
+// a PCM-Signal, read as required, from a URL.
 // if queried for a property value from an x that is more than 32 samples lower than a previous query, will return zero.
 type Wave struct{
 	Offset
@@ -30,7 +30,7 @@ func (s *Wave) property(offset x) y {
 	for offset > s.MaxX() {
 		// append available data onto the PCM slice.
 		// also possibly shift off some data, shortening the PCM slice, retaining at least two buffer lengths.
-		// semi-samples are read but not accessed by property.
+		// partial samples are read but not accessed by property.
 		switch st:=s.Offset.LimitedSignal.(type) {
 		case PCM8bit:
 			sd:=PCM8bit{st.PCM}

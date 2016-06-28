@@ -149,29 +149,31 @@ func NewStack(c ...Signal) Stack {
 // for example: without these you couldn't use a slice of LimitedSignal's in a variadic call to a func requiring Signal's. (when you can use separate LimitedSignal's in the same call.)
 
 // converts to []Signal
-func PromoteToSignals(s interface{}) (out []Signal) {
+func PromoteToSignals(s interface{}) []Signal {
+	var out []Signal 
 	switch st := s.(type) {
 	case []LimitedSignal:
-		out = make([]Signal, len(st))
+		out := make([]Signal, len(st))
 		for i := range out {
 			out[i] = st[i].(Signal)
 		}
 	case []PeriodicLimitedSignal:
-		out = make([]Signal, len(st))
+		out := make([]Signal, len(st))
 		for i := range out {
 			out[i] = st[i].(Signal)
 		}
 	case []PeriodicSignal:
-		out = make([]Signal, len(st))
+		out := make([]Signal, len(st))
 		for i := range out {
 			out[i] = st[i].(Signal)
 		}
 	}
-	return
+	return out
 }
 
 // converts to []LimitedSignal
-func PromoteToLimitedSignals(s interface{}) (out []LimitedSignal) {
+func PromoteToLimitedSignals(s interface{}) []LimitedSignal {
+	var out []LimitedSignal 
 	switch st := s.(type) {
 	case []PeriodicLimitedSignal:
 		out = make([]LimitedSignal, len(st))
@@ -179,11 +181,12 @@ func PromoteToLimitedSignals(s interface{}) (out []LimitedSignal) {
 			out[i] = st[i].(LimitedSignal)
 		}
 	}
-	return
+	return out
 }
 
 // converts to []PeriodicSignal
-func PromoteToPeriodicSignals(s interface{}) (out []PeriodicSignal) {
+func PromoteToPeriodicSignals(s interface{}) []PeriodicSignal {
+	var out []PeriodicSignal 
 	switch st := s.(type) {
 	case []PeriodicLimitedSignal:
 		out = make([]PeriodicSignal, len(st))
@@ -191,5 +194,7 @@ func PromoteToPeriodicSignals(s interface{}) (out []PeriodicSignal) {
 			out[i] = st[i].(PeriodicSignal)
 		}
 	}
-	return
+	return out
 }
+
+
