@@ -152,6 +152,8 @@ func NewStack(c ...Signal) Stack {
 func PromoteToSignals(s interface{}) []Signal {
 	var out []Signal 
 	switch st := s.(type) {
+	case []Signal:
+		return st
 	case []LimitedSignal:
 		out = make([]Signal, len(st))
 		for i := range out {
@@ -175,6 +177,8 @@ func PromoteToSignals(s interface{}) []Signal {
 func PromoteToLimitedSignals(s interface{}) []LimitedSignal {
 	var out []LimitedSignal 
 	switch st := s.(type) {
+	case []LimitedSignal:
+		return st
 	case []PeriodicLimitedSignal:
 		out = make([]LimitedSignal, len(st))
 		for i := range out {
@@ -188,6 +192,8 @@ func PromoteToLimitedSignals(s interface{}) []LimitedSignal {
 func PromoteToPeriodicSignals(s interface{}) []PeriodicSignal {
 	var out []PeriodicSignal 
 	switch st := s.(type) {
+	case []PeriodicSignal:
+		return st
 	case []PeriodicLimitedSignal:
 		out = make([]PeriodicSignal, len(st))
 		for i := range out {
