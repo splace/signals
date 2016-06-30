@@ -47,10 +47,9 @@ func (c Modulated) Period() (period x) {
 
 // the smallest Max X of the constituents.
 func (c Modulated) MaxX() (min x) {
-	min = -1
 	for _, s := range c {
 		if sls, ok := s.(LimitedSignal); ok {
-			if newmin := sls.MaxX(); newmin >= 0 && (min == -1 || newmin < min) {
+			if newmin := sls.MaxX(); newmin > 0 && (min == 0 || newmin < min) {
 				min = newmin
 			}
 		}
@@ -89,7 +88,6 @@ func (c Composite) Period() (period x) {
 
 // the largest Max X of the constituents.
 func (c Composite) MaxX() (max x) {
-	max = -1
 	for _, s := range c {
 		if sls, ok := s.(LimitedSignal); ok {
 			if newmax := sls.MaxX(); newmax > max {
@@ -128,7 +126,6 @@ func (c Stack) Period() (period x) {
 
 // the largest Max X of the constituents.
 func (c Stack) MaxX() (max x) {
-	max = -1
 	for _, s := range c {
 		if sls, ok := s.(LimitedSignal); ok {
 			if newmax := sls.MaxX(); newmax > max {
