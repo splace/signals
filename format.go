@@ -210,8 +210,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		SampleBytes: uint16(sampleBytes)*uint16(len(ss)),
 		Bits:        uint16(8 * sampleBytes),
 	})
-	fmt.Fprint(buf, "data")
-	binary.Write(buf, binary.LittleEndian, samples*uint32(sampleBytes)*uint32(len(ss)))
+	binary.Write(buf, binary.LittleEndian, chunkHeader{'d', 'a', 't', 'a', samples*uint32(sampleBytes)*uint32(len(ss))})
 	readers:=make([]io.Reader,len(ss))
 	switch sampleBytes {
 	case 1:
