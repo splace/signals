@@ -17,18 +17,18 @@ func NewPCM(sampleRate uint32, Data []byte) PCM {
 	return PCM{X(1 / float32(sampleRate)), Data}
 }
 
-func (p PCM) Period() x {
-	return p.samplePeriod
+func (s PCM) Period() x {
+	return s.samplePeriod
 }
 
 // from a PCM return two new PCM's (with the same underlying data) from either side of a sample.
-func (p PCM) Split(sample uint32, sampleBytes uint8) (head PCM, tail PCM) {
-	copy := func(p PCM) PCM { return p }
+func (s PCM) Split(sample uint32, sampleBytes uint8) (head PCM, tail PCM) {
+	copy := func(s PCM) PCM { return s }
 	bytePosition := sample * uint32(sampleBytes)
-	if bytePosition > uint32(len(p.Data)) {
-		bytePosition = uint32(len(p.Data))
+	if bytePosition > uint32(len(s.Data)) {
+		bytePosition = uint32(len(s.Data))
 	}
-	head, tail = p, copy(p)
+	head, tail = s, copy(s)
 	tail.Data = tail.Data[bytePosition:]
 	head.Data = head.Data[:bytePosition]
 	return
@@ -61,15 +61,15 @@ func decodePCM8bit(b byte) y {
 	return y(b-128) << (yBits-8)
 }
 
-func (p PCM8bit) MaxX() x {
-	return p.PCM.samplePeriod * x(len(p.PCM.Data)-1)
+func (s PCM8bit) MaxX() x {
+	return s.PCM.samplePeriod * x(len(s.PCM.Data)-1)
 }
 
 func (s PCM8bit) Encode(w io.Writer) {
 	Encode(w, 1, uint32(unitX/s.Period()), s.MaxX(), s)
 }
-func (p PCM8bit) Split(position x) (PCM8bit, PCM8bit) {
-	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 1)
+func (s PCM8bit) Split(p x) (PCM8bit, PCM8bit) {
+	head, tail := s.PCM.Split(uint32(p/s.PCM.samplePeriod)+1, 1)
 	return PCM8bit{head}, PCM8bit{tail}
 }
 
@@ -101,12 +101,12 @@ func decodePCM16bit(b1, b2 byte) y {
 func (s PCM16bit) Encode(w io.Writer) {
 	Encode(w, 2, uint32(unitX/s.Period()), s.MaxX(), s)
 }
-func (p PCM16bit) MaxX() x {
-	return p.PCM.samplePeriod * x(len(p.PCM.Data)-2) / 2
+func (s PCM16bit) MaxX() x {
+	return s.PCM.samplePeriod * x(len(s.PCM.Data)-2) / 2
 }
 
-func (p PCM16bit) Split(position x) (PCM16bit, PCM16bit) {
-	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 2)
+func (s PCM16bit) Split(p x) (PCM16bit, PCM16bit) {
+	head, tail := s.PCM.Split(uint32(p/s.PCM.samplePeriod)+1, 2)
 	return PCM16bit{head}, PCM16bit{tail}
 }
 
@@ -136,12 +136,12 @@ func decodePCM24bit(b1, b2, b3 byte) y {
 func (s PCM24bit) Encode(w io.Writer) {
 	Encode(w, 3, uint32(unitX/s.Period()), s.MaxX(), s)
 }
-func (p PCM24bit) MaxX() x {
-	return p.PCM.samplePeriod * x(len(p.PCM.Data)-3) / 3
+func (s PCM24bit) MaxX() x {
+	return s.PCM.samplePeriod * x(len(s.PCM.Data)-3) / 3
 }
 
-func (p PCM24bit) Split(position x) (PCM24bit, PCM24bit) {
-	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 3)
+func (s PCM24bit) Split(p x) (PCM24bit, PCM24bit) {
+	head, tail := s.PCM.Split(uint32(p/s.PCM.samplePeriod)+1, 3)
 	return PCM24bit{head}, PCM24bit{tail}
 }
 
@@ -171,12 +171,12 @@ func decodePCM32bit(b1, b2, b3, b4 byte) y {
 func (s PCM32bit) Encode(w io.Writer) {
 	Encode(w, 4, uint32(unitX/s.Period()), s.MaxX(), s)
 }
-func (p PCM32bit) MaxX() x {
-	return p.PCM.samplePeriod * x(len(p.PCM.Data)-4) / 4
+func (s PCM32bit) MaxX() x {
+	return s.PCM.samplePeriod * x(len(s.PCM.Data)-4) / 4
 }
 
-func (p PCM32bit) Split(position x) (PCM32bit, PCM32bit) {
-	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 4)
+func (s PCM32bit) Split(p x) (PCM32bit, PCM32bit) {
+	head, tail := s.PCM.Split(uint32(p/s.PCM.samplePeriod)+1, 4)
 	return PCM32bit{head}, PCM32bit{tail}
 }
 
@@ -206,12 +206,12 @@ func decodePCM48bit(b1, b2, b3, b4, b5, b6 byte) y {
 func (s PCM48bit) Encode(w io.Writer) {
 	Encode(w, 6, uint32(unitX/s.Period()), s.MaxX(), s)
 }
-func (p PCM48bit) MaxX() x {
-	return p.PCM.samplePeriod * x(len(p.PCM.Data)-6) / 6
+func (s PCM48bit) MaxX() x {
+	return s.PCM.samplePeriod * x(len(s.PCM.Data)-6) / 6
 }
 
-func (p PCM48bit) Split(position x) (PCM48bit, PCM48bit) {
-	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 6)
+func (s PCM48bit) Split(p x) (PCM48bit, PCM48bit) {
+	head, tail := s.PCM.Split(uint32(p/s.PCM.samplePeriod)+1, 6)
 	return PCM48bit{head}, PCM48bit{tail}
 }
 
@@ -241,12 +241,12 @@ func decodePCM64bit(b1, b2, b3, b4, b5, b6 , b7, b8 byte) y {
 func (s PCM64bit) Encode(w io.Writer) {
 	Encode(w, 8, uint32(unitX/s.Period()), s.MaxX(), s)
 }
-func (p PCM64bit) MaxX() x {
-	return p.PCM.samplePeriod * x(len(p.PCM.Data)-8) / 8
+func (s PCM64bit) MaxX() x {
+	return s.PCM.samplePeriod * x(len(s.PCM.Data)-8) / 8
 }
 
-func (p PCM64bit) Split(position x) (PCM64bit, PCM64bit) {
-	head, tail := p.PCM.Split(uint32(position/p.PCM.samplePeriod)+1, 8)
+func (s PCM64bit) Split(p x) (PCM64bit, PCM64bit) {
+	head, tail := s.PCM.Split(uint32(p/s.PCM.samplePeriod)+1, 8)
 	return PCM64bit{head}, PCM64bit{tail}
 }
 
