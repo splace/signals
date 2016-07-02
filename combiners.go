@@ -17,10 +17,10 @@ func init() {
 // As with 'AND' logic, all sources have to be unitY (at a particular x) for Modulated to be unitY, whereas, ANY Signal at zero will generate a Modulated of zero.
 type Modulated []Signal
 
-func (c Modulated) property(t x) (total y) {
+func (c Modulated) property(p x) (total y) {
 	total = unitY
 	for _, s := range c {
-		l := s.property(t)
+		l := s.property(p)
 		switch l {
 		case 0:
 			total = 0
@@ -69,9 +69,9 @@ func NewModulated(c ...Signal) Modulated {
 // As with 'OR' logic, all sources have to be zero (at a particular x) for Composite to be zero.
 type Composite []Signal
 
-func (c Composite) property(t x) (total y) {
+func (c Composite) property(p x) (total y) {
 	for _, s := range c {
-		total += s.property(t)
+		total += s.property(p)
 	}
 	return
 }
@@ -107,9 +107,9 @@ func NewComposite(c ...Signal) Composite {
 // Same as Composite except that Stack scales down by the number of signals, making it impossible to exceed unitY.
 type Stack []Signal
 
-func (c Stack) property(t x) (total y) {
+func (c Stack) property(p x) (total y) {
 	for _, s := range c {
-		total += s.property(t) / y(len(c))
+		total += s.property(p) / y(len(c))
 	}
 	return
 }

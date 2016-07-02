@@ -17,9 +17,9 @@ type PulsePattern struct {
 	PulseWidth x
 }
 
-func (s PulsePattern) property(t x) y {
+func (s PulsePattern) property(p x) y {
 	//if bp := s.BitPattern.BitLen() - int(t/s.PulseWidth); bp < 0 { // higher number bits come first
-	if bp := int(t / s.PulseWidth); bp < 0 {
+	if bp := int(p / s.PulseWidth); bp < 0 {
 		return 0
 	} else {
 		if s.BitPattern.Bit(bp) == 1 {

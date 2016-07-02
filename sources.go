@@ -33,7 +33,7 @@ func NewConstant(DB float64) Constant {
 	return Constant{y(maxyfloat64 * Vol(DB))}
 }
 
-func (s Constant) property(t x) y {
+func (s Constant) property(p x) y {
 	return s.Constant
 }
 
@@ -42,8 +42,8 @@ type Sine struct {
 	Cycle x
 }
 
-func (s Sine) property(t x) y {
-	return y(math.Sin(float64(t)/float64(s.Cycle)*2*math.Pi) * maxyfloat64)
+func (s Sine) property(p x) y {
+	return y(math.Sin(float64(p)/float64(s.Cycle)*2*math.Pi) * maxyfloat64)
 }
 
 func (s Sine) Period() x {
@@ -55,8 +55,8 @@ type Pulse struct {
 	Width x
 }
 
-func (s Pulse) property(t x) y {
-	if t > s.Width || t < 0 {
+func (s Pulse) property(p x) y {
+	if p > s.Width || p < 0 {
 		return 0
 	} else {
 		return unitY
@@ -72,8 +72,8 @@ type Square struct {
 	Cycle x
 }
 
-func (s Square) property(t x) y {
-	if t%s.Cycle >= s.Cycle/2 {
+func (s Square) property(p x) y {
+	if p%s.Cycle >= s.Cycle/2 {
 		return -unitY
 	} else {
 		return unitY
@@ -89,13 +89,13 @@ type RampUp struct {
 	Period x
 }
 
-func (s RampUp) property(t x) y {
-	if t < 0 {
+func (s RampUp) property(p x) y {
+	if p < 0 {
 		return 0
-	} else if t > s.Period {
+	} else if p > s.Period {
 		return unitY
 	} else {
-		return y(x(unitY) / s.Period * t)
+		return y(x(unitY) / s.Period * p)
 	}
 }
 
@@ -104,13 +104,13 @@ type RampDown struct {
 	Period x
 }
 
-func (s RampDown) property(t x) y {
-	if t < 0 {
+func (s RampDown) property(p x) y {
+	if p < 0 {
 		return unitY
-	} else if t > s.Period {
+	} else if p > s.Period {
 		return 0
 	} else {
-		return y(x(unitY) / s.Period * (s.Period - t))
+		return y(x(unitY) / s.Period * (s.Period - p))
 	}
 }
 
@@ -118,8 +118,8 @@ func (s RampDown) property(t x) y {
 type Heavyside struct {
 }
 
-func (s Heavyside) property(t x) y {
-	if t < 0 {
+func (s Heavyside) property(p x) y {
+	if p < 0 {
 		return 0
 	}
 	return unitY
@@ -131,8 +131,8 @@ type Sigmoid struct {
 	Steepness x
 }
 
-func (s Sigmoid) property(t x) y {
-	return y(maxyfloat64 / (1 + math.Exp(-float64(t)/float64(s.Steepness))))
+func (s Sigmoid) property(p x) y {
+	return y(maxyfloat64 / (1 + math.Exp(-float64(p)/float64(s.Steepness))))
 }
 
 

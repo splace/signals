@@ -21,8 +21,8 @@ type Shifted struct {
 	Shift x
 }
 
-func (s Shifted) property(offset x) y {
-	return s.Signal.property(offset - s.Shift)
+func (s Shifted) property(p x) y {
+	return s.Signal.property(p - s.Shift)
 }
 
 // a Signal whose property values are those of another Signal but at an offset x.
@@ -32,8 +32,8 @@ type Offset struct {
 	Offset x
 }
 
-func (s Offset) property(offset x) y {
-	return s.LimitedSignal.property(offset - s.Offset)
+func (s Offset) property(p x) y {
+	return s.LimitedSignal.property(p - s.Offset)
 }
 func (s Offset) MaxX() x {
 	return s.LimitedSignal.MaxX()+s.Offset
@@ -45,8 +45,8 @@ type Compressed struct {
 	Factor float32
 }
 
-func (s Compressed) property(offset x) y {
-	return s.Signal.property(x(float32(offset) * s.Factor))
+func (s Compressed) property(p x) y {
+	return s.Signal.property(x(float32(p) * s.Factor))
 }
 
 func (s Compressed) MaxX() x {
@@ -63,8 +63,8 @@ type Looped struct {
 	Loop x
 }
 
-func (s Looped) property(offset x) y {
-	return s.Signal.property(offset % s.Loop)
+func (s Looped) property(p x) y {
+	return s.Signal.property(p % s.Loop)
 }
 
 func (s Looped) Period() x {
@@ -82,8 +82,8 @@ func (s Repeated) Period() x {
 	return x(float32(s.PeriodicSignal.Period()) * s.Cycles)
 }
 
-func (s Repeated) property(offset x) y {
-	return s.PeriodicSignal.property((offset % s.Period()) % s.PeriodicSignal.Period())
+func (s Repeated) property(p x) y {
+	return s.PeriodicSignal.property((p % s.Period()) % s.PeriodicSignal.Period())
 }
 
 
@@ -92,8 +92,8 @@ type Inverted struct {
 	Signal
 }
 
-func (s Inverted) property(offset x) y {
-	return -s.Signal.property(offset)
+func (s Inverted) property(p x) y {
+	return -s.Signal.property(p)
 }
 
 // a Signal that returns y's that are for the -ve x of another Signal
@@ -101,8 +101,8 @@ type Reversed struct {
 	Signal
 }
 
-func (s Reversed) property(offset x) y {
-	return s.Signal.property(-offset)
+func (s Reversed) property(p x) y {
+	return s.Signal.property(-p)
 }
 
 // a Signal that produces values that are flipped over, (Maxy<->zero) of another Signal
@@ -110,8 +110,8 @@ type Reflected struct {
 	Signal
 }
 
-func (s Reflected) property(offset x) y {
-	if r := s.Signal.property(offset); r < 0 {
+func (s Reflected) property(p x) y {
+	if r := s.Signal.property(p); r < 0 {
 		return -unitY - r
 	} else {
 		return unitY - r
@@ -125,8 +125,8 @@ type RateModulated struct {
 	Factor     x
 }
 
-func (s RateModulated) property(offset x) y {
-	return s.Signal.property(offset + MultiplyX(float64(s.Modulation.property(offset))/maxyfloat64, s.Factor))
+func (s RateModulated) property(p x) y {
+	return s.Signal.property(p + MultiplyX(float64(s.Modulation.property(p))/maxyfloat64, s.Factor))
 }
 
 func (s RateModulated) Period() x {
@@ -156,12 +156,12 @@ type Segmented struct {
 }
 
 
-func (s *Segmented) property(offset x) y {
-	temp := offset % s.Width
-	if offset-temp != s.x1 || offset+s.Width-temp != s.x2 {
+func (s *Segmented) property(p x) y {
+	temp := p % s.Width
+	if p-temp != s.x1 || p+s.Width-temp != s.x2 {
 		// TODO reuse by swap ends
-		s.x1 = offset - temp
-		s.x2 = offset + s.Width - temp
+		s.x1 = p - temp
+		s.x2 = p + s.Width - temp
 		s.l1 = x(s.Signal.property(s.x1)) / s.Width
 		s.l2 = x(s.Signal.property(s.x2))/s.Width - s.l1
 	}
@@ -196,7 +196,7 @@ func NewTriggered(s Signal, trigger y, rising bool, res, max x) Triggered {
 	return Triggered{s, trigger, rising, res, max, &searchInfo{}}
 }
 
-func (s Triggered) property(offset x) y {
+func (s Triggered) property(p x) y {
 	if s.Trigger != s.Found.trigger || s.Found.rising != s.Rising {
 		s.Found.trigger = s.Trigger
 		s.Found.rising = s.Rising
@@ -217,7 +217,7 @@ func (s Triggered) property(offset x) y {
 		}
 		s.Found.Shift = 0
 	}
-	return s.Signal.property(offset + s.Found.Shift)
+	return s.Signal.property(p + s.Found.Shift)
 }
 
 

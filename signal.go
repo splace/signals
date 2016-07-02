@@ -18,8 +18,8 @@ type x int64 // current underlying representation
 const unitX = x(1000000000)
 
 // string representation of an x scaled to unitX
-func (i x) String() string {
-	return fmt.Sprintf("%9.2f", float32(i)/float32(unitX))
+func (p x) String() string {
+	return fmt.Sprintf("%9.2f", float32(p)/float32(unitX))
 }
 
 // the y type represents a value between +unitY and -unitY.
@@ -35,8 +35,8 @@ const halfyBits = yBits / 2
 const maxyfloat64 float64 = float64(unitY - 512)
 
 // string representation of a y, scaled to unitY%
-func (l y) String() string {
-	return fmt.Sprintf("%7.2f%%", 100*float32(l)/float32(unitY))
+func (v y) String() string {
+	return fmt.Sprintf("%7.2f%%", 100*float32(v)/float32(unitY))
 }
 
 // a LimitedSignal is a Signal that is assumed to have zero y after MaxX().

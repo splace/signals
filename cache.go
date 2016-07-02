@@ -8,16 +8,16 @@ type Cached struct {
 	cache map[x] y
 }
 
-func (s Cached) property(offset x) y {
-	if v,ok:=s.cache[offset];ok {return v}
+func (s Cached) property(p x) y {
+	if v,ok:=s.cache[p];ok {return v}
 	if len(s.cache)>cacheSize+10{
 		for i:=range(s.cache){
 			delete(s.cache,i)
 			if len(s.cache)<=cacheSize{break}
 		}
 	}
-	v:=s.Signal.property(offset)
-	s.cache[offset]=v
+	v:=s.Signal.property(p)
+	s.cache[p]=v
 	return v
 }
 

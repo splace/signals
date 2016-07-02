@@ -20,14 +20,14 @@ type Wave struct{
 	reader io.Reader
 }
 
-func (s *Wave) property(offset x) y {
+func (s *Wave) property(p x) y {
 	if s.reader==nil{
 		wav,err:=NewWave(s.URL)
 		failOn(err)
 		s.Offset=wav.Offset
 		s.reader=wav.reader
 	}
-	for offset > s.MaxX() {
+	for p > s.MaxX() {
 		// append available data onto the PCM slice.
 		// also possibly shift off some data, shortening the PCM slice, retaining at least two buffer lengths.
 		// partial samples are read but not accessed by property.
@@ -106,7 +106,7 @@ func (s *Wave) property(offset x) y {
 			}
 		}
 	}
-	return s.Offset.property(offset)
+	return s.Offset.property(p)
 }
 
 
