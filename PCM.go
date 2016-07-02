@@ -44,8 +44,8 @@ func NewPCM8bit(sampleRate uint32, Data []byte) PCM8bit {
 	return PCM8bit{NewPCM(sampleRate, Data)}
 }
 
-func (s PCM8bit) property(offset x) y {
-	index := int(offset / s.samplePeriod)
+func (s PCM8bit) property(p x) y {
+	index := int(p / s.samplePeriod)
 	if index < 0 || index >= len(s.Data){
 		return 0
 	}
@@ -82,8 +82,8 @@ func NewPCM16bit(sampleRate uint32, Data []byte) PCM16bit {
 	return PCM16bit{NewPCM(sampleRate, Data)}
 }
 
-func (s PCM16bit) property(offset x) y {
-	index := int(offset/s.samplePeriod) * 2
+func (s PCM16bit) property(p x) y {
+	index := int(p/s.samplePeriod) * 2
 	if index < 0 || index >= len(s.Data)-1 {
 		return 0
 	}
@@ -119,8 +119,8 @@ func NewPCM24bit(sampleRate uint32, Data []byte) PCM24bit {
 	return PCM24bit{NewPCM(sampleRate, Data)}
 }
 
-func (s PCM24bit) property(offset x) y {
-	index := int(offset/s.samplePeriod) * 3
+func (s PCM24bit) property(p x) y {
+	index := int(p/s.samplePeriod) * 3
 	if index < 0 || index >= len(s.Data)-2 {
 		return 0
 	}
@@ -154,8 +154,8 @@ func NewPCM32bit(sampleRate uint32, Data []byte) PCM32bit {
 	return PCM32bit{NewPCM(sampleRate, Data)}
 }
 
-func (s PCM32bit) property(offset x) y {
-	index := int(offset/s.samplePeriod) * 4
+func (s PCM32bit) property(p x) y {
+	index := int(p/s.samplePeriod) * 4
 	if index < 0 || index >= len(s.Data)-3 {
 		return 0
 	}
@@ -189,8 +189,8 @@ func NewPCM48bit(sampleRate uint32, Data []byte) PCM48bit {
 	return PCM48bit{NewPCM(sampleRate, Data)}
 }
 
-func (s PCM48bit) property(offset x) y {
-	index := int(offset/s.samplePeriod) * 6
+func (s PCM48bit) property(p x) y {
+	index := int(p/s.samplePeriod) * 6
 	if index < 0 || index >= len(s.Data)-5 {
 		return 0
 	}
@@ -224,8 +224,8 @@ func NewPCM64bit(sampleRate uint32, Data []byte) PCM64bit {
 	return PCM64bit{NewPCM(sampleRate, Data)}
 }
 
-func (s PCM64bit) property(offset x) y {
-	index := int(offset/s.samplePeriod) * 8
+func (s PCM64bit) property(p x) y {
+	index := int(p/s.samplePeriod) * 8
 	if index < 0 || index >= len(s.Data)-7 {
 		return 0
 	}
