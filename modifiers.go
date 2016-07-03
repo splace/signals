@@ -166,11 +166,11 @@ func (s *Segmented) property(p x) y {
 		segmentedMutex.Lock()
 		s.x1 = p - temp
 		s.x2 = p + s.Width - temp
-		s.l1 = x(s.Signal.property(s.x1)) / s.Width
-		s.l2 = x(s.Signal.property(s.x2))/s.Width - s.l1
+		s.l1 = x(s.Signal.property(s.x1)) 
+		s.l2 = x(s.Signal.property(s.x2))/s.Width - s.l1/ s.Width
 		segmentedMutex.Unlock()
 	}
-	return y(s.l1*s.Width + s.l2*temp)
+	return y(s.l1 + s.l2*temp)
 }
 
 func (s Segmented) Period() x {

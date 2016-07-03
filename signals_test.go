@@ -13,7 +13,7 @@ func PrintGraph(s Signal, start, end, step x) {
 	}
 }
 
-func ExampleConstantZero() {
+func ExampleSignalsConstantZero() {
 	PrintGraph(Constant{0}, 0, 3*unitX, unitX)
 	/* Output:
    0.00%                                  X
@@ -22,7 +22,7 @@ func ExampleConstantZero() {
 	*/
 }
 
-func ExampleConstantUnity() {
+func ExampleSignalsConstantUnity() {
 	PrintGraph(NewConstant(0), 0, 3*unitX, unitX)
 	/* Output:
  100.00%                                                                  X
@@ -31,7 +31,7 @@ func ExampleConstantUnity() {
 	*/
 }
 
-func ExampleSquare() {
+func ExampleSignalsSquare() {
 	PrintGraph(Square{unitX}, 0, 2*unitX, unitX/10)
 	/* Output:
  100.00%                                                                   X
@@ -57,7 +57,7 @@ func ExampleSquare() {
 	*/
 }
 
-func ExamplePulse() {
+func ExampleSignalsPulse() {
 	PrintGraph(Pulse{unitX}, -2*unitX, 3*unitX, unitX/4)
 	/* Output:
    0.00%                                  X
@@ -82,7 +82,7 @@ func ExamplePulse() {
    0.00%                                  X
 	*/
 }
-func ExampleRampUpDown() {
+func ExampleSignalsRampUpDown() {
 	PrintGraph(RampUp{unitX}, 0, 2*unitX, unitX/10)
 	fmt.Println()
 	PrintGraph(RampDown{unitX}, 0, 2*unitX, unitX/10)
@@ -130,7 +130,7 @@ func ExampleRampUpDown() {
    0.00%                                  X
 	*/
 }
-func ExampleHeavyside() {
+func ExampleSignalsHeavyside() {
 	PrintGraph(Heavyside{}, -3*unitX, 3*unitX, unitX/4)
 	/* Output:
    0.00%                                  X
@@ -160,7 +160,7 @@ func ExampleHeavyside() {
 	*/
 }
 
-func ExampleSine() {
+func ExampleSignalsSine() {
 	PrintGraph(Sine{unitX}, 0, 2*unitX, unitX/16)
 	/* Output:
    0.00%                                  X
@@ -198,7 +198,7 @@ func ExampleSine() {
 	*/
 }
 
-func ExampleSigmoid() {
+func ExampleSignalsSigmoid() {
 	PrintGraph(Sigmoid{unitX}, -5*unitX, 5*unitX, unitX/2)
 	/* Output:
    0.67%                                  X
@@ -224,7 +224,7 @@ func ExampleSigmoid() {
 	*/
 }
 
-func ExampleOffset() {
+func ExampleSignalsOffset() {
 	PrintGraph(Offset{NewADSREnvelope(unitX, unitX, unitX, unitY/2, unitX),unitX}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
@@ -280,7 +280,7 @@ func ExampleOffset() {
 	*/
 }
 
-func ExampleReflected() {
+func ExampleSignalsReflected() {
 	PrintGraph(Reflected{NewADSREnvelope(unitX, unitX, unitX, unitY/2, unitX)}, 0, 5*unitX, unitX/10)
 	/* Output:
  100.00%                                                                   X
@@ -336,7 +336,7 @@ func ExampleReflected() {
 	*/
 }
 
-func ExamplePower() {
+func ExampleSignalsPower() {
 	Sine := Sine{unitX * 2}
 	Power := Modulated{Sine, Sine}
 	PrintGraph(Power, 0, unitX, unitX/40)
@@ -384,7 +384,7 @@ func ExamplePower() {
 	*/
 }
 
-func ExampleModulated() {
+func ExampleSignalsModulated() {
 	PrintGraph(Modulated{Sine{unitX * 2}, Sine{unitX * 5}}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
@@ -440,7 +440,7 @@ func ExampleModulated() {
 	*/
 }
 
-func ExampleStack() {
+func ExampleSignalsStack() {
 	PrintGraph(Stack{Sine{unitX * 2}, Sine{unitX * 5}}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
@@ -496,7 +496,7 @@ func ExampleStack() {
 	*/
 }
 
-func ExampleTriggered() {
+func ExampleSignalsTriggered() {
 	s := NewTriggered(NewADSREnvelope(unitX, unitX, unitX, unitY/2, unitX), unitY/3*2, true, unitX/100, unitX*10)
 	PrintGraph(s, 0, 5*unitX, unitX/10)
 	fmt.Println(s.Found.Shift)
@@ -609,7 +609,7 @@ func ExampleTriggered() {
 	*/
 }
 
-func ExampleSegmented() {
+func ExampleSignalsSegmented() {
 	PrintGraph(&Segmented{Signal:Sine{unitX * 10}, Width:unitX}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
@@ -666,25 +666,25 @@ func ExampleSegmented() {
 
 }
 
-func ExampleSegmented_makeSawtooth() {
+func ExampleSignalsSegmented_makeSawtooth() {
 	PrintGraph(&Segmented{Signal:Square{unitX}, Width:unitX/2}, 0, 2*unitX, unitX/10)
 	/* Output:
- 100.00%                                                                  X
+ 100.00%                                                                   X
   60.00%                                                     X
   20.00%                                        X
  -20.00%                            X
  -60.00%               X
--100.00%  X
+-100.00% X
  -60.00%               X
  -20.00%                            X
   20.00%                                        X
   60.00%                                                     X
- 100.00%                                                                  X
+ 100.00%                                                                   X
   60.00%                                                     X
   20.00%                                        X
  -20.00%                            X
  -60.00%               X
--100.00%  X
+-100.00% X
  -60.00%               X
  -20.00%                            X
   20.00%                                        X
@@ -692,7 +692,7 @@ func ExampleSegmented_makeSawtooth() {
 	*/
 }
 
-func ExampleRateModulated() {
+func ExampleSignalsRateModulated() {
 	PrintGraph(RateModulated{Sine{unitX * 5}, Sine{unitX * 10}, unitX}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
@@ -748,7 +748,7 @@ func ExampleRateModulated() {
 	*/
 }
 
-func ExampleLooped() {
+func ExampleSignalsLooped() {
 	PrintGraph(Looped{Sine{unitX * 5}, unitX * 25 / 10}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
@@ -804,7 +804,7 @@ func ExampleLooped() {
 	*/
 }
 
-func ExampleRepeated() {
+func ExampleSignalsRepeated() {
 	PrintGraph(Repeated{Sine{unitX * 2}, 1.5}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
@@ -879,6 +879,5 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 	}
 
 }
-
 
 
