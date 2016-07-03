@@ -3,6 +3,7 @@ package signals
 import (
 	"encoding/gob"
 	"math/rand"
+	"sync"
 )
 
 func init() {
