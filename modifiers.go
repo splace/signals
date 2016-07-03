@@ -200,11 +200,9 @@ type searchInfo struct {
 func NewTriggered(s Signal, trigger y, rising bool, res, max x) Triggered {
 	return Triggered{s, trigger, rising, res, max, &searchInfo{}}
 }
-var triggeredMutex = &sync.Mutex{}
 
 func (s Triggered) property(p x) y {
 	if s.Trigger != s.Found.trigger || s.Found.rising != s.Rising {
-		triggeredMutex.Lock()
 		s.Found.trigger = s.Trigger
 		s.Found.rising = s.Rising
 		if s.Rising && s.Signal.property(s.Found.Shift) > s.Trigger || !s.Rising && s.Signal.property(s.Found.Shift) < s.Trigger {
@@ -223,7 +221,6 @@ func (s Triggered) property(p x) y {
 			}
 		}
 		s.Found.Shift = 0
-		triggeredMutex.Unlock()
 	}
 	return s.Signal.property(p + s.Found.Shift)
 }
