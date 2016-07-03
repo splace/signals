@@ -1,6 +1,8 @@
 package signals
 
 import "encoding/gob"
+import "sync"
+
 
 func init() {
 	gob.Register(Shifted{})
@@ -155,15 +157,18 @@ type Segmented struct {
 	x1, x2, l1, l2 x
 }
 
+var segmentedMutex = &sync.Mutex{}
 
 func (s *Segmented) property(p x) y {
 	temp := p % s.Width
 	if p-temp != s.x1 || p+s.Width-temp != s.x2 {
 		// TODO reuse by swap ends
+		segmentedMutex.Lock()
 		s.x1 = p - temp
 		s.x2 = p + s.Width - temp
 		s.l1 = x(s.Signal.property(s.x1)) / s.Width
 		s.l2 = x(s.Signal.property(s.x2))/s.Width - s.l1
+		segmentedMutex.Unlock()
 	}
 	return y(s.l1*s.Width + s.l2*temp)
 }
