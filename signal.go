@@ -14,7 +14,7 @@ type Signal interface {
 // -ve x's are considered imaginary, not used, unless a Delay makes them +ve.
 type x int64 // current underlying representation
 
-// somewhere close to the middle of the resolution range.
+// somewhere close to the middle of the resolution range, adjust if dealing with high accuracy but only either small or large values.
 const unitX = x(1000000000)
 
 // string representation of an x scaled to unitX
