@@ -30,7 +30,7 @@ type Constant struct {
 }
 
 func NewConstant(DB float64) Constant {
-	return Constant{y(maxyfloat64 * Vol(DB))}
+	return Constant{y(unitYfloat64 * Vol(DB))}
 }
 
 func (s Constant) property(p x) y {
@@ -43,12 +43,33 @@ type Sine struct {
 }
 
 func (s Sine) property(p x) y {
-	return y(math.Sin(float64(p)/float64(s.Cycle)*2*math.Pi) * maxyfloat64)
+	return y(math.Sin(float64(p)/float64(s.Cycle)*2*math.Pi) * unitYfloat64)
 }
 
 func (s Sine) Period() x {
 	return s.Cycle
 }
+
+// a Signal that varies sinusoidally, repeating with Cycle width.
+type Sinc struct {
+	Cycle x
+}
+
+func (s Sinc) property(p x) y {
+	if p==0 {return unitY}
+	xp:=float64(p)/float64(s.Cycle)*2*math.Pi
+	return y(math.Sin(xp)/xp * unitYfloat64)
+}
+
+// a Signal that varies sinusoidally, repeating with Cycle width.
+type Gauss struct {
+	Q22 float64   // 2 * q squared
+}
+
+func (s Gauss) property(p x) y {
+	return y(math.Exp(-float64(p)*float64(p)/s.Q22) * unitYfloat64)
+}
+
 
 // a LimitedSignal that produces unitY for a Width, zero otherwise.
 type Pulse struct {
@@ -132,7 +153,7 @@ type Sigmoid struct {
 }
 
 func (s Sigmoid) property(p x) y {
-	return y(maxyfloat64 / (1 + math.Exp(-float64(p)/float64(s.Steepness))))
+	return y(unitYfloat64 / (1 + math.Exp(-float64(p)/float64(s.Steepness))))
 }
 
 

@@ -198,6 +198,74 @@ func ExampleSignalsSine() {
 	*/
 }
 
+func ExampleSignalsSinc() {
+	PrintGraph(Sinc{unitX}, 0, 2*unitX, unitX/16)
+	/* Output:
+100.00%                                                                   X
+  97.45%                                                                  X
+  90.03%                                                               X
+  78.42%                                                           X
+  63.66%                                                       X
+  47.05%                                                 X
+  30.01%                                           X
+  13.92%                                      X
+   0.00%                                  X
+ -10.83%                               X
+ -18.01%                             X
+ -21.39%                           X
+ -21.22%                           X
+ -18.10%                             X
+ -12.86%                              X
+  -6.50%                                X
+  -0.00%                                  X
+   5.73%                                   X
+  10.00%                                     X
+  12.38%                                      X
+  12.73%                                      X
+  11.20%                                     X
+   8.18%                                    X
+   4.24%                                   X
+   0.00%                                  X
+  -3.90%                                 X
+  -6.93%                                X
+  -8.71%                                X
+  -9.09%                               X
+  -8.11%                                X
+  -6.00%                                 X
+  -3.14%                                 X
+	*/
+}
+
+func ExampleSignalsGauss() {
+	PrintGraph(Gauss{float64(unitX)*float64(unitX)}, -3*unitX, 3*unitX, unitX/4)
+	/* Output:
+   0.01%                                  X
+   0.05%                                  X
+   0.19%                                  X
+   0.63%                                  X
+   1.83%                                  X
+   4.68%                                   X
+  10.54%                                     X
+  20.96%                                        X
+  36.79%                                              X
+  56.98%                                                    X
+  77.88%                                                           X
+  93.94%                                                                 X
+ 100.00%                                                                  X
+  93.94%                                                                 X
+  77.88%                                                           X
+  56.98%                                                    X
+  36.79%                                              X
+  20.96%                                        X
+  10.54%                                     X
+   4.68%                                   X
+   1.83%                                  X
+   0.63%                                  X
+   0.19%                                  X
+   0.05%                                  X
+	*/
+}
+
 func ExampleSignalsSigmoid() {
 	PrintGraph(Sigmoid{unitX}, -5*unitX, 5*unitX, unitX/2)
 	/* Output:

@@ -128,7 +128,7 @@ type RateModulated struct {
 }
 
 func (s RateModulated) property(p x) y {
-	return s.Signal.property(p + MultiplyX(float64(s.Modulation.property(p))/maxyfloat64, s.Factor))
+	return s.Signal.property(p + MultiplyX(float64(s.Modulation.property(p))/unitYfloat64, s.Factor))
 }
 
 func (s RateModulated) Period() x {

@@ -32,7 +32,7 @@ const halfyBits = yBits / 2
 //const Halfy=2<<(HalfyBits-1)
 
 // float64 has less resolution than int64 at maxy, so need this to scale float64 sourced Signals to never overflow int64
-const maxyfloat64 float64 = float64(unitY - 512)
+const unitYfloat64 float64 = float64(unitY - 512)
 
 // string representation of a y, scaled to unitY%
 func (v y) String() string {
