@@ -159,18 +159,18 @@ type Segmented struct {
 
 var segmentedMutex = &sync.Mutex{}
 
-func (s *Segmented) property(p x) y {
+func (s *Segmented) property(p x) (value y) {
 	temp := p % s.Width
+	segmentedMutex.Lock()
 	if p-temp != s.x1 || p+s.Width-temp != s.x2 {
-		// TODO reuse by swap ends
-		segmentedMutex.Lock()
 		s.x1 = p - temp
 		s.x2 = p + s.Width - temp
 		s.l1 = x(s.Signal.property(s.x1)) 
 		s.l2 = x(s.Signal.property(s.x2))/s.Width - s.l1/ s.Width
-		segmentedMutex.Unlock()
 	}
-	return y(s.l1 + s.l2*temp)
+	value=y(s.l1 + s.l2*temp)
+	segmentedMutex.Unlock()
+	return
 }
 
 func (s Segmented) Period() x {
