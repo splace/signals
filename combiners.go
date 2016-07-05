@@ -142,6 +142,31 @@ func NewStack(c ...Signal) Stack {
 	return Stack(c)
 }
 
+type Sequenced []LimitedSignal
+
+func (c Sequenced) property(p x) y {
+	for _, s := range c {
+		if l:=s.MaxX();p-l<0{
+			return s.property(p)
+		}else{
+			p -= l
+		}
+	}
+	return 0
+}
+
+func (c Sequenced) MaxX() (max x) {
+	for _, s := range c {
+		max+=s.MaxX()
+	}
+	return
+}
+
+func NewSequence(c ...LimitedSignal) Sequenced {
+	return Sequenced(c)
+}
+
+
 // Converters to promote slices of interfaces, needed when using variadic parameters called using a slice since go doesn't automatically promote a narrow interface inside the slice to be able to use a broader interface.
 // for example: without these you couldn't use a slice of LimitedSignal's in a variadic call to a func requiring Signal's. (when you can use separate LimitedSignal's in the same call.)
 
