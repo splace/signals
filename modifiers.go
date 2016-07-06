@@ -17,7 +17,7 @@ func init() {
 	gob.Register(&Segmented{})
 }
 
-// a Signal whose property values are those of another Signal but at an offset x.
+// a Signal whose values are moved, in x, by 'Shift'.
 type Shifted struct {
 	Signal
 	Shift x
@@ -27,8 +27,7 @@ func (s Shifted) property(p x) y {
 	return s.Signal.property(p - s.Shift)
 }
 
-// a Signal whose property values are those of another Signal but at an offset x.
-// unlike Shifted its MaxX is also offset. 
+// a LimitedSignal whose values are moved, in x, by 'Offset'.
 type Offset struct {
 	LimitedSignal
 	Offset x

@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"encoding/gob"
+	"regexp"
+	"strconv"
 )
 func init() {
 	gob.Register(&Wave{})
@@ -150,9 +152,11 @@ func NewWave(URL string) (*Wave, error) {
 	return nil, ErrWaveParse{"Source bit rate not supported."}
 }
 
-// returns a reader from a source file, along with its Channel count, Precision (bytes) and Samples per second.
-func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
-	resp, err := http.Get(source)
+var contentTypeParse = regexp.MustCompile(`^audio/l(\d+);rate=(\d+)$`)
+
+// returns a reader to a resource, along with its Channel count, Precision (bytes) and Samples per second.
+func PCMReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, error) {
+	resp, err := http.Get(resourceLocation)
 	if err != nil {
 		return nil, 0, 0, 0, err
 	}
@@ -163,8 +167,14 @@ func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
 		}
 		return resp.Body, format.Channels, format.SampleBytes, format.SampleRate, nil
 	}
-	if resp.Header["Content-Type"][0] == "audio/l16;rate=8000" {
-		return resp.Body, 1, 2, 8000, nil
+	pcmFormat:=contentTypeParse.FindStringSubmatch(resp.Header["Content-Type"][0]) 
+	if pcmFormat!=nil {
+		bits,err:=strconv.ParseUint(pcmFormat[1],10,19)
+		rate,err:=strconv.ParseUint(pcmFormat[2],10,32)
+		if err != nil {
+			return nil, 0, 0, 0, err
+		}
+		return resp.Body, 1, uint16(bits/8),uint32(rate), nil
 	}
 	return nil, 0, 0, 0, errors.New("Source in unrecognized format.")
 }
@@ -172,3 +182,5 @@ func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
 func failOn(e error){
 	if e!=nil {panic(e)}
 }
+
+
