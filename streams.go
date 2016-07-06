@@ -147,7 +147,7 @@ func NewWave(URL string) (*Wave, error) {
 	case 8:
 		return &Wave{Offset{NewPCM64bit(rate, b),0},URL,r}, nil
 	}
-	return nil, ErrWavParse{"Source bit rate not supported."}
+	return nil, ErrWaveParse{"Source bit rate not supported."}
 }
 
 // returns a reader from a source file, along with its Channel count, Precision (bytes) and Samples per second.
@@ -157,7 +157,7 @@ func PCMReader(source string) (io.Reader, uint16, uint16, uint32, error) {
 		return nil, 0, 0, 0, err
 	}
 	if resp.Header["Content-Type"][0] == "sound/wav" || resp.Header["Content-Type"][0] == "audio/x-wav" {
-		_, format, err := readHeader(resp.Body)
+		_, format, err := readWaveHeader(resp.Body)
 		if err != nil {
 			return nil, 0, 0, 0, err
 		}

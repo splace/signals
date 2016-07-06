@@ -290,12 +290,12 @@ func EncodeLike(w io.Writer, s PeriodicSignal, p LimitedSignal) {
 // Read a wave format stream into an array of PeriodicLimitedSignals.
 // one for each channel in the encoding.
 func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
-	bytesToRead, format, err := readHeader(wav)
+	bytesToRead, format, err := readWaveHeader(wav)
 	if err != nil {
 		return nil, err
 	}
 	samples := bytesToRead / uint32(format.Channels) / uint32(format.Bits/8)
-	sampleData, err := readData(wav, samples, uint32(format.Channels), uint32(format.Bits/8))
+	sampleData, err := readWaveData(wav, samples, uint32(format.Channels), uint32(format.Bits/8))
 	if err != nil {
 		return nil, err
 	}
@@ -326,41 +326,41 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 			pcms[c] = PCM64bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*8 : (c+1)*samples*8]}}
 		}
 	default:
-			return nil,ErrWavParse{fmt.Sprintf("Unsupported bit depth (%d).",format.Bits)}
+			return nil,ErrWaveParse{fmt.Sprintf("Unsupported bit depth (%d).",format.Bits)}
 		}
 	return pcms, nil
 }
 
-type ErrWavParse struct {
+type ErrWaveParse struct {
 	description string
 }
 
-func (e ErrWavParse) Error() string {
+func (e ErrWaveParse) Error() string {
 	return fmt.Sprintf("WAVE Parse,%s", e.description)
 }
 
-func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
+func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	var header riffHeader
 	var formatHeader chunkHeader
 	var format formatChunk
 	var dataHeader chunkHeader
 	if err := binary.Read(wav, binary.LittleEndian, &header); err != nil {
-		return 0, nil, ErrWavParse{"Header not complete."}
+		return 0, nil, ErrWaveParse{"Header not complete."}
 	}
 	if header.C1 != 'R' || header.C2 != 'I' || header.C3 != 'F' || header.C4 != 'F' || header.C5 != 'W' || header.C6 != 'A' || header.C7 != 'V' || header.C8 != 'E' {
-		return 0, nil, ErrWavParse{"Not RIFF/WAVE format."}
+		return 0, nil, ErrWaveParse{"Not RIFF/WAVE format."}
 	}
 	//var runningBytes int =16
 	if err := binary.Read(wav, binary.LittleEndian, &formatHeader); err != nil {
-		return 0, nil, ErrWavParse{"Chunk incomplete."}
+		return 0, nil, ErrWaveParse{"Chunk incomplete."}
 	}
 	// TODO skip other chunks
 	if formatHeader.C1 != 'f' || formatHeader.C2 != 'm' || formatHeader.C3 != 't' || formatHeader.C4 != ' ' || formatHeader.DataLen != 16 {
-		return 0, nil, ErrWavParse{"No format chunk."}
+		return 0, nil, ErrWaveParse{"No format chunk."}
 	}
 
 	if err := binary.Read(wav, binary.LittleEndian, &format); err != nil {
-		return 0, nil, ErrWavParse{"Format chunk incomplete."}
+		return 0, nil, ErrWaveParse{"Format chunk incomplete."}
 	}
 	if format.Code != 1 {
 		return 0, &format, errors.New("only PCM supported.")
@@ -369,7 +369,7 @@ func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	//	return 0, &format, errors.New("only mono or stereo PCM supported.")
 	//}
 	if format.Bits%8 != 0 {
-		return 0, &format, ErrWavParse{"not whole byte samples size!"}
+		return 0, &format, ErrWaveParse{"not whole byte samples size!"}
 	}
 
 	//nice TODO a "LIST" chunk with, 3 fields third being "INFO", can contain "ICOP" and "ICRD" chunks providing copyright and creation date information.
@@ -379,7 +379,7 @@ func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
 
 	// skip any non-"data" chucks
 	if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
-		return 0, &format, ErrWavParse{"Chunk header incomplete."}
+		return 0, &format, ErrWaveParse{"Chunk header incomplete."}
 	}
 	for dataHeader.C1 != 'd' || dataHeader.C2 != 'a' || dataHeader.C3 != 't' || dataHeader.C4 != 'a' {
 		var err error
@@ -389,29 +389,29 @@ func readHeader(wav io.Reader) (uint32, *formatChunk, error) {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(dataHeader.DataLen))
 		}
 		if err != nil {
-			return 0, &format, ErrWavParse{string(dataHeader.C1) + string(dataHeader.C2) + string(dataHeader.C3) + string(dataHeader.C4) + " " + err.Error()}
+			return 0, &format, ErrWaveParse{string(dataHeader.C1) + string(dataHeader.C2) + string(dataHeader.C3) + string(dataHeader.C4) + " " + err.Error()}
 		}
 
 		if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
-			return 0, &format, ErrWavParse{"Chunk header incomplete."}
+			return 0, &format, ErrWaveParse{"Chunk header incomplete."}
 		}
 	}
 
 	//if dataHeader.DataLen!=header.DataLen-36 {return nil, ErrWavParse{fmt.Sprintf("data chunk size mismatch. %v+36!=%v",dataHeader.DataLen,header.DataLen), []byte(fmt.Sprintf("%#v",dataHeader))}}	//  this is only true for non-extensible wav, ie non-microsoft
 	if dataHeader.DataLen%uint32(format.Channels) != 0 {
-		return 0, &format, ErrWavParse{fmt.Sprintf("sound sample data length %d not divisable by channel count", dataHeader.DataLen)}
+		return 0, &format, ErrWaveParse{fmt.Sprintf("sound sample data length %d not divisable by channel count", dataHeader.DataLen)}
 	}
 	return dataHeader.DataLen, &format, nil
 }
 
-func readData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32) ([]byte, error) {
+func readWaveData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32) ([]byte, error) {
 	sampleData := make([]byte, samples*channels*sampleBytes)
 	var err error
 	for s:=uint32(0); s < samples; s++ {
 		// deinterlace channels by reading directly into separate regions of a byte slice
 		for c:=uint32(0); c < uint32(channels); c++ {
 			if n, err := wav.Read(sampleData[(c*samples+s)*sampleBytes : (c*samples+s+1)*sampleBytes]); err != nil || n != int(sampleBytes) {
-				return nil, ErrWavParse{fmt.Sprintf("data incomplete %v of %v", s, samples)}
+				return nil, ErrWaveParse{fmt.Sprintf("data incomplete %v of %v", s, samples)}
 			}
 		}
 	}
