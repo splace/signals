@@ -71,7 +71,7 @@ func (s *Wave) property(p x) y {
 				s.Offset=Offset{sd,s.Offset.Offset}
 			}
 		case PCM32bit:
-			sd:=PCM16bit{st.PCM}
+			sd:=PCM32bit{st.PCM}
 			sd.Data=append(sd.Data,make([]byte,bufferSize*4)...)
 			n, err := s.reader.Read(sd.Data[len(sd.Data)-bufferSize*4:])
 			failOn(err)
@@ -170,6 +170,9 @@ func PCMReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, erro
 	pcmFormat:=contentTypeParse.FindStringSubmatch(resp.Header["Content-Type"][0]) 
 	if pcmFormat!=nil {
 		bits,err:=strconv.ParseUint(pcmFormat[1],10,19)
+		if err != nil {
+			return nil, 0, 0, 0, err
+		}
 		rate,err:=strconv.ParseUint(pcmFormat[2],10,32)
 		if err != nil {
 			return nil, 0, 0, 0, err
