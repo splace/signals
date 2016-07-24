@@ -295,7 +295,7 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 		return nil, err
 	}
 	samples := bytesToRead / uint32(format.Channels) / uint32(format.Bits/8)
-	sampleData, err := readWaveData(wav, samples, uint32(format.Channels), uint32(format.Bits/8))
+	sampleData, err := readInterleaved(wav, samples, uint32(format.Channels), uint32(format.Bits/8))
 	if err != nil {
 		return nil, err
 	}
@@ -404,13 +404,13 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	return dataHeader.DataLen, &format, nil
 }
 
-func readWaveData(wav io.Reader, samples uint32, channels uint32, sampleBytes uint32) ([]byte, error) {
+func readInterleaved(r io.Reader, samples uint32, channels uint32, sampleBytes uint32) ([]byte, error) {
 	sampleData := make([]byte, samples*channels*sampleBytes)
 	var err error
 	for s:=uint32(0); s < samples; s++ {
 		// deinterlace channels by reading directly into separate regions of a byte slice
 		for c:=uint32(0); c < uint32(channels); c++ {
-			if n, err := wav.Read(sampleData[(c*samples+s)*sampleBytes : (c*samples+s+1)*sampleBytes]); err != nil || n != int(sampleBytes) {
+			if n, err := r.Read(sampleData[(c*samples+s)*sampleBytes : (c*samples+s+1)*sampleBytes]); err != nil || n != int(sampleBytes) {
 				return nil, ErrWaveParse{fmt.Sprintf("data incomplete %v of %v", s, samples)}
 			}
 		}
