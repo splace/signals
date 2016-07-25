@@ -57,8 +57,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 						w.Close()
 					}
 				}()
-				for i:=uint32(0); err ==nil && i < samples; i++ {
-					_, err = w.Write([]byte{encodePCM8bit(s.property(x(i) * samplePeriod))})
+				for i,sample:=uint32(0),make([]byte,1); err ==nil && i < samples; i++ {
+					sample[0] = encodePCM8bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write(sample)
 				}
 			}
 			w.Close()
@@ -83,15 +84,11 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 						w.Close()
 					}
 				}()
-				for i:=uint32(0); err ==nil && i < samples; i++ {
-					b1, b2 := encodePCM16bit(s.property(x(i) * samplePeriod))
-					_, err = w.Write([]byte{b1, b2})
-				}
 
-//				for i,sample:=uint32(0),make([]byte,2); err ==nil && i < samples; i++ {
-//					sample[0], sample[1] = encodePCM16bit(s.property(x(i) * samplePeriod))
-//					_, err = w.Write(sample)
-//				}
+				for i,sample:=uint32(0),make([]byte,2); err ==nil && i < samples; i++ {
+					sample[0], sample[1] = encodePCM16bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write(sample)
+				}
 			}
 			w.Close()
 		}()
@@ -115,9 +112,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 						w.Close()
 					}
 				}()
-				for i:=uint32(0); err ==nil && i < samples; i++ {
-					b1, b2, b3 := encodePCM24bit(s.property(x(i) * samplePeriod))
-					_, err = w.Write([]byte{ b1, b2,b3})
+				for i,sample:=uint32(0),make([]byte,3); err ==nil && i < samples; i++ {
+					sample[0], sample[1],sample[2] = encodePCM24bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write(sample)
 				}
 			}
 			w.Close()
@@ -142,9 +139,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 						w.Close()
 					}
 				}()
-				for i:=uint32(0); err ==nil && i < samples; i++ {
-					b1, b2, b3, b4 := encodePCM32bit(s.property(x(i) * samplePeriod))
-					_, err = w.Write([]byte{b1, b2, b3, b4})
+				for i,sample:=uint32(0),make([]byte,4); err ==nil && i < samples; i++ {
+					sample[0], sample[1], sample[2], sample[3] = encodePCM32bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write(sample)
 				}
 			}
 			w.Close()
@@ -169,9 +166,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 						w.Close()
 					}
 				}()
-				for i:=uint32(0); err ==nil && i < samples; i++ {
-					b1, b2, b3, b4, b5, b6 := encodePCM48bit(s.property(x(i) * samplePeriod))
-					_, err = w.Write([]byte{ b1, b2, b3, b4,b5 ,b6})
+				for i,sample:=uint32(0),make([]byte,6); err ==nil && i < samples; i++ {
+					sample[0], sample[1], sample[2], sample[3], sample[4], sample[5]  = encodePCM48bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write(sample)
 				}
 			}
 			w.Close()
@@ -196,9 +193,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 						w.Close()
 					}
 				}()
-				for i:=uint32(0); err ==nil && i < samples; i++ {
-					b1, b2, b3, b4, b5, b6, b7, b8 := encodePCM64bit(s.property(x(i) * samplePeriod))
-					_, err = w.Write([]byte{ b1, b2, b3, b4,b5 ,b6, b7, b8})
+				for i,sample:=uint32(0),make([]byte,8); err ==nil && i < samples; i++ {
+					sample[0], sample[1], sample[2], sample[3], sample[4], sample[5] , sample[6], sample[7]   = encodePCM64bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write(sample)
 				}
 			}
 			w.Close()
@@ -222,32 +219,32 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		for i,_:=range(readers){
 			readers[i]=readerForPCM8Bit(ss[i])
 		}
-		err=interleavedWrite(buf,readers,1)
+		err=interleavedWrite(buf,1,readers...)
 	case 2:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM16Bit(ss[i])
 		}
-		err=interleavedWrite(buf,readers,2)
+		err=interleavedWrite(buf,2,readers...)
 	case 3:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM24Bit(ss[i])
 		}
-		err=interleavedWrite(buf,readers,3)
+		err=interleavedWrite(buf,3,readers...)
 	case 4:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM32Bit(ss[i])
 		}
-		err=interleavedWrite(buf,readers,4)
+		err=interleavedWrite(buf,4,readers...)
 	case 6:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM48Bit(ss[i])
 		}
-		err=interleavedWrite(buf,readers,6)
+		err=interleavedWrite(buf,6,readers...)
 	case 8:
 		for i,_:=range(readers){
 			readers[i]=readerForPCM64Bit(ss[i])
 		}
-		err=interleavedWrite(buf,readers,8)
+		err=interleavedWrite(buf,8,readers...)
 	}
 	if err != nil {
 		log.Println("Encode failure:" + err.Error())
@@ -257,7 +254,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 }
 
 
-func interleavedWrite(w io.Writer, rs []io.Reader, blockSize int64) (err error) {
+func interleavedWrite(w io.Writer, blockSize int64, rs ...io.Reader) (err error) {
 	if len(rs)==1{
 		_,err=io.Copy(w, rs[0])
 	}else if len(rs)>1{
