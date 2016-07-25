@@ -365,7 +365,7 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 		return 0, nil, ErrWaveParse{"Format chunk incomplete."}
 	}
 	if format.Code != 1 {
-		return 0, &format, errors.New("only PCM supported.")
+		return 0, &format, ErrWaveParse{"only PCM supported."}
 	}
 	//if format.Channels == 0 || format.Channels > 2 {
 	//	return 0, &format, errors.New("only mono or stereo PCM supported.")
@@ -413,7 +413,7 @@ func readInterleaved(r io.Reader, samples uint32, channels uint32, sampleBytes u
 		// deinterlace channels by reading directly into separate regions of a byte slice
 		for c:=uint32(0); c < uint32(channels); c++ {
 			if n, err := r.Read(sampleData[(c*samples+s)*sampleBytes : (c*samples+s+1)*sampleBytes]); err != nil || n != int(sampleBytes) {
-				return nil, ErrWaveParse{fmt.Sprintf("data incomplete %v of %v", s, samples)}
+				return nil, errors.New(fmt.Sprintf("data ran out at %v of %v", s, samples))
 			}
 		}
 	}
