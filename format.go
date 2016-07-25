@@ -255,9 +255,10 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 
 
 func interleavedWrite(w io.Writer, blockSize int64, rs ...io.Reader) (err error) {
+	if len(rs)==0{return}
 	if len(rs)==1{
 		_,err=io.Copy(w, rs[0])
-	}else if len(rs)>1{
+	}else{
 		for err==nil{
 			for i,_:=range(rs){
 				_,err=io.CopyN(w,rs[i],blockSize)
