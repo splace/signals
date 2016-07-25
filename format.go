@@ -87,6 +87,11 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					b1, b2 := encodePCM16bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write([]byte{b1, b2})
 				}
+
+//				for i,sample:=uint32(0),make([]byte,2); err ==nil && i < samples; i++ {
+//					sample[0], sample[1] = encodePCM16bit(s.property(x(i) * samplePeriod))
+//					_, err = w.Write(sample)
+//				}
 			}
 			w.Close()
 		}()
