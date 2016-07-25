@@ -68,6 +68,7 @@ func (s PCM8bit) MaxX() x {
 func (s PCM8bit) Encode(w io.Writer) {
 	Encode(w, 1, uint32(unitX/s.Period()), s.MaxX(), s)
 }
+
 func (s PCM8bit) Split(p x) (PCM8bit, PCM8bit) {
 	head, tail := s.PCM.Split(uint32(p/s.PCM.samplePeriod)+1, 1)
 	return PCM8bit{head}, PCM8bit{tail}
