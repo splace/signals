@@ -9,12 +9,14 @@ import (
 func init() {
 	gob.Register(Constant{})
 	gob.Register(Sine{})
+	gob.Register(Sinc{})
 	gob.Register(Pulse{})
 	gob.Register(Square{})
 	gob.Register(RampUp{})
 	gob.Register(RampDown{})
 	gob.Register(Heavyside{})
 	gob.Register(Sigmoid{})
+	gob.Register(Gauss{})
 }
 
 func DB(vol float64) float64 {
