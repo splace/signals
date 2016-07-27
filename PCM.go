@@ -26,7 +26,7 @@ func (s PCM) Period() x {
 	return s.samplePeriod
 }
 
-// load PCM from pathTo, which needs to Explicitly include parent <<Sample Rate>> named folder, also adds extension ".pcm" to name.
+// load PCM from pathTo, which needs to explicitly point into a folder with the <<Sample Rate>>, numerically, as its name, also adds extension ".pcm" to name.
 func LoadPCM(pathTo string) (p *PCM,err error) {
 	data,err:=ioutil.ReadFile(pathTo+".pcm")
 	if err!=nil {return}
@@ -35,7 +35,7 @@ func LoadPCM(pathTo string) (p *PCM,err error) {
 	return &PCM{X(1 / float32(sampleRate)), data},nil
 }
 
-// save PCM to pathTo, if not to a folder with the <<Sample Rate>> as its name, adds it, also adds exension ".pcm".
+// save PCM to pathTo, if pathTo is not in a folder with the <<Sample Rate>> as its name, adds it, also adds extension ".pcm".
 func (s PCM) SaveTo(pathTo string) error {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
