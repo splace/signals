@@ -26,7 +26,7 @@ func (s PCM) Period() x {
 	return s.samplePeriod
 }
 
-// load PCM from pathTo, which needs to explicitly point into a folder with the <<Sample Rate>>, numerically, as its name, also adds extension ".pcm" to name.
+// load PCM from pathTo, which needs to explicitly point into a folder with the <<Sample Rate>>, numerically, as its name, also adds extension ".pcm".
 func LoadPCM(pathTo string) (p *PCM,err error) {
 	data,err:=ioutil.ReadFile(pathTo+".pcm")
 	if err!=nil {return}
