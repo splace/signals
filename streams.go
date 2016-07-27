@@ -128,7 +128,7 @@ func (s *Wave) property(p x) y {
 //}
 
 func NewWave(URL string) (*Wave, error) {
-	r, channels, bytes, rate, err := PCMReader(URL)
+	r, channels, bytes, rate, err := pcmReader(URL)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func NewWave(URL string) (*Wave, error) {
 var contentTypeParse = regexp.MustCompile(`^audio/l(\d+);rate=(\d+)$`)
 
 // returns a reader to a resource, along with its Channel count, Precision (bytes) and Samples per second.
-func PCMReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, error) {
+func pcmReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, error) {
 	//	resp, err := http.Get(resourceLocation)
 	url, err := url.Parse(resourceLocation)
 	if err != nil {
@@ -240,4 +240,7 @@ func failOn(e error) {
 }
 
 
+/*  Hal3 Thu Jul 28 00:03:39 BST 2016 go version go1.5.1 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Thu Jul 28 00:03:40 BST 2016 */
 
