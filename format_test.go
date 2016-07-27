@@ -78,7 +78,7 @@ func TestFormatPCMMultiChannelSave(t *testing.T) {
 }
 
 func TestFormatProceduralMultiChannelSave(t *testing.T) {
-	wavFile, err := os.Create("./test output/StereoTwoTone.wav")
+	wavFile, err := os.Create("./test output/TonesToChannels.wav")
 	if err != nil {
 		panic(err)
 	}
@@ -146,5 +146,4 @@ func TestFormatPiping(t *testing.T) {
 	defer wavFile.Close()
 	Encode(wavFile, 1, 8000, unitX, Modulated{Sine{unitX/200}, NewConstant(-6)})
 }
-
 

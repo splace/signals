@@ -39,6 +39,17 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 	buf := bufio.NewWriter(w)
 	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
+	binary.Write(buf, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
+	binary.Write(buf, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
+	binary.Write(buf, binary.LittleEndian, formatChunk{
+		Code:        1,
+		Channels:    uint16(len(ss)),
+		SampleRate:  sampleRate,
+		ByteRate:    sampleRate * uint32(sampleBytes) *uint32(len(ss)),
+		SampleBytes: uint16(sampleBytes)*uint16(len(ss)),
+		Bits:        uint16(8 * sampleBytes),
+	})
+	binary.Write(buf, binary.LittleEndian, chunkHeader{'d', 'a', 't', 'a', samples*uint32(sampleBytes)*uint32(len(ss))})
 	readerForPCM8Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
@@ -202,17 +213,6 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		}()
 		return r
 	}
-	binary.Write(buf, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
-	binary.Write(buf, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
-	binary.Write(buf, binary.LittleEndian, formatChunk{
-		Code:        1,
-		Channels:    uint16(len(ss)),
-		SampleRate:  sampleRate,
-		ByteRate:    sampleRate * uint32(sampleBytes) *uint32(len(ss)),
-		SampleBytes: uint16(sampleBytes)*uint16(len(ss)),
-		Bits:        uint16(8 * sampleBytes),
-	})
-	binary.Write(buf, binary.LittleEndian, chunkHeader{'d', 'a', 't', 'a', samples*uint32(sampleBytes)*uint32(len(ss))})
 	readers:=make([]io.Reader,len(ss))
 	switch sampleBytes {
 	case 1:
