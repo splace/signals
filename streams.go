@@ -229,9 +229,8 @@ func PCMReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, erro
 			}
 			return resp.Body, 1, uint16(bits / 8), uint32(rate), nil
 		}
-		return nil, 0, 0, 0, errors.New("Source in unrecognized format.")
 	}
-	return nil, 0, 0, 0, errors.New("Source has unrecognized Scheme." + url.Scheme)
+	return nil, 0, 0, 0, errors.New("Source:" + resourceLocation + " unsupported." )
 }
 
 func failOn(e error) {
