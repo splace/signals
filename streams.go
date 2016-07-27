@@ -11,7 +11,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"fmt"
 )
 
 func init() {
@@ -180,14 +179,31 @@ func PCMReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, erro
 	case "data":
 		mimeAndRest := strings.SplitN(url.Opaque, ";", 2)
 		encodingAndData := strings.SplitN(mimeAndRest[1], ",", 2)
-		r := strings.NewReader(encodingAndData[1])
-		dr:= base64.NewDecoder(base64.StdEncoding, r) 
-		_, format, err := readWaveHeader(dr)
-		if err != nil {
-			return nil, 0, 0, 0, err
+		var r io.Reader
+		if encodingAndData[0]=="base64" {
+			r= base64.NewDecoder(base64.StdEncoding, strings.NewReader(encodingAndData[1])) 
+		}else{
+			r= strings.NewReader(encodingAndData[1]) 
 		}
-		fmt.Println(format)
-		return dr, format.Channels, format.SampleBytes, format.SampleRate, nil
+		if mimeAndRest[0] == "sound/wav" || mimeAndRest[0] == "audio/x-wav" {
+			_, format, err := readWaveHeader(r)
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			return r, format.Channels, format.SampleBytes, format.SampleRate, nil
+		}
+		pcmFormat := contentTypeParse.FindStringSubmatch(mimeAndRest[0])
+		if pcmFormat != nil {
+			bits, err := strconv.ParseUint(pcmFormat[1], 10, 19)
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			rate, err := strconv.ParseUint(pcmFormat[2], 10, 32)
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			return r, 1, uint16(bits / 8), uint32(rate), nil
+		}
 	default: // whatever supported and placed in Body, currently basically "http" or "https"
 		resp, err := http.DefaultClient.Do(&http.Request{Method: "GET", URL: url})
 
@@ -223,5 +239,6 @@ func failOn(e error) {
 		panic(e)
 	}
 }
+
 
 
