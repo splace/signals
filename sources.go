@@ -135,7 +135,7 @@ func (s RampDown) property(p x) y {
 	}
 }
 
-// a Signal that returns +unitY for positive x and zero for negative.
+// a Signal that returns +unitY for positive x and zero for negative x.
 type Heavyside struct {
 }
 
