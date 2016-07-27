@@ -3,6 +3,7 @@ package signals
 import (
 	"testing"
 	"os"
+	"bytes"
 	//"fmt"
 )
 
@@ -59,6 +60,26 @@ func TestPCMEnocdeShiftedPCM(t *testing.T) {
 	var err error
 	if file, err = os.Create("./test output/EnocdeShiftedPCM.wav"); err != nil {panic(err)}else{defer file.Close()}
 	Encode(file, 2, 5, unitX/2,Shifted{PCM16bit{NewPCM(5, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})},unitX})
+}
+
+
+func TestPCMSaveLoad(t *testing.T) {
+	pcm:=NewPCM(22050, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})
+	err:=pcm.SaveTo("./test output/pcm")
+	if err!=nil {t.Error(err)}
+	_,err=LoadPCM("./test output/22050/pcm")
+	if err!=nil {t.Error(err)}
+}
+
+
+func TestPCMXSaveLoad(t *testing.T) {
+	pcmx:=PCM16bit{NewPCM(22050, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}
+	err:=pcmx.SaveTo("./test output/16bit/pcm")
+	if err!=nil {t.Error(err)}
+	pcm,err:=LoadPCM("./test output/16bit/22050/pcm")
+	if err!=nil {t.Error(err)}
+	pcmx2:=PCM16bit{*pcm}
+	if !bytes.Equal(pcmx.PCM.Data,pcmx2.PCM.Data){t.Fail()}
 }
 
 var mb byte
@@ -177,4 +198,6 @@ BenchmarkPCM32bitDecode-2   	2000000000	         0.77 ns/op
 PASS
 ok  	_/home/simon/Dropbox/github/working/signals	14.189s
 Sun Jun 19 17:41:27 BST 2016 */
+
+
 

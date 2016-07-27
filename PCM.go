@@ -2,6 +2,11 @@ package signals
 
 import (
 	"io"
+	"os"
+	"io/ioutil"
+	"path"
+	"strconv"
+	"errors"
 )
 
 // PCM is the state and behaviour common to all PCM, it doesn't include encoding information, so cannot return a property and so its not a Signal.
@@ -20,6 +25,33 @@ func NewPCM(sampleRate uint32, Data []byte) PCM {
 func (s PCM) Period() x {
 	return s.samplePeriod
 }
+
+// load PCM from pathTo, which needs to exspisidy include parent <<Sample Rate>> named folder, also adds extension ".pcm" to name.
+func LoadPCM(pathTo string) (p *PCM,err error) {
+	data,err:=ioutil.ReadFile(pathTo+".pcm")
+	if err!=nil {return}
+	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
+	if err!=nil {return}
+	return &PCM{X(1 / float32(sampleRate)), data},nil
+}
+
+// save PCM to pathTo, if not in a folder with the sampleRate as its name, adds it, also adds exension ".pcm".
+func (s PCM) SaveTo(pathTo string) error {
+	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
+	if err!=nil {
+		pathTo=path.Join(path.Dir(pathTo),strconv.FormatInt(int64(unitX / x(s.samplePeriod)),10),path.Base(pathTo))
+		err:=os.Mkdir(path.Dir(pathTo), os.ModeDir | 0775)
+		if err!=nil && !os.IsExist(err){return err}
+	}else{
+		if s.samplePeriod!=unitX / x(sampleRate) {return errors.New("parent folder for different sample rate.")}
+	}	
+	file, err := os.Create(pathTo+".pcm")
+	if err!=nil {return err}
+	file.Write(s.Data)
+	return file.Close()
+}
+
+
 
 // from a PCM return two new PCM's (with the same underlying data) from either side of a sample.
 func (s PCM) Split(sample uint32, sampleBytes uint8) (head PCM, tail PCM) {

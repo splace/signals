@@ -13,7 +13,7 @@ type Signal interface {
 // the x represents a value from -infinity to +infinity, but is actually limited by its current underlying representation.
 // -ve x's are considered imaginary, not used, unless a Delay makes them +ve.
 type x int64 // current underlying representation
-
+const xBits=64
 // somewhere close to the middle of the resolution range, adjust if dealing with high accuracy but only either small or large values.
 const unitX = x(1000000000)
 
