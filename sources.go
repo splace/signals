@@ -50,7 +50,7 @@ func (s Sine) Period() x {
 	return s.Cycle
 }
 
-// a Signal that varies sinusoidally, repeating with Cycle width.
+// a Signal that is a wave 'packet', with fundamental (central) wavelength of Cycle.
 type Sinc struct {
 	Cycle x
 }
@@ -61,7 +61,7 @@ func (s Sinc) property(p x) y {
 	return y(math.Sin(xp)/xp * unitYfloat64)
 }
 
-// a Signal that varies sinusoidally, repeating with Cycle width.
+// a Signal that peaks, centred on zero, as a gaussian distribution, width q.
 type Gauss struct {
 	Q22 float64   // 2 * q squared
 }
