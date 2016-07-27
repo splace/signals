@@ -225,4 +225,4 @@ func (s Triggered) property(p x) y {
 }
 
 
-
+// Random repeats a signal at random intervals, given its mean and spread as multipes of its maxx, no overlapping.
