@@ -10,7 +10,7 @@ import (
 var OneSecond = X(1)
 
 func Saves(file string, s PeriodicSignal) {
-	err := SaveGOB(file+".gob", s)
+	err := SaveGOB(file, s)
 	if err != nil {
 		panic(err)
 	}
