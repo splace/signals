@@ -56,7 +56,15 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM8bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				w.Write(pcms.Data[uint32(offset.Offset/samplePeriod) : uint32(offset.Offset/samplePeriod)+samples])
+				offsetSamples:=int(offset.Offset/samplePeriod)
+				if offsetSamples<0 {
+					w.Write(pcms.Data[-offsetSamples : -offsetSamples+int(samples)])
+				}else{
+					for x,zeroSample:=0,[]byte{0x80};x<offsetSamples;x++{
+						w.Write(zeroSample)
+					}
+					w.Write(pcms.Data[:int(samples)-offsetSamples])
+				}
 			} else if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples])
 			} else {
@@ -83,7 +91,15 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM16bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				w.Write(pcms.Data[uint32(offset.Offset*2/samplePeriod) : uint32(offset.Offset*2/samplePeriod)+samples*2])
+				offsetSamples:=int(offset.Offset/samplePeriod)
+				if offsetSamples<0 {
+					w.Write(pcms.Data[-offsetSamples*2 : (int(samples)-offsetSamples)*2])
+				}else{
+					for x,zeroSample:=0,[]byte{0x00,0x00};x<offsetSamples;x++{
+						w.Write(zeroSample)
+					}
+					w.Write(pcms.Data[:(int(samples)-offsetSamples)*2])
+				}
 			} else if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*2])
 			} else {
@@ -111,7 +127,15 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM24bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				w.Write(pcms.Data[uint32(offset.Offset*3/samplePeriod) : uint32(offset.Offset*3/samplePeriod)+samples*3])
+				offsetSamples:=int(offset.Offset/samplePeriod)
+				if offsetSamples<0 {
+					w.Write(pcms.Data[-offsetSamples*3 : (int(samples)-offsetSamples)*3])
+				}else{
+					for x,zeroSample:=0,[]byte{0x00,0x00,0x00};x<offsetSamples;x++{
+						w.Write(zeroSample)
+					}
+					w.Write(pcms.Data[:(int(samples)-offsetSamples)*3])
+				}
 			} else if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*3])
 			} else {
@@ -138,7 +162,15 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM32bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				w.Write(pcms.Data[uint32(offset.Offset*4/samplePeriod) : uint32(offset.Offset*4/samplePeriod)+samples*4])
+				offsetSamples:=int(offset.Offset/samplePeriod)
+				if offsetSamples<0 {
+					w.Write(pcms.Data[-offsetSamples*4 : (int(samples)-offsetSamples)*4])
+				}else{
+					for x,zeroSample:=0,[]byte{0x00,0x00,0x00,0x00};x<offsetSamples;x++{
+						w.Write(zeroSample)
+					}
+					w.Write(pcms.Data[:(int(samples)-offsetSamples)*4])
+				}
 			} else if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*4])
 			} else {
@@ -165,7 +197,15 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM48bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				w.Write(pcms.Data[uint32(offset.Offset*6/samplePeriod) : uint32(offset.Offset*6/samplePeriod)+samples*6])
+				offsetSamples:=int(offset.Offset/samplePeriod)
+				if offsetSamples<0 {
+					w.Write(pcms.Data[-offsetSamples*6 : (int(samples)-offsetSamples)*6])
+				}else{
+					for x,zeroSample:=0,[]byte{0x00,0x00,0x00,0x00,0x00,0x00};x<offsetSamples;x++{
+						w.Write(zeroSample)
+					}
+					w.Write(pcms.Data[:(int(samples)-offsetSamples)*6])
+				}
 			} else if pcm, ok := s.(PCM48bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*6])
 			} else {
@@ -192,7 +232,15 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM64bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				w.Write(pcms.Data[uint32(offset.Offset*8/samplePeriod) : uint32(offset.Offset*8/samplePeriod)+samples*8])
+				offsetSamples:=int(offset.Offset/samplePeriod)
+				if offsetSamples<0 {
+					w.Write(pcms.Data[-offsetSamples*8 : (int(samples)-offsetSamples)*8])
+				}else{
+					for x,zeroSample:=0,[]byte{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};x<offsetSamples;x++{
+						w.Write(zeroSample)
+					}
+					w.Write(pcms.Data[:(int(samples)-offsetSamples)*8])
+				}
 			} else if pcm, ok := s.(PCM64bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*8])
 			} else {

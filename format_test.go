@@ -147,3 +147,21 @@ func TestFormatPiping(t *testing.T) {
 	Encode(wavFile, 1, 8000, unitX, Modulated{Sine{unitX/200}, NewConstant(-6)})
 }
 
+func TestFormatShortcutEncoding(t *testing.T) {
+	file, err := os.Open("middlec.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+	noises, err := Decode(file)
+	if err != nil {
+		panic(err)
+	}
+	wavFile, err := os.Create("./test output/OffsetPCMShortcut.wav")
+	if err != nil {
+		panic(err)
+	}
+	defer wavFile.Close()
+	Encode(wavFile, 1, 8000, unitX*2, Offset{noises[0], X(1)})
+}
+
