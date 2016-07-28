@@ -43,7 +43,7 @@ func main() {
 		os.Exit(0)
 	}
 	rr := bufio.NewReader(os.Stdin)
-	s,err := signals.LoadGOB(rr)
+	s,err := signals.ReadGOB(rr)
 	if err != nil {
 		panic("unable to load."+err.Error())
 	}
@@ -66,4 +66,5 @@ func main() {
 	
 	os.Stdout.Close()
 }
+
 
