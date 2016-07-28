@@ -1,34 +1,29 @@
-// generate a few standard telephone notification tones into wav files.
-// tone duration is a multiple of the repeat cycle, so to get any length play output repeatedly. 
+// generate a few standard telephone notification tones into wav and GOB files.
+// tone duration is a multiple of the repeat cycle, so to get any length play output repeatedly.
 package main
 
 import (
-	. "github.com/splace/signals" 
+	. "github.com/splace/signals"
 	"os"
 )
 
 var OneSecond = X(1)
 
-func Saves(file string,s PeriodicSignal){
-	wavFile, err := os.Create(file+".wav")
+func Saves(file string, s PeriodicSignal) {
+	err := SaveGOB(file+".gob", s)
+	if err != nil {
+		panic(err)
+	}
+	wavFile, err := os.Create(file + ".wav")
 	if err != nil {
 		panic(err)
 	}
 	defer wavFile.Close()
-	GOBFile, err := os.Create(file+".gob")
-	if err != nil {
-		panic(err)
-	}
-	defer GOBFile.Close()
-	err=Save(GOBFile,s)
-	if err != nil {
-		panic(err)
-	}
 	// one cycle or at least a seconds worth
-	if s.Period()>OneSecond{
-		Encode(wavFile,2,44100,s.Period(),s)
-	}else{
-		Encode(wavFile,2,44100,s.Period()*(OneSecond/s.Period()),s)
+	if s.Period() > OneSecond {
+		Encode(wavFile, 2, 44100, s.Period(), s)
+	} else {
+		Encode(wavFile, 2, 44100, s.Period()*(OneSecond/s.Period()), s)
 	}
 
 }
@@ -49,15 +44,13 @@ Notes
 
 */
 
-func main(){
-	Saves("BusyTone",Modulated{Looped{Pulse{OneSecond*375/1000},OneSecond*75/100}, Sine{OneSecond/400}})
-	Saves("EngagedTone",Looped{Modulated{Composite{Modulated{Pulse{OneSecond*4/10},NewConstant(-6)},Shifted{Pulse{OneSecond*225/1000},OneSecond*75/100}}, Sine{OneSecond/400}}, OneSecond*15/10})
-	Saves("RingingTone",Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond*4/10}, OneSecond*6/10}, Stack{Sine{OneSecond/450},Sine{OneSecond/400}}}, OneSecond*3})
-	Saves("NumberUnobtainableTone",Sine{OneSecond/400})
-	Saves("dialTone",Stack{Sine{OneSecond/450},Sine{OneSecond/350}})
+func main() {
+	Saves("BusyTone", Modulated{Looped{Pulse{OneSecond * 375 / 1000}, OneSecond * 75 / 100}, Sine{OneSecond / 400}})
+	Saves("EngagedTone", Looped{Modulated{Composite{Modulated{Pulse{OneSecond * 4 / 10}, NewConstant(-6)}, Shifted{Pulse{OneSecond * 225 / 1000}, OneSecond * 75 / 100}}, Sine{OneSecond / 400}}, OneSecond * 15 / 10})
+	Saves("RingingTone", Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond * 4 / 10}, OneSecond * 6 / 10}, Stack{Sine{OneSecond / 450}, Sine{OneSecond / 400}}}, OneSecond * 3})
+	Saves("NumberUnobtainableTone", Sine{OneSecond / 400})
+	Saves("dialTone", Stack{Sine{OneSecond / 450}, Sine{OneSecond / 350}})
 
 }
 
-/*  Hal3 Sat Jun 18 00:38:41 BST 2016 go version go1.5.1 linux/amd64
-Sat Jun 18 00:38:43 BST 2016 */
 
