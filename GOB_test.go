@@ -2,29 +2,17 @@ package signals
 
 import (
 	"fmt"
-	"os"
 	"testing"
 )
 
 func TestGOBSaveLoadTone(t *testing.T) {
-	var file *os.File
-	var err error
-	if file, err = os.Create("./test output/tone.gob"); err != nil {panic(err)}else{defer file.Close()}
 	m := Sine{unitX/1000}
-	if err := Save(file,m); err != nil {
-		panic(err)
-	}
-	file.Close()
+	err := SaveGOB("./test output/tone",m)
+	if err != nil { t.Error(err)}
 
-	if file, err = os.Open("./test output/tone.gob"); err != nil {
-		panic(err)
-	}
-	defer file.Close()
+	s,err := LoadGOB("./test output/tone")
+	if err != nil { t.Error(err)}
 
-	s,err := Load(file)
-	if err != nil {
-		panic(err)
-	}
 	if fmt.Sprintf("%#v", s) != fmt.Sprintf("%#v", m) {
 		t.Errorf("%#v != %#v", s, m)
 	}
@@ -33,28 +21,19 @@ func TestGOBSaveLoadTone(t *testing.T) {
 
 
 func TestGOBSaveLoadStack(t *testing.T) {
-	var file *os.File
-	var err error
-	if file, err = os.Create("./test output/stack.gob"); err != nil {panic(err)}else{defer file.Close()}
 	m := Stack{Sine{unitX/450},Sine{unitX/350}}
-	if err := Save(file,m); err != nil {
-		panic(err)
-	}
-	file.Close()
 
-	if file, err = os.Open("./test output/stack.gob"); err != nil {
-		panic(err)
-	}
-	defer file.Close()
+	err := SaveGOB("./test output/stack",m)
+	if err != nil { t.Error(err)}
 
-	s,err := Load(file)
-	if err != nil {
-		panic(err)
-	}
+	s,err := LoadGOB("./test output/stack")
+	if err != nil { t.Error(err)}
+
 	if fmt.Sprintf("%#v", s) != fmt.Sprintf("%#v", m) {
 		t.Errorf("%#v != %#v", s, m)
 	}
 
 }
+
 
 

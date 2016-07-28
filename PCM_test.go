@@ -80,6 +80,11 @@ func TestPCMXSaveLoad(t *testing.T) {
 	if err!=nil {t.Error(err)}
 	pcmx2:=PCM16bit{*pcm}
 	if !bytes.Equal(pcmx.PCM.Data,pcmx2.PCM.Data){t.Fail()}
+	
+//	if fmt.Sprintf("%#v", s) != fmt.Sprintf("%#v", m) {
+//		t.Errorf("%#v != %#v", s, m)
+//	}
+
 }
 
 var mb byte

@@ -64,31 +64,6 @@ func TestStreamsLocalRampUpSave(t *testing.T) {
 	Encode(file, 1, 8000, unitX*3, fs)
 }
 
-func TestStreamsGOBSaveLoadWave(t *testing.T) {
-	var file *os.File
-	var err error
-	if file, err = os.Create("./test output/wave.gob"); err != nil {panic(err)}else{defer file.Close()}
-	m := Modulated{&Wave{URL:testRemoteURL},RampUp{unitX}}
-	if err := Save(file,m); err != nil {
-		panic(err)
-	}
-	file.Close()
-
-	if file, err = os.Open("./test output/wave.gob"); err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	s,err := Load(file)
-	if err != nil {
-		panic(err)
-	}
-	file, err = os.Create("./test output/gobFadeInStream.wav")
-	if err != nil {panic(err)}
-	defer file.Close()
-	Encode(file, 1, 8000, unitX*3, s)
-
-}
 
 func TestStreamsSaveDataURL(t *testing.T) {
 	fs:=&Wave{URL:testDataURL}
