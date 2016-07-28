@@ -3,6 +3,7 @@ package signals
 import (
 	"encoding/gob"
 	"io"
+	"os"
 )
 
 // write Gob encoding
