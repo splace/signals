@@ -67,8 +67,15 @@ func TestPCMSaveLoad(t *testing.T) {
 	pcm:=NewPCM(22050, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})
 	err:=pcm.SaveTo("./test output/pcm")
 	if err!=nil {t.Error(err)}
-	_,err=LoadPCM("./test output/22050/pcm")
+	err=os.Remove("./test output/44100/pcm.pcm")
 	if err!=nil {t.Error(err)}
+	err=os.Remove("./test output/44100")
+	if err!=nil {t.Error(err)}
+	err=os.Rename("./test output/22050","./test output/44100")
+	if err!=nil {t.Error(err)}
+	p,err:=LoadPCM("./test output/44100/pcm")
+	if err!=nil {t.Error(err)}
+	if p.samplePeriod != X(1 / float32(44100)) {t.Error("wrong sample rate")}
 }
 
 
@@ -203,6 +210,7 @@ BenchmarkPCM32bitDecode-2   	2000000000	         0.77 ns/op
 PASS
 ok  	_/home/simon/Dropbox/github/working/signals	14.189s
 Sun Jun 19 17:41:27 BST 2016 */
+
 
 
 
