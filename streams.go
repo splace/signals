@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"encoding/base64"
 	"os"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -19,9 +20,12 @@ func init() {
 
 const bufferSize = 16
 
-// an offset PCM Signal, that reads from a source, as required, its data.
-// supported URL, "file:", "data:", "http(s):" single channel, MIME: "sound/wav","audio/x-wav","audio/l?;rate=?", Encodings:".wav",".pcm" 
-// if queried for a property value from an x that is more than 32 samples lower than a previous query, will return zero.
+// an offset PCM Signal, (so single channel) that reads from a source, as required, its data.
+// supported URL schemes, "file:", "data:", "http(s):".
+// Http(s); MIME: "audio/l?;rate=?","sound/wav"(mono),"audio/x-wav" (mono)
+// File: ".wav"(mono),".pcm",".gob"
+// Data: MIME: "audio/l?;rate=?","sound/wav"(mono),"audio/x-wav" (mono), ENCODING: "base64" or none.
+// if queried for a property value from an x that is more than 32 samples lower than a previous query, might return zero.
 type Wave struct {
 	Offset
 	URL    string
@@ -159,7 +163,7 @@ func NewWave(URL string) (*Wave, error) {
 
 var contentTypeParse = regexp.MustCompile(`^audio/l(\d+);rate=(\d+)$`)
 
-// returns a reader to a resource, along with its Channel count, Precision (bytes) and Samples per second.
+// returns a reader to a resource, along with its Channel count, Precision (bytes) and Sample rate.
 func pcmReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, error) {
 	//	resp, err := http.Get(resourceLocation)
 	url, err := url.Parse(resourceLocation)
@@ -168,15 +172,55 @@ func pcmReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, erro
 	}
 	switch url.Scheme {
 	case "file":
-		file, err := os.Open(url.Path)
-		if err != nil {
-			return nil, 0, 0, 0, err
+		switch path.Ext(url.Path){
+		case ".wav",".wave",".WAV",".WAVE":
+			file, err := os.Open(url.Path)
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			_, format, err := readWaveHeader(file)
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			return file, format.Channels, format.SampleBytes, format.SampleRate, nil
+		case ".gob",".GOB":
+			s,err:=LoadGOB(url.Path[:len(url.Path)-4])
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			var sampleRate uint32 = 22010
+			samplePeriod:=X(1 / float32(sampleRate))
+			r, w := io.Pipe()
+			go func() {
+				defer func(){
+					e:=recover()
+					if e!=nil{
+						w.CloseWithError(e.(error))
+					}else{
+						w.Close()
+					}
+				}()
+				for i,sample:=uint32(0),make([]byte,2); err ==nil; i++ {
+					sample[0], sample[1] = encodePCM16bit(s.property(x(i) * samplePeriod))
+					_, err = w.Write(sample)
+				}
+			}()
+			return r,1,2,sampleRate,nil
+		case ".pcm":
+			rate, err :=strconv.ParseUint(path.Base(path.Dir(url.Path)),10,32)
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			bits, err :=strconv.ParseUint(path.Base(path.Dir(path.Dir(url.Path))[:len(path.Dir(path.Dir(url.Path)))-3]),10,20)
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			file, err := os.Open(url.Path)
+			if err != nil {
+				return nil, 0, 0, 0, err
+			}
+			return file, 1, uint16(bits / 8), uint32(rate), nil
 		}
-		_, format, err := readWaveHeader(file)
-		if err != nil {
-			return nil, 0, 0, 0, err
-		}
-		return file, format.Channels, format.SampleBytes, format.SampleRate, nil
 	case "data":
 		mimeAndRest := strings.SplitN(url.Opaque, ";", 2)
 		encodingAndData := strings.SplitN(mimeAndRest[1], ",", 2)

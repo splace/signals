@@ -73,19 +73,21 @@ func TestPCMSaveLoad(t *testing.T) {
 	if err!=nil {t.Error(err)}
 	err=os.Rename("./test output/22050","./test output/44100")
 	if err!=nil {t.Error(err)}
-	p,err:=LoadPCM("./test output/44100/pcm")
+	var p PCM
+	err=LoadPCM("./test output/44100/pcm",&p)
 	if err!=nil {t.Error(err)}
 	if p.samplePeriod != X(1 / float32(44100)) {t.Error("wrong sample rate")}
 }
 
 
 func TestPCMXSaveLoad(t *testing.T) {
-	pcmx:=PCM16bit{NewPCM(22050, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100})}
+	pcmx:=PCM16bit{NewPCM(22050, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100, 0, 110, 0, 120})}
 	err:=pcmx.SaveTo("./test output/16bit/pcm")
 	if err!=nil {t.Error(err)}
-	pcm,err:=LoadPCM("./test output/16bit/22050/pcm")
+	var p PCM
+	err=LoadPCM("./test output/16bit/22050/pcm",&p)
 	if err!=nil {t.Error(err)}
-	pcmx2:=PCM16bit{*pcm}
+	pcmx2:=PCM16bit{p}
 	if !bytes.Equal(pcmx.PCM.Data,pcmx2.PCM.Data){t.Fail()}
 	
 //	if fmt.Sprintf("%#v", s) != fmt.Sprintf("%#v", m) {
