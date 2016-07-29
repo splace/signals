@@ -22,7 +22,7 @@ Interfaces
 
 Signal :- has method property(x), which returns a 'y' value from an 'x' value parameter.
 Signal's are generally procedural, calculated as needed, meaning changes in parameters, or arrangement, effect returned values of existing types.
-Signal's can be saved/loaded from a go code binary (gob) file, making for a basic interpreted signal language, or they can be stored, lossily, as PCM data. (PCM data can be encoded and saved in a Waveform Audio File Format (wav) file.)
+Signal's can be saved/loaded from a go code binary (gob) file, (and signals can stream data, including gob files.) making for a basic interpreted signal language, or they can be stored, lossily, as PCM data. (PCM data can be encoded and saved in a Waveform Audio File Format (wav) file.)
 
 LimitedSignal :- has a MaxX() method that returns the 'x' value above which the Signal can be assumed to return zero, effectively has an end.
 an 'x' value of zero is normally regarded as its start.

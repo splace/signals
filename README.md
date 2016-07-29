@@ -42,7 +42,7 @@ Features:
 
   * combiners:- Modulate, Stack, Composite
 
-  * extras(non-core):- Depiction, ADSR, Noise, Streaming
+  * extras(non-core):- Depiction, ADSR, Noise, Wave (stream)
 
 
 Extras examples: Depiction of "Stack{Sine{unitX/100}, Sine{unitX/50}}", red/black,(3200px.600px) for 4 * unitX. 
