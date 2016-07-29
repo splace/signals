@@ -35,6 +35,10 @@ func LoadPCM(pathTo string) (p *PCM,err error) {
 	return &PCM{X(1 / float32(sampleRate)), data},nil
 }
 
+func SavePCM(pathTo string,pcm PCM) error {
+	return pcm.SaveTo(pathTo)
+}
+
 // save PCM to pathTo, if pathTo is not in a folder with the <<Sample Rate>> as its name, adds it, also adds extension ".pcm".
 func (s PCM) SaveTo(pathTo string) error {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
