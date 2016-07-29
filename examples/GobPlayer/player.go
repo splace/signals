@@ -42,8 +42,8 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
-	rr := bufio.NewReader(os.Stdin)
-	s,err := signals.ReadGOB(rr)
+	var s signals.Signal
+	err := signals.ReadGOB(bufio.NewReader(os.Stdin),&s)
 	if err != nil {
 		panic("unable to load."+err.Error())
 	}
@@ -67,4 +67,7 @@ func main() {
 	os.Stdout.Close()
 }
 
+/*  Hal3 Fri Jul 29 21:03:09 BST 2016 go version go1.5.1 linux/amd64
+Fri Jul 29 21:03:11 BST 2016 */
+exit status 2
 
