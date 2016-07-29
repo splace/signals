@@ -20,6 +20,7 @@ func init() {
 const bufferSize = 16
 
 // an offset PCM Signal, that reads from a source, as required, its data.
+// supported URL, "file:", "data:", "http(s):" single channel, MIME: "sound/wav","audio/x-wav","audio/l?;rate=?", Encodings:".wav",".pcm" 
 // if queried for a property value from an x that is more than 32 samples lower than a previous query, will return zero.
 type Wave struct {
 	Offset
@@ -239,8 +240,4 @@ func failOn(e error) {
 	}
 }
 
-
-/*  Hal3 Thu Jul 28 00:03:39 BST 2016 go version go1.5.1 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Thu Jul 28 00:03:40 BST 2016 */
 
