@@ -65,8 +65,10 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					}
 					w.Write(pcms.Data[:int(samples)-offsetSamples])
 				}
+				w.Close()
 			} else if pcm, ok := s.(PCM8bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples])
+				w.Close()
 			} else {
 				defer func(){
 					e:=recover()
@@ -81,7 +83,6 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					_, err = w.Write(sample)
 				}
 			}
-			w.Close()
 		}()
 		return r
 	}
@@ -100,8 +101,10 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*2])
 				}
+				w.Close()
 			} else if pcm, ok := s.(PCM16bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*2])
+				w.Close()
 			} else {
 				defer func(){
 					e:=recover()
@@ -117,7 +120,6 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					_, err = w.Write(sample)
 				}
 			}
-			w.Close()
 		}()
 		return r
 	}
@@ -136,8 +138,10 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*3])
 				}
+				w.Close()
 			} else if pcm, ok := s.(PCM24bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*3])
+				w.Close()
 			} else {
 				defer func(){
 					e:=recover()
@@ -152,7 +156,6 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					_, err = w.Write(sample)
 				}
 			}
-			w.Close()
 		}()
 		return r
 	}
@@ -171,8 +174,10 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*4])
 				}
+				w.Close()
 			} else if pcm, ok := s.(PCM32bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*4])
+				w.Close()
 			} else {
 				defer func(){
 					e:=recover()
@@ -187,7 +192,6 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					_, err = w.Write(sample)
 				}
 			}
-			w.Close()
 		}()
 		return r
 	}
@@ -206,8 +210,10 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*6])
 				}
+				w.Close()
 			} else if pcm, ok := s.(PCM48bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*6])
+				w.Close()
 			} else {
 				defer func(){
 					e:=recover()
@@ -222,7 +228,6 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					_, err = w.Write(sample)
 				}
 			}
-			w.Close()
 		}()
 		return r
 	}
@@ -241,8 +246,10 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*8])
 				}
+				w.Close()
 			} else if pcm, ok := s.(PCM64bit); ok && pcm.samplePeriod == samplePeriod && pcm.MaxX() >= length {
 				w.Write(pcm.Data[:samples*8])
+				w.Close()
 			} else {
 				defer func(){
 					e:=recover()
@@ -257,7 +264,6 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 					_, err = w.Write(sample)
 				}
 			}
-			w.Close()
 		}()
 		return r
 	}
