@@ -26,6 +26,6 @@ func play(s Signal) {
 }
 
 func main(){
-	play(Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond*4/10}, OneSecond*6/10}, Stack{Sine{OneSecond/450},Sine{OneSecond/400}}}, OneSecond*3})
+	play(Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond*4/10}, OneSecond*6/10}, Stacked{Sine{OneSecond/450},Sine{OneSecond/400}}}, OneSecond*3})
 }
 

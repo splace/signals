@@ -47,10 +47,9 @@ Notes
 func main() {
 	Saves("BusyTone", Modulated{Looped{Pulse{OneSecond * 375 / 1000}, OneSecond * 75 / 100}, Sine{OneSecond / 400}})
 	Saves("EngagedTone", Looped{Modulated{Composite{Modulated{Pulse{OneSecond * 4 / 10}, NewConstant(-6)}, Shifted{Pulse{OneSecond * 225 / 1000}, OneSecond * 75 / 100}}, Sine{OneSecond / 400}}, OneSecond * 15 / 10})
-	Saves("RingingTone", Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond * 4 / 10}, OneSecond * 6 / 10}, Stack{Sine{OneSecond / 450}, Sine{OneSecond / 400}}}, OneSecond * 3})
+	Saves("RingingTone", Looped{Modulated{Pulse{OneSecond}, Looped{Pulse{OneSecond * 4 / 10}, OneSecond * 6 / 10}, Stacked{Sine{OneSecond / 450}, Sine{OneSecond / 400}}}, OneSecond * 3})
 	Saves("NumberUnobtainableTone", Sine{OneSecond / 400})
-	Saves("dialTone", Stack{Sine{OneSecond / 450}, Sine{OneSecond / 350}})
+	Saves("dialTone", Stacked{Sine{OneSecond / 450}, Sine{OneSecond / 350}})
 
 }
-
 

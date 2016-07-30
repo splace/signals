@@ -93,7 +93,7 @@ func main() {
 			errorLog.message = "File Access"
 			out = errorLog.errFatal(os.Create(files[1])).(*os.File)
 			errorLog.message = "Encode"
-			Encode(out, uint8(sampleBytes), uint32(sampleRate), PCMs[0].MaxX(), Modulated{NewStack(PromoteToSignals(PCMs)...), NewConstant(float64(-dB))})
+			Encode(out, uint8(sampleBytes), uint32(sampleRate), PCMs[0].MaxX(), Modulated{NewStacked(PromoteToSignals(PCMs)...), NewConstant(float64(-dB))})
 			out.Close()
 		} else {
 			errorLog.message = "Parse Channels."
@@ -118,7 +118,7 @@ func main() {
 			errorLog.message = "File Access"
 			out = errorLog.errFatal(os.Create(files[1])).(*os.File)
 			errorLog.message = "Encode"
-			EncodeLike(out, Modulated{NewStack(PromoteToSignals(PCMs)...), NewConstant(float64(-dB))}, PCMs[0])
+			EncodeLike(out, Modulated{NewStacked(PromoteToSignals(PCMs)...), NewConstant(float64(-dB))}, PCMs[0])
 			out.Close()
 		} else {
 			errorLog.message = "Parse Channels."

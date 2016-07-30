@@ -31,22 +31,22 @@ func main() {
 	// cache the raw PCM data for each tone
 	// (example, not really required.)
 	var Tones = map[rune]PCM{
-		'0': NewPCMSignal(Stack{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'1': NewPCMSignal(Stack{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'2': NewPCMSignal(Stack{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'3': NewPCMSignal(Stack{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1477)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'4': NewPCMSignal(Stack{Sine{X(1.0 / 770)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'5': NewPCMSignal(Stack{Sine{X(1.0 / 770)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'6': NewPCMSignal(Stack{Sine{X(1.0 / 770)}, Sine{X(1.0 / 1477)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'7': NewPCMSignal(Stack{Sine{X(1.0 / 852)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'8': NewPCMSignal(Stack{Sine{X(1.0 / 852)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'9': NewPCMSignal(Stack{Sine{X(1.0 / 852)}, Sine{X(1.0 / 1477)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'A': NewPCMSignal(Stack{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1633)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'B': NewPCMSignal(Stack{Sine{X(1.0 / 770)}, Sine{X(1.0 / 1633)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'C': NewPCMSignal(Stack{Sine{X(1.0 / 852)}, Sine{X(1.0 / 1633)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'D': NewPCMSignal(Stack{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1633)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'*': NewPCMSignal(Stack{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
-		'#': NewPCMSignal(Stack{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1477)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'0': NewPCMSignal(Stacked{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'1': NewPCMSignal(Stacked{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'2': NewPCMSignal(Stacked{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'3': NewPCMSignal(Stacked{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1477)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'4': NewPCMSignal(Stacked{Sine{X(1.0 / 770)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'5': NewPCMSignal(Stacked{Sine{X(1.0 / 770)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'6': NewPCMSignal(Stacked{Sine{X(1.0 / 770)}, Sine{X(1.0 / 1477)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'7': NewPCMSignal(Stacked{Sine{X(1.0 / 852)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'8': NewPCMSignal(Stacked{Sine{X(1.0 / 852)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'9': NewPCMSignal(Stacked{Sine{X(1.0 / 852)}, Sine{X(1.0 / 1477)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'A': NewPCMSignal(Stacked{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1633)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'B': NewPCMSignal(Stacked{Sine{X(1.0 / 770)}, Sine{X(1.0 / 1633)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'C': NewPCMSignal(Stacked{Sine{X(1.0 / 852)}, Sine{X(1.0 / 1633)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'D': NewPCMSignal(Stacked{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1633)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'*': NewPCMSignal(Stacked{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
+		'#': NewPCMSignal(Stacked{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1477)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
 	}
 
 	var gapPCM = NewPCMSignal(Constant{0}, gap, uint32(sampleRate), 2).(PCM16bit).PCM
