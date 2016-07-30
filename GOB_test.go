@@ -21,7 +21,7 @@ func TestGOBSaveLoadTone(t *testing.T) {
 
 
 func TestGOBSaveLoadStack(t *testing.T) {
-	m := Stack{Sine{unitX/450},Sine{unitX/350}}
+	m := Stacked{Sine{unitX/450},Sine{unitX/350}}
 
 	err := SaveGOB("./test output/stack",m)
 	if err != nil { t.Error(err)}

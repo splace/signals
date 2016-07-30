@@ -40,7 +40,7 @@ Features:
 	
   * modifiers:- Delayed, Spedup, Looped, Inverted, Reversed, Cached, RateModulated, Triggered, Segmented
 
-  * combiners:- Modulate, Stack, Composite
+  * combiners:- Sequenced, Modulated, Stacked, Composite
 
   * extras(non-core):- Depiction, ADSR, Noise, Wave (stream)
 

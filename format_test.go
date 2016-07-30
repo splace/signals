@@ -102,7 +102,7 @@ func TestFormatStackPCMs(t *testing.T) {
 		panic(err)
 	}
 	defer wavFile.Close()
-	Encode(wavFile, 4, 44100, noise[0].MaxX(), Stack{noise[0], noise[1]})
+	Encode(wavFile, 4, 44100, noise[0].MaxX(), Stacked{noise[0], noise[1]})
 }
 
 func TestFormatMultiplexTones(t *testing.T) {

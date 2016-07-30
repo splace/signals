@@ -84,7 +84,7 @@ func TestStreamsSaveFileURL(t *testing.T) {
 
 
 func TestStreamsSaveGOBFileURL(t *testing.T) {
-	err := SaveGOB(testGOBFile,Looped{Modulated{Pulse{unitX}, Looped{Pulse{unitX * 4 / 10}, unitX * 6 / 10}, Stack{Sine{unitX / 450}, Sine{unitX / 400}}}, unitX * 3})
+	err := SaveGOB(testGOBFile,Looped{Modulated{Pulse{unitX}, Looped{Pulse{unitX * 4 / 10}, unitX * 6 / 10}, Stacked{Sine{unitX / 450}, Sine{unitX / 400}}}, unitX * 3})
 	if err != nil { t.Error(err)}
 	fs:=&Wave{URL:"file://"+testGOBFile+".gob"}
 	file, err := os.Create("./test output/GOBfileURL.wav")

@@ -56,7 +56,7 @@ func TestImageComposable(t *testing.T) {
 }
 
 func TestImageStack(t *testing.T) {
-	s := Stack{Sine{unitX / 100}, Sine{unitX / 50}}
+	s := Stacked{Sine{unitX / 100}, Sine{unitX / 50}}
 	file, err := os.Create("./test output/out.jpeg")
 	if err != nil {
 		panic(err)

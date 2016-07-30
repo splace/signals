@@ -509,7 +509,7 @@ func ExampleSignalsModulated() {
 }
 
 func ExampleSignalsStack() {
-	PrintGraph(Stack{Sine{unitX * 2}, Sine{unitX * 5}}, 0, 5*unitX, unitX/10)
+	PrintGraph(Stacked{Sine{unitX * 2}, Sine{unitX * 5}}, 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
   21.72%                                         X
