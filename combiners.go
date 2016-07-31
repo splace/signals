@@ -36,7 +36,7 @@ func (c Modulated) property(p x) (total y) {
 }
 
 func (c Modulated) Period() (period x) {
-	// TODO needs to be longest period and all constituents but only when the shorter are multiples of it.
+	// TODO could helpfully be the shortest period and any constituent.
 	if len(c) > 0 {
 		if s, ok := c[0].(PeriodicSignal); ok {
 			return s.Period()
@@ -77,7 +77,7 @@ func (c Composite) property(p x) (total y) {
 }
 
 func (c Composite) Period() (period x) {
-	// TODO could helpfully be the longest period and all constituents but only when the shorter are multiples of it.
+	// TODO could be longest period muliple common to all constituents.
 	if len(c) > 0 {
 		if s, ok := c[0].(PeriodicSignal); ok {
 			return s.Period()
@@ -115,7 +115,7 @@ func (c Stacked) property(p x) (total y) {
 }
 
 func (c Stacked) Period() (period x) {
-	// TODO needs to be longest period and all constituents but only when the shorter are multiples of it.
+	// TODO could be longest period muliple common to all constituents.
 	if len(c) > 0 {
 		if s, ok := c[0].(PeriodicSignal); ok {
 			return s.Period()
