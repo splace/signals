@@ -1,10 +1,10 @@
 /*
-Package signals generates, stores, downloads and manipulates abstract signals, when its imported it can then be used with specific real-world quantities.
+Package signals generates, stores, downloads and manipulates abstract signals, when imported it can then be used with specific real-world quantities.
 
 
-Definition of signal
+Definition of 'signal'
 
-A signal is the varying value of some property, as it depends, uniquely, on some parameter.
+A varying value of some property, as it depends, uniquely, on some parameter.
 
 The controlling parameter is generally unbounded, and the property bounded.
 
@@ -13,9 +13,9 @@ also see; https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signal
 
 Fundamental Types
 
-x :- the 'parameter' designed to be used as if unbounded (+ve and -ve), with unitX near the centre of its precision range.
+x :- 'parameter' designed to be used as if unbounded (+ve and -ve), with unitX near the centre of its precision range.
 
-y :- the 'property', can have a value between +unitY and -unitY.
+y :- 'property', can have a value between limits, +unitY and -unitY.
 
 
 Interfaces

@@ -45,22 +45,22 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		Code:        1,
 		Channels:    uint16(len(ss)),
 		SampleRate:  sampleRate,
-		ByteRate:    sampleRate * uint32(sampleBytes) *uint32(len(ss)),
-		SampleBytes: uint16(sampleBytes)*uint16(len(ss)),
+		ByteRate:    sampleRate * uint32(sampleBytes) * uint32(len(ss)),
+		SampleBytes: uint16(sampleBytes) * uint16(len(ss)),
 		Bits:        uint16(8 * sampleBytes),
 	})
-	binary.Write(buf, binary.LittleEndian, chunkHeader{'d', 'a', 't', 'a', samples*uint32(sampleBytes)*uint32(len(ss))})
+	binary.Write(buf, binary.LittleEndian, chunkHeader{'d', 'a', 't', 'a', samples * uint32(sampleBytes) * uint32(len(ss))})
 	readerForPCM8Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM8bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				offsetSamples:=int(offset.Offset/samplePeriod)
-				if offsetSamples<0 {
+				offsetSamples := int(offset.Offset / samplePeriod)
+				if offsetSamples < 0 {
 					w.Write(pcms.Data[-offsetSamples : -offsetSamples+int(samples)])
-				}else{
-					for x,zeroSample:=0,[]byte{0x80};x<offsetSamples;x++{
+				} else {
+					for x, zeroSample := 0, []byte{0x80}; x < offsetSamples; x++ {
 						w.Write(zeroSample)
 					}
 					w.Write(pcms.Data[:int(samples)-offsetSamples])
@@ -70,15 +70,15 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 				w.Write(pcm.Data[:samples])
 				w.Close()
 			} else {
-				defer func(){
-					e:=recover()
-					if e!=nil{
+				defer func() {
+					e := recover()
+					if e != nil {
 						w.CloseWithError(e.(error))
-					}else{
+					} else {
 						w.Close()
 					}
 				}()
-				for i,sample:=uint32(0),make([]byte,1); err ==nil && i < samples; i++ {
+				for i, sample := uint32(0), make([]byte, 1); err == nil && i < samples; i++ {
 					sample[0] = encodePCM8bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write(sample)
 				}
@@ -92,11 +92,11 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM16bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				offsetSamples:=int(offset.Offset/samplePeriod)
-				if offsetSamples<0 {
+				offsetSamples := int(offset.Offset / samplePeriod)
+				if offsetSamples < 0 {
 					w.Write(pcms.Data[-offsetSamples*2 : (int(samples)-offsetSamples)*2])
-				}else{
-					for x,zeroSample:=0,[]byte{0x00,0x00};x<offsetSamples;x++{
+				} else {
+					for x, zeroSample := 0, []byte{0x00, 0x00}; x < offsetSamples; x++ {
 						w.Write(zeroSample)
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*2])
@@ -106,16 +106,16 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 				w.Write(pcm.Data[:samples*2])
 				w.Close()
 			} else {
-				defer func(){
-					e:=recover()
-					if e!=nil{
+				defer func() {
+					e := recover()
+					if e != nil {
 						w.CloseWithError(e.(error))
-					}else{
+					} else {
 						w.Close()
 					}
 				}()
 
-				for i,sample:=uint32(0),make([]byte,2); err ==nil && i < samples; i++ {
+				for i, sample := uint32(0), make([]byte, 2); err == nil && i < samples; i++ {
 					sample[0], sample[1] = encodePCM16bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write(sample)
 				}
@@ -129,11 +129,11 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM24bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				offsetSamples:=int(offset.Offset/samplePeriod)
-				if offsetSamples<0 {
+				offsetSamples := int(offset.Offset / samplePeriod)
+				if offsetSamples < 0 {
 					w.Write(pcms.Data[-offsetSamples*3 : (int(samples)-offsetSamples)*3])
-				}else{
-					for x,zeroSample:=0,[]byte{0x00,0x00,0x00};x<offsetSamples;x++{
+				} else {
+					for x, zeroSample := 0, []byte{0x00, 0x00, 0x00}; x < offsetSamples; x++ {
 						w.Write(zeroSample)
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*3])
@@ -143,16 +143,16 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 				w.Write(pcm.Data[:samples*3])
 				w.Close()
 			} else {
-				defer func(){
-					e:=recover()
-					if e!=nil{
+				defer func() {
+					e := recover()
+					if e != nil {
 						w.CloseWithError(e.(error))
-					}else{
+					} else {
 						w.Close()
 					}
 				}()
-				for i,sample:=uint32(0),make([]byte,3); err ==nil && i < samples; i++ {
-					sample[0], sample[1],sample[2] = encodePCM24bit(s.property(x(i) * samplePeriod))
+				for i, sample := uint32(0), make([]byte, 3); err == nil && i < samples; i++ {
+					sample[0], sample[1], sample[2] = encodePCM24bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write(sample)
 				}
 			}
@@ -165,11 +165,11 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM32bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				offsetSamples:=int(offset.Offset/samplePeriod)
-				if offsetSamples<0 {
+				offsetSamples := int(offset.Offset / samplePeriod)
+				if offsetSamples < 0 {
 					w.Write(pcms.Data[-offsetSamples*4 : (int(samples)-offsetSamples)*4])
-				}else{
-					for x,zeroSample:=0,[]byte{0x00,0x00,0x00,0x00};x<offsetSamples;x++{
+				} else {
+					for x, zeroSample := 0, []byte{0x00, 0x00, 0x00, 0x00}; x < offsetSamples; x++ {
 						w.Write(zeroSample)
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*4])
@@ -179,15 +179,15 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 				w.Write(pcm.Data[:samples*4])
 				w.Close()
 			} else {
-				defer func(){
-					e:=recover()
-					if e!=nil{
+				defer func() {
+					e := recover()
+					if e != nil {
 						w.CloseWithError(e.(error))
-					}else{
+					} else {
 						w.Close()
 					}
 				}()
-				for i,sample:=uint32(0),make([]byte,4); err ==nil && i < samples; i++ {
+				for i, sample := uint32(0), make([]byte, 4); err == nil && i < samples; i++ {
 					sample[0], sample[1], sample[2], sample[3] = encodePCM32bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write(sample)
 				}
@@ -201,11 +201,11 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM48bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				offsetSamples:=int(offset.Offset/samplePeriod)
-				if offsetSamples<0 {
+				offsetSamples := int(offset.Offset / samplePeriod)
+				if offsetSamples < 0 {
 					w.Write(pcms.Data[-offsetSamples*6 : (int(samples)-offsetSamples)*6])
-				}else{
-					for x,zeroSample:=0,[]byte{0x00,0x00,0x00,0x00,0x00,0x00};x<offsetSamples;x++{
+				} else {
+					for x, zeroSample := 0, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; x < offsetSamples; x++ {
 						w.Write(zeroSample)
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*6])
@@ -215,16 +215,16 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 				w.Write(pcm.Data[:samples*6])
 				w.Close()
 			} else {
-				defer func(){
-					e:=recover()
-					if e!=nil{
+				defer func() {
+					e := recover()
+					if e != nil {
 						w.CloseWithError(e.(error))
-					}else{
+					} else {
 						w.Close()
 					}
 				}()
-				for i,sample:=uint32(0),make([]byte,6); err ==nil && i < samples; i++ {
-					sample[0], sample[1], sample[2], sample[3], sample[4], sample[5]  = encodePCM48bit(s.property(x(i) * samplePeriod))
+				for i, sample := uint32(0), make([]byte, 6); err == nil && i < samples; i++ {
+					sample[0], sample[1], sample[2], sample[3], sample[4], sample[5] = encodePCM48bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write(sample)
 				}
 			}
@@ -237,11 +237,11 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 			// try shortcuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM64bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
-				offsetSamples:=int(offset.Offset/samplePeriod)
-				if offsetSamples<0 {
+				offsetSamples := int(offset.Offset / samplePeriod)
+				if offsetSamples < 0 {
 					w.Write(pcms.Data[-offsetSamples*8 : (int(samples)-offsetSamples)*8])
-				}else{
-					for x,zeroSample:=0,[]byte{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};x<offsetSamples;x++{
+				} else {
+					for x, zeroSample := 0, []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}; x < offsetSamples; x++ {
 						w.Write(zeroSample)
 					}
 					w.Write(pcms.Data[:(int(samples)-offsetSamples)*8])
@@ -251,54 +251,54 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 				w.Write(pcm.Data[:samples*8])
 				w.Close()
 			} else {
-				defer func(){
-					e:=recover()
-					if e!=nil{
+				defer func() {
+					e := recover()
+					if e != nil {
 						w.CloseWithError(e.(error))
-					}else{
+					} else {
 						w.Close()
 					}
 				}()
-				for i,sample:=uint32(0),make([]byte,8); err ==nil && i < samples; i++ {
-					sample[0], sample[1], sample[2], sample[3], sample[4], sample[5] , sample[6], sample[7]   = encodePCM64bit(s.property(x(i) * samplePeriod))
+				for i, sample := uint32(0), make([]byte, 8); err == nil && i < samples; i++ {
+					sample[0], sample[1], sample[2], sample[3], sample[4], sample[5], sample[6], sample[7] = encodePCM64bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write(sample)
 				}
 			}
 		}()
 		return r
 	}
-	readers:=make([]io.Reader,len(ss))
+	readers := make([]io.Reader, len(ss))
 	switch sampleBytes {
 	case 1:
-		for i,_:=range(readers){
-			readers[i]=readerForPCM8Bit(ss[i])
+		for i, _ := range readers {
+			readers[i] = readerForPCM8Bit(ss[i])
 		}
-		err=interleavedWrite(buf,1,readers...)
+		err = interleavedWrite(buf, 1, readers...)
 	case 2:
-		for i,_:=range(readers){
-			readers[i]=readerForPCM16Bit(ss[i])
+		for i, _ := range readers {
+			readers[i] = readerForPCM16Bit(ss[i])
 		}
-		err=interleavedWrite(buf,2,readers...)
+		err = interleavedWrite(buf, 2, readers...)
 	case 3:
-		for i,_:=range(readers){
-			readers[i]=readerForPCM24Bit(ss[i])
+		for i, _ := range readers {
+			readers[i] = readerForPCM24Bit(ss[i])
 		}
-		err=interleavedWrite(buf,3,readers...)
+		err = interleavedWrite(buf, 3, readers...)
 	case 4:
-		for i,_:=range(readers){
-			readers[i]=readerForPCM32Bit(ss[i])
+		for i, _ := range readers {
+			readers[i] = readerForPCM32Bit(ss[i])
 		}
-		err=interleavedWrite(buf,4,readers...)
+		err = interleavedWrite(buf, 4, readers...)
 	case 6:
-		for i,_:=range(readers){
-			readers[i]=readerForPCM48Bit(ss[i])
+		for i, _ := range readers {
+			readers[i] = readerForPCM48Bit(ss[i])
 		}
-		err=interleavedWrite(buf,6,readers...)
+		err = interleavedWrite(buf, 6, readers...)
 	case 8:
-		for i,_:=range(readers){
-			readers[i]=readerForPCM64Bit(ss[i])
+		for i, _ := range readers {
+			readers[i] = readerForPCM64Bit(ss[i])
 		}
-		err=interleavedWrite(buf,8,readers...)
+		err = interleavedWrite(buf, 8, readers...)
 	}
 	if err != nil {
 		log.Println("Encode failure:" + err.Error())
@@ -307,18 +307,21 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 	}
 }
 
-
 func interleavedWrite(w io.Writer, blockSize int64, rs ...io.Reader) (err error) {
-	if len(rs)==0{return}
-	if len(rs)==1{
-		_,err=io.Copy(w, rs[0])
-	}else{
-		for err==nil{
-			for i,_:=range(rs){
-				_,err=io.CopyN(w,rs[i],blockSize)
+	if len(rs) == 0 {
+		return
+	}
+	if len(rs) == 1 {
+		_, err = io.Copy(w, rs[0])
+	} else {
+		for err == nil {
+			for i, _ := range rs {
+				_, err = io.CopyN(w, rs[i], blockSize)
 			}
 		}
-		if err==io.EOF{err=nil}
+		if err == io.EOF {
+			err = nil
+		}
 	}
 	return
 }
@@ -344,6 +347,19 @@ func EncodeLike(w io.Writer, s PeriodicSignal, p LimitedSignal) {
 	return
 }
 
+type errWaveParse struct {
+	Source      io.Reader
+	description string
+}
+
+func (e errWaveParse) Error() string {
+	return fmt.Sprintf("WAV Parsing:%s", e.description)
+}
+
+func (e errWaveParse) Parsing() io.Reader {
+	return e.Source
+}
+
 // Read a wave format stream into an array of PeriodicLimitedSignals.
 // one for each channel in the encoding.
 func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
@@ -359,41 +375,33 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 	pcms := make([]PeriodicLimitedSignal, format.Channels)
 	switch format.Bits {
 	case 8:
-		for c:=uint32(0); c < uint32(format.Channels); c++ {
+		for c := uint32(0); c < uint32(format.Channels); c++ {
 			pcms[c] = PCM8bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples : (c+1)*samples]}}
 		}
 	case 16:
-		for c:=uint32(0); c < uint32(format.Channels); c++ {
+		for c := uint32(0); c < uint32(format.Channels); c++ {
 			pcms[c] = PCM16bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*2 : (c+1)*samples*2]}}
 		}
 	case 24:
-		for c:=uint32(0); c < uint32(format.Channels); c++ {
+		for c := uint32(0); c < uint32(format.Channels); c++ {
 			pcms[c] = PCM24bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*3 : (c+1)*samples*3]}}
 		}
 	case 32:
-		for c:=uint32(0); c < uint32(format.Channels); c++ {
+		for c := uint32(0); c < uint32(format.Channels); c++ {
 			pcms[c] = PCM32bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*4 : (c+1)*samples*4]}}
 		}
 	case 48:
-		for c:=uint32(0); c < uint32(format.Channels); c++ {
+		for c := uint32(0); c < uint32(format.Channels); c++ {
 			pcms[c] = PCM48bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*6 : (c+1)*samples*6]}}
 		}
 	case 64:
-		for c:=uint32(0); c < uint32(format.Channels); c++ {
+		for c := uint32(0); c < uint32(format.Channels); c++ {
 			pcms[c] = PCM64bit{PCM{unitX / x(format.SampleRate), sampleData[c*samples*8 : (c+1)*samples*8]}}
 		}
 	default:
-			return nil,ErrWaveParse{fmt.Sprintf("Unsupported bit depth (%d).",format.Bits)}
-		}
+		return nil, errWaveParse{wav, fmt.Sprintf("Unsupported bit depth (%d).", format.Bits)}
+	}
 	return pcms, nil
-}
-
-type ErrWaveParse struct {
-	description string
-}
-
-func (e ErrWaveParse) Error() string {
-	return fmt.Sprintf("WAVE Parse,%s", e.description)
 }
 
 func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
@@ -402,13 +410,13 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	var format formatChunk
 	var dataHeader chunkHeader
 	if err := binary.Read(wav, binary.LittleEndian, &header); err != nil {
-		return 0, nil, ErrWaveParse{err.Error()}
+		return 0, nil, errWaveParse{wav, err.Error()}
 	}
 	if header.C1 != 'R' || header.C2 != 'I' || header.C3 != 'F' || header.C4 != 'F' || header.C5 != 'W' || header.C6 != 'A' || header.C7 != 'V' || header.C8 != 'E' {
-		return 0, nil, ErrWaveParse{"Not RIFF/WAVE format."}
+		return 0, nil, errWaveParse{wav, "Not RIFF/WAVE format."}
 	}
 	if err := binary.Read(wav, binary.LittleEndian, &formatHeader); err != nil {
-		return 0, nil, ErrWaveParse{err.Error()}
+		return 0, nil, errWaveParse{wav, err.Error()}
 	}
 	// skip any non-"fmt " chunks
 	for formatHeader.C1 != 'f' || formatHeader.C2 != 'm' || formatHeader.C3 != 't' || formatHeader.C4 != ' ' {
@@ -419,33 +427,33 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(formatHeader.DataLen))
 		}
 		if err != nil {
-			return 0, &format, ErrWaveParse{string(formatHeader.C1) + string(formatHeader.C2) + string(formatHeader.C3) + string(formatHeader.C4) + " " + err.Error()}
+			return 0, &format, errWaveParse{wav, string(formatHeader.C1) + string(formatHeader.C2) + string(formatHeader.C3) + string(formatHeader.C4) + " " + err.Error()}
 		}
 
 		if err := binary.Read(wav, binary.LittleEndian, &formatHeader); err != nil {
-			return 0, &format, ErrWaveParse{err.Error()}
+			return 0, &format, errWaveParse{wav, err.Error()}
 		}
 	}
-	
+
 	if formatHeader.DataLen != 16 {
-		return 0, nil, ErrWaveParse{"Format chunk wrong size."+string(formatHeader.DataLen)}
+		return 0, nil, errWaveParse{wav, "Format chunk wrong size." + string(formatHeader.DataLen)}
 	}
 
 	if err := binary.Read(wav, binary.LittleEndian, &format); err != nil {
-		return 0, nil, ErrWaveParse{err.Error()}
+		return 0, nil, errWaveParse{wav, err.Error()}
 	}
 	if format.Code != 1 {
-		return 0, &format, ErrWaveParse{"only PCM supported. not format code:"+string(format.Code)}
+		return 0, &format, errWaveParse{wav, "only PCM supported. not format code:" + string(format.Code)}
 	}
 	if format.Bits%8 != 0 {
-		return 0, &format, ErrWaveParse{"not whole byte samples size!"}
+		return 0, &format, errWaveParse{wav, "not whole byte samples size!"}
 	}
 
 	// TODO-nice read "LIST" chunk with, 3 fields, third being "INFO", can contain "ICOP" and "ICRD" chunks providing copyright and creation date information.
 
 	// skip any non-"data" chucks
 	if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
-		return 0, &format, ErrWaveParse{err.Error()}
+		return 0, &format, errWaveParse{wav, err.Error()}
 	}
 	for dataHeader.C1 != 'd' || dataHeader.C2 != 'a' || dataHeader.C3 != 't' || dataHeader.C4 != 'a' {
 		var err error
@@ -455,15 +463,15 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(dataHeader.DataLen))
 		}
 		if err != nil {
-			return 0, &format, ErrWaveParse{string(dataHeader.C1) + string(dataHeader.C2) + string(dataHeader.C3) + string(dataHeader.C4) + " " + err.Error()}
+			return 0, &format, errWaveParse{wav, string(dataHeader.C1) + string(dataHeader.C2) + string(dataHeader.C3) + string(dataHeader.C4) + " " + err.Error()}
 		}
 
 		if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
-			return 0, &format, ErrWaveParse{err.Error()}
+			return 0, &format, errWaveParse{wav, err.Error()}
 		}
 	}
 	if dataHeader.DataLen%uint32(format.Channels) != 0 {
-		return 0, &format, ErrWaveParse{"sound sample data length not divisable by channel count:"+string(dataHeader.DataLen))}
+		return 0, &format, errWaveParse{wav, "sound sample data length not divisable by channel count:" + string(dataHeader.DataLen)}
 	}
 	return dataHeader.DataLen, &format, nil
 }
@@ -471,9 +479,9 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 func readInterleaved(r io.Reader, samples uint32, channels uint32, sampleBytes uint32) ([]byte, error) {
 	sampleData := make([]byte, samples*channels*sampleBytes)
 	var err error
-	for s:=uint32(0); s < samples; s++ {
+	for s := uint32(0); s < samples; s++ {
 		// deinterlace channels by reading directly into separate regions of a byte slice
-		for c:=uint32(0); c < uint32(channels); c++ {
+		for c := uint32(0); c < uint32(channels); c++ {
 			if n, err := r.Read(sampleData[(c*samples+s)*sampleBytes : (c*samples+s+1)*sampleBytes]); err != nil || n != int(sampleBytes) {
 				return nil, errors.New(fmt.Sprintf("data ran out at %v of %v", s, samples))
 			}

@@ -1,12 +1,12 @@
 package signals
 
 import (
+	"encoding/base64"
 	"encoding/gob"
 	"errors"
 	"io"
 	"net/http"
 	"net/url"
-	"encoding/base64"
 	"os"
 	"path"
 	"regexp"
@@ -158,7 +158,7 @@ func NewWave(URL string) (*Wave, error) {
 	case 8:
 		return &Wave{Offset{NewPCM64bit(rate, b), 0}, URL, r}, nil
 	}
-	return nil, ErrWaveParse{"Source bit rate not supported."}
+	return nil, errWaveParse{r, "Source bit rate not supported."}
 }
 
 var contentTypeParse = regexp.MustCompile(`^audio/l(\d+);rate=(\d+)$`)
@@ -172,8 +172,8 @@ func pcmReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, erro
 	}
 	switch url.Scheme {
 	case "file":
-		switch path.Ext(url.Path){
-		case ".wav",".wave",".WAV",".WAVE":
+		switch path.Ext(url.Path) {
+		case ".wav", ".wave", ".WAV", ".WAVE":
 			file, err := os.Open(url.Path)
 			if err != nil {
 				return nil, 0, 0, 0, err
@@ -183,35 +183,35 @@ func pcmReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, erro
 				return nil, 0, 0, 0, err
 			}
 			return file, format.Channels, format.SampleBytes, format.SampleRate, nil
-		case ".gob",".GOB":
-			s,err:=LoadGOB(url.Path[:len(url.Path)-4])
+		case ".gob", ".GOB":
+			s, err := LoadGOB(url.Path[:len(url.Path)-4])
 			if err != nil {
 				return nil, 0, 0, 0, err
 			}
 			var sampleRate uint32 = 22010
-			samplePeriod:=X(1 / float32(sampleRate))
+			samplePeriod := X(1 / float32(sampleRate))
 			r, w := io.Pipe()
 			go func() {
-				defer func(){
-					e:=recover()
-					if e!=nil{
+				defer func() {
+					e := recover()
+					if e != nil {
 						w.CloseWithError(e.(error))
-					}else{
+					} else {
 						w.Close()
 					}
 				}()
-				for i,sample:=uint32(0),make([]byte,2); err ==nil; i++ {
+				for i, sample := uint32(0), make([]byte, 2); err == nil; i++ {
 					sample[0], sample[1] = encodePCM16bit(s.property(x(i) * samplePeriod))
 					_, err = w.Write(sample)
 				}
 			}()
-			return r,1,2,sampleRate,nil
+			return r, 1, 2, sampleRate, nil
 		case ".pcm":
-			rate, err :=strconv.ParseUint(path.Base(path.Dir(url.Path)),10,32)
+			rate, err := strconv.ParseUint(path.Base(path.Dir(url.Path)), 10, 32)
 			if err != nil {
 				return nil, 0, 0, 0, err
 			}
-			bits, err :=strconv.ParseUint(path.Base(path.Dir(path.Dir(url.Path))[:len(path.Dir(path.Dir(url.Path)))-3]),10,20)
+			bits, err := strconv.ParseUint(path.Base(path.Dir(path.Dir(url.Path))[:len(path.Dir(path.Dir(url.Path)))-3]), 10, 20)
 			if err != nil {
 				return nil, 0, 0, 0, err
 			}
@@ -225,10 +225,10 @@ func pcmReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, erro
 		mimeAndRest := strings.SplitN(url.Opaque, ";", 2)
 		encodingAndData := strings.SplitN(mimeAndRest[1], ",", 2)
 		var r io.Reader
-		if encodingAndData[0]=="base64" {
-			r= base64.NewDecoder(base64.StdEncoding, strings.NewReader(encodingAndData[1])) 
-		}else{
-			r= strings.NewReader(encodingAndData[1]) 
+		if encodingAndData[0] == "base64" {
+			r = base64.NewDecoder(base64.StdEncoding, strings.NewReader(encodingAndData[1]))
+		} else {
+			r = strings.NewReader(encodingAndData[1])
 		}
 		if mimeAndRest[0] == "sound/wav" || mimeAndRest[0] == "audio/x-wav" {
 			_, format, err := readWaveHeader(r)
@@ -275,7 +275,7 @@ func pcmReader(resourceLocation string) (io.Reader, uint16, uint16, uint32, erro
 			return resp.Body, 1, uint16(bits / 8), uint32(rate), nil
 		}
 	}
-	return nil, 0, 0, 0, errors.New("Source:" + resourceLocation + " unsupported." )
+	return nil, 0, 0, 0, errors.New("Source:" + resourceLocation + " unsupported.")
 }
 
 func failOn(e error) {
