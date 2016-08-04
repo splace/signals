@@ -1,14 +1,13 @@
 package signals
 
 import (
-	"bufio"
-	"encoding/binary"
-	"errors"
 	"fmt"
+	"os"
 	"io"
 	"io/ioutil"
-	"log"
-	"os"
+	"errors"
+	"encoding/binary"
+	"bufio"
 )
 
 // RIFF file header holder
@@ -33,15 +32,22 @@ type formatChunk struct {
 	Bits        uint16
 }
 
+
 // Encode Signals as PCM data,in a Riff wave container.
-func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...Signal) {
-	var err error
-	buf := bufio.NewWriter(w)
+func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...Signal) (err error) {
+	buf:=bufio.NewWriter(w)
+	err = encode(buf, sampleBytes, sampleRate, length, ss...) 
+	if err == nil {	buf.Flush()	}
+	return err
+}
+
+// unbuffered encode Signals as PCM data,in a Riff wave container.
+func encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...Signal) (err error) {
 	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
-	binary.Write(buf, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
-	binary.Write(buf, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
-	binary.Write(buf, binary.LittleEndian, formatChunk{
+	binary.Write(w, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
+	binary.Write(w, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
+	binary.Write(w, binary.LittleEndian, formatChunk{
 		Code:        1,
 		Channels:    uint16(len(ss)),
 		SampleRate:  sampleRate,
@@ -49,7 +55,7 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		SampleBytes: uint16(sampleBytes) * uint16(len(ss)),
 		Bits:        uint16(8 * sampleBytes),
 	})
-	binary.Write(buf, binary.LittleEndian, chunkHeader{'d', 'a', 't', 'a', samples * uint32(sampleBytes) * uint32(len(ss))})
+	binary.Write(w, binary.LittleEndian, chunkHeader{'d', 'a', 't', 'a', samples * uint32(sampleBytes) * uint32(len(ss))})
 	readerForPCM8Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
@@ -273,38 +279,34 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		for i, _ := range readers {
 			readers[i] = readerForPCM8Bit(ss[i])
 		}
-		err = interleavedWrite(buf, 1, readers...)
+		err = interleavedWrite(w, 1, readers...)
 	case 2:
 		for i, _ := range readers {
 			readers[i] = readerForPCM16Bit(ss[i])
 		}
-		err = interleavedWrite(buf, 2, readers...)
+		err = interleavedWrite(w, 2, readers...)
 	case 3:
 		for i, _ := range readers {
 			readers[i] = readerForPCM24Bit(ss[i])
 		}
-		err = interleavedWrite(buf, 3, readers...)
+		err = interleavedWrite(w, 3, readers...)
 	case 4:
 		for i, _ := range readers {
 			readers[i] = readerForPCM32Bit(ss[i])
 		}
-		err = interleavedWrite(buf, 4, readers...)
+		err = interleavedWrite(w, 4, readers...)
 	case 6:
 		for i, _ := range readers {
 			readers[i] = readerForPCM48Bit(ss[i])
 		}
-		err = interleavedWrite(buf, 6, readers...)
+		err = interleavedWrite(w, 6, readers...)
 	case 8:
 		for i, _ := range readers {
 			readers[i] = readerForPCM64Bit(ss[i])
 		}
-		err = interleavedWrite(buf, 8, readers...)
+		err = interleavedWrite(w, 8, readers...)
 	}
-	if err != nil {
-		log.Println("Encode failure:" + err.Error())
-	} else {
-		buf.Flush()
-	}
+	return
 }
 
 func interleavedWrite(w io.Writer, blockSize int64, rs ...io.Reader) (err error) {
