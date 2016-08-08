@@ -28,13 +28,15 @@ func (s PCM) Period() x {
 
 //func ReadPCM(pathTo string) (p *PCM,err error) {)
 
-// load PCM from pathTo, which needs to explicitly point into a folder with the <<Sample Rate>>, numerically, as its name, also adds extension ".pcm".
+// load PCM from pathTo, which if not explicitly pointing into a folder with the <<Sample Rate>> numerically, as its name, will look into sub-folder with the sampleRate indicated by the PCM. Also adds extension ".pcm".
 func LoadPCM(pathTo string, p *PCM) (err error) {
-	p.Data,err=ioutil.ReadFile(pathTo+".pcm")
-	if err!=nil {return}
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
-	if err!=nil {return}
-	p.samplePeriod=X(1 / float32(sampleRate))
+	if err!=nil {
+		pathTo=path.Join(path.Dir(pathTo),strconv.FormatInt(int64(unitX / x(p.samplePeriod)),10),path.Base(pathTo))
+	}else{
+		p.samplePeriod=X(1 / float32(sampleRate))
+	}	
+	p.Data,err=ioutil.ReadFile(pathTo+".pcm")
 	return 
 }
 
@@ -42,19 +44,19 @@ func SavePCM(pathTo string,pcm PCM) error {
 	return pcm.SaveTo(pathTo)
 }
 
-// save PCM to pathTo, if pathTo is not in a folder with the <<Sample Rate>> as its name, adds it, also adds extension ".pcm".
-func (s PCM) SaveTo(pathTo string) error {
+// save PCM to pathTo, if pathTo is not inside a folder with the <<Sample Rate>> as its name, its added, (making it if required) which means the file won't then actually be at the pathTo address. Also adds extension ".pcm".
+func (p PCM) SaveTo(pathTo string) error {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
-		pathTo=path.Join(path.Dir(pathTo),strconv.FormatInt(int64(unitX / x(s.samplePeriod)),10),path.Base(pathTo))
+		pathTo=path.Join(path.Dir(pathTo),strconv.FormatInt(int64(unitX / x(p.samplePeriod)),10),path.Base(pathTo))
 		err:=os.Mkdir(path.Dir(pathTo), os.ModeDir | 0775)
 		if err!=nil && !os.IsExist(err){return err}
 	}else{
-		if s.samplePeriod!=unitX / x(sampleRate) {return errors.New("parent folder for different sample rate.")}
+		if p.samplePeriod!=unitX / x(sampleRate) {return errors.New("parent folder for different sample rate.")}
 	}	
 	file, err := os.Create(pathTo+".pcm")
 	if err!=nil {return err}
-	file.Write(s.Data)
+	file.Write(p.Data)
 	return file.Close()
 }
 
