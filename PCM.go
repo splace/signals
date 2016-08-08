@@ -41,11 +41,12 @@ func LoadPCM(pathTo string, p *PCM) (err error) {
 	return 
 }
 
-func SavePCM(pathTo string,pcm PCM) error {
-	return pcm.SaveTo(pathTo)
+// save PCM into a paths subfolder depending on its sample rate. (see LoadPCM) 
+func SavePCM(path string,pcm PCM) error {
+	return pcm.SaveTo(path)
 }
 
-// save PCM to pathTo, if pathTo is not inside a folder with the <<Sample Rate>> as its name, its added, (making it if required) which means the file won't then actually be at the pathTo address. Also adds extension ".pcm".
+// save PCM to pathTo, if pathTo is not inside a folder with the <<Sample Rate>> as its name, its added, (making it if required) which means the file won't then actually be at the pathTo address, but LoadPCM will add required sub-folder. Also adds extension ".pcm".
 func (p PCM) SaveTo(pathTo string) error {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
