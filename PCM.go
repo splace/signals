@@ -32,6 +32,7 @@ func (s PCM) Period() x {
 func LoadPCM(pathTo string, p *PCM) (err error) {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
+		// TODO if Period zero then use any available?
 		pathTo=path.Join(path.Dir(pathTo),strconv.FormatInt(int64(unitX / x(p.samplePeriod)),10),path.Base(pathTo))
 	}else{
 		p.samplePeriod=X(1 / float32(sampleRate))
