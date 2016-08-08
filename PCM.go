@@ -28,7 +28,7 @@ func (s PCM) Period() x {
 
 //func ReadPCM(pathTo string) (p *PCM,err error) {)
 
-// load PCM from pathTo, if not explicitly pointing into a folder with the <<Sample Rate>>, numerically as its name, will look into sub-folder with the sampleRate indicated by the PCM, if sampleRate is zero will load any samplerate available. Also adds extension ".pcm".
+// load PCM from pathTo, if not explicitly pointing into a folder with the <<Sample Rate>>, numerically as its name, will look into sub-folder with the sampleRate indicated by the PCM parameter, if that's zero will load any samplerate available. Also adds extension ".pcm".
 func LoadPCM(pathTo string, p *PCM) (err error) {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
@@ -60,7 +60,7 @@ func SavePCM(path string,pcm PCM) error {
 	return pcm.SaveTo(path)
 }
 
-// save PCM to pathTo, if pathTo is not inside a folder with the <<Sample Rate>> as its name, its added, (making it if required) which means the file won't then actually be at the pathTo address, but LoadPCM will add required sub-folder. Also adds extension ".pcm".
+// save PCM to pathTo, if pathTo is not inside a folder with the <<Sample Rate>> as its name, its added, (making it if required) which means the file won't then actually be at the pathTo address, but LoadPCM can automatically find the sub-folder. Also adds extension ".pcm".
 func (p PCM) SaveTo(pathTo string) error {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
