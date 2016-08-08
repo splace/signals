@@ -96,6 +96,23 @@ func TestPCMXSaveLoad(t *testing.T) {
 
 }
 
+func TestPCMXSaveLoadAny(t *testing.T) {
+	pcmx:=PCM8bit{NewPCM(22050, []byte{0, 0, 0, 10, 0, 20, 0, 30, 0, 40, 0, 50, 0, 60, 0, 70, 0, 80, 0, 90, 0, 100, 0, 110, 0, 120})}
+	err:=pcmx.SaveTo("./test output/8bit/pcm")
+	if err!=nil {t.Error(err)}
+	var p PCM
+	err=LoadPCM("./test output/8bit/pcm",&p)
+	if err!=nil {t.Error(err)}
+	pcmx2:=PCM8bit{p}
+	if !bytes.Equal(pcmx.PCM.Data,pcmx2.PCM.Data){t.Fail()}
+	
+//	if fmt.Sprintf("%#v", s) != fmt.Sprintf("%#v", m) {
+//		t.Errorf("%#v != %#v", s, m)
+//	}
+
+}
+
+
 var mb byte
 var mx y
 

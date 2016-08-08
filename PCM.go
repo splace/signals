@@ -32,8 +32,22 @@ func (s PCM) Period() x {
 func LoadPCM(pathTo string, p *PCM) (err error) {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
-		// TODO if Period zero then use any available?
-		pathTo=path.Join(path.Dir(pathTo),strconv.FormatInt(int64(unitX / x(p.samplePeriod)),10),path.Base(pathTo))
+		if p.samplePeriod==0 {
+			var files []os.FileInfo
+			files, err = ioutil.ReadDir(path.Dir(pathTo))
+			if err != nil {return}
+			for _, file := range files {
+				if file.IsDir() && file.Size()>0 {
+					sampleRate,err=strconv.ParseUint(file.Name(), 10, 32)
+					if err==nil {
+						pathTo=path.Join(path.Dir(pathTo),file.Name(),path.Base(pathTo))
+						break
+					}
+				}
+			}
+		}else{
+			pathTo=path.Join(path.Dir(pathTo),strconv.FormatInt(int64(unitX / x(p.samplePeriod)),10),path.Base(pathTo))
+		}
 	}else{
 		p.samplePeriod=X(1 / float32(sampleRate))
 	}	
