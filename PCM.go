@@ -307,7 +307,7 @@ func (s PCM64bit) Split(p x) (PCM64bit, PCM64bit) {
 	return PCM64bit{head}, PCM64bit{tail}
 }
 
-// make a PeriodicLimitedSignal by sampling from another Signal, using provided parameters.
+// make a PeriodicLimitedSignal by sampling from a Signal, using provided parameters.
 func NewPCMSignal(s Signal, length x, sampleRate uint32, sampleBytes uint8) PeriodicLimitedSignal {
 	out, in := io.Pipe()
 	go func() {
