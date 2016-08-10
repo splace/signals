@@ -92,7 +92,6 @@ func (s PCM) Split(sample uint32, sampleBytes uint8) (head PCM, tail PCM) {
 }
 
 // 8 bit PCM Signal.
-// unlike the other precisions of PCM, that use signed data, 8bit uses un-signed. (the default OpenAL and wave file representation for 8bit precision.)
 type PCM8bit struct {
 	PCM
 }
