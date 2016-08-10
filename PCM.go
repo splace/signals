@@ -11,7 +11,7 @@ import (
 
 // PCM is the state and behaviour common to all PCM, it doesn't include encoding information, so cannot return a property and so is not a Signal.
 // Specific PCM<<encoding>> types embed this, and then are Signal's.
-// these specific precision types, the Signals, return continuous property values that step from one PCM value to the next, Segmented could be used to get interpolated property values.
+// The specific precision types, the Signals, return continuous property values that step from one PCM value to the next, Segmented could be used to get interpolated property values.
 type PCM struct {
 	samplePeriod x
 	Data         []byte
