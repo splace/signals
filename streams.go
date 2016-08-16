@@ -158,7 +158,7 @@ func NewWave(URL string) (*Wave, error) {
 	case 8:
 		return &Wave{Offset{NewPCM64bit(rate, b), 0}, URL, r}, nil
 	}
-	return nil, errors.New("Sample Bytes:"+bytes+" not supported:"+URL)
+	return nil, errors.New("Sample Bytes not supported:"+URL)
 }
 
 var contentTypeParse = regexp.MustCompile(`^audio/l(\d+);rate=(\d+)$`)
@@ -284,4 +284,7 @@ func failOn(e error) {
 	}
 }
 
+/*  Hal3 Tue 16 Aug 20:14:48 BST 2016 go version go1.6.2 linux/amd64
+FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
+Tue 16 Aug 20:14:53 BST 2016 */
 
