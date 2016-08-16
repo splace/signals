@@ -284,7 +284,4 @@ func failOn(e error) {
 	}
 }
 
-/*  Hal3 Tue 16 Aug 20:14:48 BST 2016 go version go1.6.2 linux/amd64
-FAIL	_/home/simon/Dropbox/github/working/signals [build failed]
-Tue 16 Aug 20:14:53 BST 2016 */
 
