@@ -232,4 +232,29 @@ Sun Jun 19 17:41:27 BST 2016 */
 
 
 
+/*  Hal3 Tue 16 Aug 00:42:15 BST 2016 go version go1.6.2 linux/amd64
+PASS
+BenchmarkPCM8bitEncode-2 	2000000000	         0.77 ns/op
+BenchmarkPCM8bitDecode-2 	2000000000	         1.16 ns/op
+BenchmarkPCM16bitEncode-2	2000000000	         1.16 ns/op
+BenchmarkPCM16bitDecode-2	2000000000	         1.16 ns/op
+BenchmarkPCM24bitEncode-2	2000000000	         1.93 ns/op
+BenchmarkPCM24bitDecode-2	2000000000	         1.54 ns/op
+BenchmarkPCM32bitEncode-2	2000000000	         1.98 ns/op
+BenchmarkPCM32bitDecode-2	2000000000	         1.93 ns/op
+ok  	_/home/simon/Dropbox/github/working/signals	24.535s
+Tue 16 Aug 00:42:42 BST 2016 */
+/*  Hal3 Tue 16 Aug 00:42:55 BST 2016  go version go1.7 linux/amd64
+
+BenchmarkPCM8bitEncode-2    	2000000000	         1.16 ns/op
+BenchmarkPCM8bitDecode-2    	2000000000	         0.77 ns/op
+BenchmarkPCM16bitEncode-2   	2000000000	         0.83 ns/op
+BenchmarkPCM16bitDecode-2   	2000000000	         1.20 ns/op
+BenchmarkPCM24bitEncode-2   	2000000000	         0.83 ns/op
+BenchmarkPCM24bitDecode-2   	2000000000	         1.68 ns/op
+BenchmarkPCM32bitEncode-2   	2000000000	         0.83 ns/op
+BenchmarkPCM32bitDecode-2   	1000000000	         2.06 ns/op
+PASS
+ok  	_/home/simon/Dropbox/github/working/signals	17.702s
+Tue 16 Aug 00:43:14 BST 2016 */
 

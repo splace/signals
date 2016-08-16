@@ -158,7 +158,7 @@ func NewWave(URL string) (*Wave, error) {
 	case 8:
 		return &Wave{Offset{NewPCM64bit(rate, b), 0}, URL, r}, nil
 	}
-	return nil, errWaveParse{r, "Source bit rate not supported."}
+	return nil, errors.New("Sample Bytes:"+bytes+" not supported:"+URL)
 }
 
 var contentTypeParse = regexp.MustCompile(`^audio/l(\d+);rate=(\d+)$`)
