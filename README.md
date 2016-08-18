@@ -2,6 +2,7 @@
 
 Status: (Beta :- stabilising API)
 
+see Examples for some uses.
 
 Overview/docs: [![GoDoc](https://godoc.org/github.com/splace/signals?status.svg)](https://godoc.org/github.com/splace/signals) 
 
