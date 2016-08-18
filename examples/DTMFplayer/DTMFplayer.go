@@ -28,8 +28,7 @@ func main() {
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
-	// cache the raw PCM data for each tone
-	// (example, not really required.)
+	// cache the raw PCM data for each tone. (helps efficiency if a lot of repeat tones.)  
 	var Tones = map[rune]PCM{
 		'0': NewPCMSignal(Stacked{Sine{X(1.0 / 941)}, Sine{X(1.0 / 1336)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
 		'1': NewPCMSignal(Stacked{Sine{X(1.0 / 697)}, Sine{X(1.0 / 1209)}}, length, uint32(sampleRate), 2).(PCM16bit).PCM,
