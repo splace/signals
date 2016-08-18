@@ -33,7 +33,7 @@ func main() {
 	Encode(file, 2, 8000, OneSecond, signal)
 }
 ```
-Output: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signed PCM (s16), WAV file 
+Produces file: Sine wave, 100hz, 50% volume (-6dB), 1 sec, @8k samples/sec, 2byte signed PCM (s16), WAV file 
 
 Features:
 
