@@ -40,6 +40,8 @@ func main() {
 }
 
 
+//helpers for log
+
 func AssertFatal(test func()bool,info string) {
 	if !test() {
 		log.Fatal("failed"+info)
@@ -65,6 +67,8 @@ LOG 	Reports information of interest to administrators, e.g., checkpoint activit
 FATAL 	Reports an error that caused the current session to abort.
 PANIC 	Reports an error that caused all database sessions to abort.
 */
+
+// helpers for drawing
 
 type composable struct {
 	draw.Image
