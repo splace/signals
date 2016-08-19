@@ -2,7 +2,7 @@
 // usage: 2jpeg.<<elf|exe>> <<stereo.wav>>
 package main
 
-import . "github.com/splace/signals" //"../../../signals" //
+import . "github.com/splace/signals" 
 import (
 	"flag"
 	"image"
@@ -15,22 +15,23 @@ import (
 )
 
 func main() {
-	//var sampleRate,sampleBytes uint
-	//flag.UintVar(&sampleRate, "rate", 44100, "sample per second")
-	//flag.UintVar(&sampleBytes,"bytes", 2, "bytes per sample")
 	flag.Parse()
 	files := flag.Args()
-	sLogError := statefulLogger{log.New(os.Stderr, "ERROR\t", log.LstdFlags), "File access"}
+
+	log.SetPrefix("ERROR\tFile access.\t")
 	var in, out *os.File
-	sLogError.AssertFatal(func ()bool{return len(files)==1}," to detect an input file name.")
-	in = sLogError.ErrFatal(os.Open(files[0])).(*os.File)
-	sLogError.State = "Decode:" + files[0]
+	AssertFatal(func ()bool{return len(files)==1}," to detect an input file name.")
+	in = ErrFatal(os.Open(files[0])).(*os.File)
 	defer in.Close()
-	noise := sLogError.ErrFatal(Decode(in)).([]PeriodicLimitedSignal)
-	sLogError.AssertFatal(func ()bool{return len(noise) ==2}," to detect a stereo file.")
-	sLogError.State = "File Access"
-	out = sLogError.ErrFatal(os.Create(files[0] + ".jpeg")).(*os.File)
+
+	log.SetPrefix("ERROR\tDecode:"+ files[0]+"\t")
+	noise := ErrFatal(Decode(in)).([]PeriodicLimitedSignal)
+	AssertFatal(func ()bool{return len(noise) ==2}," to detect a stereo file.")
+
+	log.SetPrefix("ERROR\tFile Access.\t")
+	out = ErrFatal(os.Create(files[0] + ".jpeg")).(*os.File)
 	defer out.Close()
+
 	m := newcomposable(image.NewPaletted(image.Rect(0, -150, 800, 150), palette.WebSafe))
 	// offset centre of 600px image, to fit 300px width.
 	m.drawOffset(WebSafePalettedImage{NewDepiction(noise[0], 800, 600, color.RGBA{255, 0, 0, 255}, color.RGBA{0, 0, 0, 0})}, image.Point{0, 150})
@@ -38,29 +39,21 @@ func main() {
 	jpeg.Encode(out, m, nil)
 }
 
-type statefulLogger struct {
-	*log.Logger
-	State string
+
+func AssertFatal(test func()bool,info string) {
+	if !test() {
+		log.Fatal("failed"+info)
+	}
+	return
 }
 
-func (sl statefulLogger) ErrFatal(result interface{}, err error) interface{} {
+func ErrFatal(result interface{}, err error) interface{} {
 	if err != nil {
-		sl.Fatal(err.Error())
+		log.Fatal(err.Error())
 	}
 	return result
 }
 
-func (sl statefulLogger) AssertFatal(test func()bool,info string) {
-	if !test() {
-		sl.Fatal("failed"+info)
-	}
-	return
-}
-
-func (sl statefulLogger) Fatal(info string) {
-	sl.Logger.Fatal("\t" + os.Args[0] + "\t" + sl.State + "\t" + info)
-	return
-}
 
 /*
 DEBUG1..DEBUG5 	Provides successively-more-detailed information for use by developers.
