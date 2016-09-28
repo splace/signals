@@ -14,12 +14,6 @@ import (
 	"os"
 )
 
-func ErrFatal(result interface{}, err error) interface{} {
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	return result
-}
 
 func main() {
 	flag.Parse()
