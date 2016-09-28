@@ -20,12 +20,12 @@ func init() {
 
 const bufferSize = 16
 
-// an offset PCM Signal, (so single channel) that reads from a source, as required, its data.
-// supported URL schemes, "file:", "data:", "http(s):".
-// Http(s); MIME: "audio/l?;rate=?","sound/wav"(mono),"audio/x-wav" (mono)
-// File: ".wav"(mono),".pcm",".gob"
-// Data: MIME: "audio/l?;rate=?","sound/wav"(mono),"audio/x-wav" (mono), ENCODING: "base64" or none.
-// if queried for a property value from an x that is more than 32 samples lower than a previous query, might return zero.
+// an offset PCM Signal, (so single channel) that streams values from a URL source as required.
+// Supported URL schemes, "file:", "data:", "http(s):".
+// Encodings for Http(s); MIME: "audio/l?;rate=?","sound/wav"(mono),"audio/x-wav" (mono)
+// Encoding for File: ".wav"(mono),".pcm",".gob"
+// Encodings for Data: MIME: "base64" or none. (and MIME as for Http.) 
+// Buffers at least 32 samples, but if queried for a property value that needs a sample prior to that, might return zero.
 type Wave struct {
 	Offset
 	URL    string
