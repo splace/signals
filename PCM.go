@@ -55,7 +55,7 @@ func LoadPCM(pathTo string, p *PCM) (err error) {
 	return 
 }
 
-// save PCM into a paths subfolder depending on its sample rate. (see LoadPCM) 
+// save PCM into a paths sub-folder depending on its sample rate. (see LoadPCM) 
 func SavePCM(path string,pcm PCM) error {
 	return pcm.SaveTo(path)
 }

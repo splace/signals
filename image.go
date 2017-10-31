@@ -30,6 +30,8 @@ func (i Depiction) At(xp, yp int) color.Color {
 	return i.below
 }
 
+// TODO just embed a colorModel?
+
 // a Depictor is an image.Image without a colormodel, so is more general.
 // embedded in one of the helper wrappers gets you an image.Image.
 // (this and the wrappers might be moved, in a later version of this package, to their own package.)

@@ -63,7 +63,7 @@ func (s Sinc) property(p x) y {
 	return y(math.Sin(xp)/xp * unitYfloat64)
 }
 
-// a Signal that peaks, centred on zero, as a gaussian distribution, width q.
+// a Signal that peaks, centred on zero, as a Gaussian distribution, width q.
 type Gauss struct {
 	Q22 float64   // 2 * q squared
 }
@@ -122,7 +122,7 @@ func (s RampUp) property(p x) y {
 	}
 }
 
-// a Signal wcich ramps from unitY to zero, over a Period width.
+// a Signal which ramps from unitY to zero, over a Period width.
 type RampDown struct {
 	Period x
 }
@@ -149,7 +149,7 @@ func (s Heavyside) property(p x) y {
 }
 
 // a Signal that smoothly transitions from 0 to +unitY.
-// with a maximium gradient (first derivative) at x=0, of Steepness.
+// with a maximum gradient (first derivative) at x=0, of Steepness.
 type Sigmoid struct {
 	Steepness x
 }

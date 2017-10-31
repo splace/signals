@@ -59,7 +59,7 @@ func encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 	readerForPCM8Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
-			// try shortcuts first
+			// try short-cuts first
 			offset, ok := s.(Offset)
 			if pcms, ok2 := offset.LimitedSignal.(PCM8bit); ok && ok2 && pcms.samplePeriod == samplePeriod && pcms.MaxX() >= length-offset.Offset {
 				offsetSamples := int(offset.Offset / samplePeriod)
@@ -421,7 +421,7 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	for formatHeader.C1 != 'f' || formatHeader.C2 != 'm' || formatHeader.C3 != 't' || formatHeader.C4 != ' ' {
 		var err error
 		if s, ok := wav.(io.Seeker); ok {
-			_, err = s.Seek(int64(formatHeader.DataLen), os.SEEK_CUR) // seek relative to current file pointer if psossible
+			_, err = s.Seek(int64(formatHeader.DataLen), os.SEEK_CUR) // seek relative to current file pointer if possible
 		} else {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(formatHeader.DataLen))
 		}
@@ -457,7 +457,7 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	for dataHeader.C1 != 'd' || dataHeader.C2 != 'a' || dataHeader.C3 != 't' || dataHeader.C4 != 'a' {
 		var err error
 		if s, ok := wav.(io.Seeker); ok {
-			_, err = s.Seek(int64(dataHeader.DataLen), os.SEEK_CUR) // seek relative to current file pointer if psossible
+			_, err = s.Seek(int64(dataHeader.DataLen), os.SEEK_CUR) // seek relative to current file pointer if possible
 		} else {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(dataHeader.DataLen))
 		}
@@ -470,7 +470,7 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 		}
 	}
 	if dataHeader.DataLen%uint32(format.Channels) != 0 {
-		return 0, &format, errParsing{errors.New("sound sample data length not divisable by channel count:" + string(dataHeader.DataLen)),wav}
+		return 0, &format, errParsing{errors.New("sound sample data length not divisible by channel count:" + string(dataHeader.DataLen)),wav}
 	}
 	return dataHeader.DataLen, &format, nil
 }
@@ -479,7 +479,7 @@ func readInterleaved(r io.Reader, samples uint32, channels uint32, sampleBytes u
 	sampleData := make([]byte, samples*channels*sampleBytes)
 	var err error
 	for s := uint32(0); s < samples; s++ {
-		// deinterlace channels by reading directly into separate regions of a byte slice
+		// de-interlace channels by reading directly into separate regions of a byte slice
 		for c := uint32(0); c < uint32(channels); c++ {
 			if n, err := r.Read(sampleData[(c*samples+s)*sampleBytes : (c*samples+s+1)*sampleBytes]); err != nil || n != int(sampleBytes) {
 				return nil, errors.New(fmt.Sprintf("data ran out at %v of %v", s, samples))
