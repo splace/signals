@@ -257,4 +257,20 @@ BenchmarkPCM32bitDecode-2   	1000000000	         2.06 ns/op
 PASS
 ok  	_/home/simon/Dropbox/github/working/signals	17.702s
 Tue 16 Aug 00:43:14 BST 2016 */
+/*  Hal3 Tue 31 Oct 19:46:06 GMT 2017  go version go1.9.1 linux/amd64
+
+goos: linux
+goarch: amd64
+BenchmarkPCM8bitEncode-2    	2000000000	         1.16 ns/op
+BenchmarkPCM8bitDecode-2    	2000000000	         0.77 ns/op
+BenchmarkPCM16bitEncode-2   	2000000000	         0.83 ns/op
+BenchmarkPCM16bitDecode-2   	2000000000	         0.77 ns/op
+BenchmarkPCM24bitEncode-2   	2000000000	         0.83 ns/op
+BenchmarkPCM24bitDecode-2   	2000000000	         0.77 ns/op
+BenchmarkPCM32bitEncode-2   	2000000000	         0.83 ns/op
+BenchmarkPCM32bitDecode-2   	2000000000	         0.77 ns/op
+PASS
+ok  	_/home/simon/Dropbox/github/working/signals	14.206s
+Tue 31 Oct 19:46:29 GMT 2017
+*/
 
