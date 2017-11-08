@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-// satisfying the Signal interface means a type represents an analogue signal, where a y property varies with an x parameter.
+// satisfying the Signal interface means a type represents an analogue signal, where property of type y, varies with a parameter of type x.
 type Signal interface {
 	property(x) y
 }
@@ -39,19 +39,19 @@ func (v y) String() string {
 	return fmt.Sprintf("%7.2f%%", 100*float32(v)/float32(unitY))
 }
 
-// a LimitedSignal is a Signal that is assumed to have zero y after MaxX().
+// a LimitedSignal is a Signal modified to give property values of zero with parameter values above the values returned by MaxX().
 type LimitedSignal interface {
 	Signal
 	MaxX() x
 }
 
-// a PeriodicSignal is a Signal that repeats, that is, gives the same y, if x changes by the amount returned by Period().
+// a PeriodicSignal is a Signal that repeats, that is, gives the same value of its property, for parameter values offset by the value returned by Period().
 type PeriodicSignal interface {
 	Signal
 	Period() x
 }
 
-// a PeriodicLimitedSignal is a Signal that repeats over Period() and doesn't exceed MaxX().
+// a PeriodicLimitedSignal is a Signal that repeats over Period() and is zero above MaxX().
 type PeriodicLimitedSignal interface {
 	Signal
 	MaxX() x

@@ -678,7 +678,7 @@ func ExampleSignalsTriggered() {
 }
 
 func ExampleSignalsSegmented() {
-	PrintGraph(&Segmented{Signal:Sine{unitX * 10}, Width:unitX}, 0, 5*unitX, unitX/10)
+	PrintGraph(NewSegmented(Sine{unitX * 10}, unitX), 0, 5*unitX, unitX/10)
 	/* Output:
    0.00%                                  X
    5.88%                                   X
@@ -735,7 +735,7 @@ func ExampleSignalsSegmented() {
 }
 
 func ExampleSignalsSegmented_makeSawtooth() {
-	PrintGraph(&Segmented{Signal:Square{unitX}, Width:unitX/2}, 0, 2*unitX, unitX/10)
+	PrintGraph(NewSegmented(Square{unitX}, unitX/2), 0, 2*unitX, unitX/10)
 	/* Output:
  100.00%                                                                   X
   60.00%                                                     X
@@ -948,4 +948,129 @@ func BenchmarkSignalsSineSegmented(b *testing.B) {
 
 }
 
+/*  Hal3 Wed 8 Nov 17:08:51 GMT 2017 go version go1.6.2 linux/amd64
+=== RUN   TestGOBSaveLoadTone
+--- PASS: TestGOBSaveLoadTone (0.00s)
+=== RUN   TestGOBSaveLoadStack
+--- PASS: TestGOBSaveLoadStack (0.00s)
+=== RUN   TestPCMscale
+--- PASS: TestPCMscale (0.00s)
+=== RUN   TestPCMRaw
+--- PASS: TestPCMRaw (0.00s)
+=== RUN   TestPCMSplit
+--- PASS: TestPCMSplit (0.00s)
+=== RUN   TestPCMEnocdeToShortLength
+--- PASS: TestPCMEnocdeToShortLength (0.00s)
+=== RUN   TestPCMEnocdeShiftedPCM
+--- PASS: TestPCMEnocdeShiftedPCM (0.00s)
+=== RUN   TestPCMSaveLoad
+--- PASS: TestPCMSaveLoad (0.00s)
+=== RUN   TestPCMXSaveLoad
+--- PASS: TestPCMXSaveLoad (0.00s)
+=== RUN   TestPCMXSaveLoadAny
+--- PASS: TestPCMXSaveLoadAny (0.00s)
+=== RUN   TestCacheStreamsSave
+--- SKIP: TestCacheStreamsSave (0.00s)
+	cache_test.go:17: Get http://localhost:8086/wavs/s16/4.wav?f=8000: dial tcp 127.0.0.1:8086: getsockopt: connection refused
+=== RUN   TestFormatNoiseSave
+--- PASS: TestFormatNoiseSave (0.98s)
+=== RUN   TestFormatSaveWav
+--- PASS: TestFormatSaveWav (0.09s)
+=== RUN   TestFormatLoad
+--- PASS: TestFormatLoad (0.01s)
+=== RUN   TestFormatLoadChannels
+--- PASS: TestFormatLoadChannels (0.08s)
+=== RUN   TestFormatPCMMultiChannelSave
+--- PASS: TestFormatPCMMultiChannelSave (1.42s)
+=== RUN   TestFormatProceduralMultiChannelSave
+--- PASS: TestFormatProceduralMultiChannelSave (0.04s)
+=== RUN   TestFormatStackPCMs
+--- PASS: TestFormatStackPCMs (0.31s)
+=== RUN   TestFormatMultiplexTones
+--- PASS: TestFormatMultiplexTones (0.09s)
+=== RUN   TestFormatSaveLoadSave
+--- PASS: TestFormatSaveLoadSave (0.14s)
+=== RUN   TestFormatPiping
+--- PASS: TestFormatPiping (0.02s)
+=== RUN   TestFormatShortcutEncoding
+--- PASS: TestFormatShortcutEncoding (0.03s)
+=== RUN   TestImageSine
+--- PASS: TestImageSine (0.27s)
+=== RUN   TestImage
+--- PASS: TestImage (0.35s)
+=== RUN   TestImageComposable
+--- PASS: TestImageComposable (1.48s)
+=== RUN   TestImageStack
+--- PASS: TestImageStack (0.91s)
+=== RUN   TestImageMultiplex
+--- PASS: TestImageMultiplex (0.91s)
+=== RUN   TestStreamsRemoteSave
+--- PASS: TestStreamsRemoteSave (0.54s)
+=== RUN   TestStreamsLocalSave
+--- SKIP: TestStreamsLocalSave (0.00s)
+	streams_test.go:45: Get http://localhost:8086/wavs/s16/4.wav?f=8000: dial tcp 127.0.0.1:8086: getsockopt: connection refused
+=== RUN   TestStreamsLocalRampUpSave
+--- PASS: TestStreamsLocalRampUpSave (0.00s)
+=== RUN   TestStreamsSaveDataURL
+--- PASS: TestStreamsSaveDataURL (0.00s)
+=== RUN   TestStreamsSaveFileURL
+--- PASS: TestStreamsSaveFileURL (0.05s)
+=== RUN   TestStreamsSaveGOBFileURL
+--- PASS: TestStreamsSaveGOBFileURL (0.81s)
+=== RUN   TestStreamsSavePCMFileURL
+--- PASS: TestStreamsSavePCMFileURL (0.00s)
+=== RUN   ExampleADSREnvelope
+--- PASS: ExampleADSREnvelope (0.00s)
+=== RUN   ExamplePulsePattern
+--- PASS: ExamplePulsePattern (0.00s)
+=== RUN   ExampleCombinersSequenced
+--- PASS: ExampleCombinersSequenced (0.00s)
+=== RUN   ExampleNoise
+--- PASS: ExampleNoise (0.00s)
+=== RUN   ExampleSignalsConstantZero
+--- PASS: ExampleSignalsConstantZero (0.00s)
+=== RUN   ExampleSignalsConstantUnity
+--- PASS: ExampleSignalsConstantUnity (0.00s)
+=== RUN   ExampleSignalsSquare
+--- PASS: ExampleSignalsSquare (0.00s)
+=== RUN   ExampleSignalsPulse
+--- PASS: ExampleSignalsPulse (0.00s)
+=== RUN   ExampleSignalsRampUpDown
+--- PASS: ExampleSignalsRampUpDown (0.00s)
+=== RUN   ExampleSignalsHeavyside
+--- PASS: ExampleSignalsHeavyside (0.00s)
+=== RUN   ExampleSignalsSine
+--- PASS: ExampleSignalsSine (0.00s)
+=== RUN   ExampleSignalsSinc
+--- PASS: ExampleSignalsSinc (0.00s)
+=== RUN   ExampleSignalsGauss
+--- PASS: ExampleSignalsGauss (0.00s)
+=== RUN   ExampleSignalsSigmoid
+--- PASS: ExampleSignalsSigmoid (0.00s)
+=== RUN   ExampleSignalsOffset
+--- PASS: ExampleSignalsOffset (0.00s)
+=== RUN   ExampleSignalsReflected
+--- PASS: ExampleSignalsReflected (0.00s)
+=== RUN   ExampleSignalsPower
+--- PASS: ExampleSignalsPower (0.00s)
+=== RUN   ExampleSignalsModulated
+--- PASS: ExampleSignalsModulated (0.00s)
+=== RUN   ExampleSignalsStack
+--- PASS: ExampleSignalsStack (0.00s)
+=== RUN   ExampleSignalsTriggered
+--- PASS: ExampleSignalsTriggered (0.00s)
+=== RUN   ExampleSignalsSegmented
+--- PASS: ExampleSignalsSegmented (0.00s)
+=== RUN   ExampleSignalsSegmented_makeSawtooth
+--- PASS: ExampleSignalsSegmented_makeSawtooth (0.00s)
+=== RUN   ExampleSignalsRateModulated
+--- PASS: ExampleSignalsRateModulated (0.00s)
+=== RUN   ExampleSignalsLooped
+--- PASS: ExampleSignalsLooped (0.00s)
+=== RUN   ExampleSignalsRepeated
+--- PASS: ExampleSignalsRepeated (0.00s)
+PASS
+ok  	_/home/simon/Dropbox/github/working/signals	8.593s
+Wed 8 Nov 17:09:02 GMT 2017
+*/
 

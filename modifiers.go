@@ -14,7 +14,7 @@ func init() {
 	gob.Register(Reflected{})
 	gob.Register(RateModulated{})
 	gob.Register(Triggered{})
-	gob.Register(&Segmented{})
+	gob.Register(Segmented{})
 }
 
 // a Signal whose values are moved, in x, by 'Shift'.
@@ -153,21 +153,30 @@ func (s RateModulated) Period() x {
 type Segmented struct {
 	Signal
 	Width x
+	ends *endInfo
+}
+
+type endInfo struct {
 	x1, x2, l1, l2 x
 }
 
+
 var segmentedMutex = &sync.Mutex{}
 
-func (s *Segmented) property(p x) (value y) {
+func NewSegmented(s Signal, width x) Segmented {
+	return Segmented{s, width, &endInfo{}}
+}
+
+func (s Segmented) property(p x) (value y) {
 	temp := p % s.Width
 	segmentedMutex.Lock()
-	if p-temp != s.x1 || p+s.Width-temp != s.x2 {
-		s.x1 = p - temp
-		s.x2 = p + s.Width - temp
-		s.l1 = x(s.Signal.property(s.x1)) 
-		s.l2 = x(s.Signal.property(s.x2))/s.Width - s.l1/ s.Width
+	if p-temp != s.ends.x1 || p+s.Width-temp != s.ends.x2 {
+		s.ends.x1 = p - temp
+		s.ends.x2 = p + s.Width - temp
+		s.ends.l1 = x(s.Signal.property(s.ends.x1)) 
+		s.ends.l2 = x(s.Signal.property(s.ends.x2))/s.Width - s.ends.l1/ s.Width
 	}
-	value=y(s.l1 + s.l2*temp)
+	value=y(s.ends.l1 + s.ends.l2*temp)
 	segmentedMutex.Unlock()
 	return
 }
@@ -224,5 +233,3 @@ func (s Triggered) property(p x) y {
 	return s.Signal.property(p + s.Found.Shift)
 }
 
-
-// Random repeats a signal at random intervals, given its mean and spread as multipes of its maxx, no overlapping.
