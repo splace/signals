@@ -149,7 +149,7 @@ func (s RateModulated) Period() x {
 
 
 // Segmented is a Signal that is a sequence of equal width segments each with a uniform gradient, that approximate another Signal.
-// Repeated calls within the same segment, are generated from interpolating cached segmant end values, so avoiding calls to the embedded Signal.
+// Repeated calls within the same segment, are generated from interpolating cached segment end values, so avoiding calls to the embedded Signal.
 type Segmented struct {
 	Signal
 	Width x
