@@ -1,33 +1,39 @@
 /*
-Package signals generates, stores, downloads and manipulates abstract signals, when imported it can then be used with specific real-world quantities.
+Package Signals generates, stores, downloads and manipulates abstract signals, when imported it can then be used with specific real-world quantities.
 
 
-Definition of 'signal'
+Definition of a 'signal'
 
-A varying value of some property, as it depends, uniquely, on some parameter.
+	A varying value of some property, as it depends, uniquely, on some parameter.
 
-The controlling parameter is generally unbounded, and the property bounded.
+	The controlling parameter is generally unbounded, and the property bounded.
 
 also see; https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signals_and_Systems.
 
 
 Fundamental Types
 
-x :- 'parameter' designed to be used as if unbounded (+ve and -ve), with unitX near the centre of its precision range.
+x :- the 'parameter' designed to be used as if it were unbounded (+ve and -ve), with unitX near the centre of its precision range.
 
-y :- 'property', can have a value between limits, +unitY and -unitY.
+y :- the 'property', a value between limits, +unitY and -unitY.
+
+(the underlying types of x and y are kept hidden to enable simple generation of optimised packages with different ranges/precisions.)
 
 
 Interfaces
 
-Signal :- has method property(x), which returns a 'y' value from an 'x' value parameter.
-Signal's are generally procedural, calculated as needed, meaning changes in parameters, or arrangement, effect returned values of existing types.
-Signal's can be saved/loaded from a go code binary (gob) file, (and signals can stream data, including gob files.) making for a basic interpreted signal language, or they can be stored, lossily, as PCM data. (PCM data can be encoded and saved in a Waveform Audio File Format (wav) file.)
+Signal :- has one method, property, which returning a 'y' value from an 'x' value parameter.
+	Signal's are fundamentally procedural, calculated as needed, so that any 'x' value returns a 'y' value.
+	Changes to a Signals parameters effect returned values from any other Signals composed from them.
+	Signal's can be saved/loaded, lossily, as PCM data. (PCM data can be encoded and saved in a Waveform Audio File Format (wav) file.)
+	Signal's can be saved/loaded from a go code binary (gob) file, (and signals can stream data, including gob files.) making for a basic interpreted signal language.
 
-LimitedSignal :- has a MaxX() method that returns the 'x' value above which the Signal can be assumed to return zero, effectively has an end.
-an 'x' value of zero is normally regarded as its start.
+LimitedSignal :- a Signal with an additional method; MaxX(), that returns the 'x' value above which the Signal can be assumed to return zero, effectively the Signals end.
+	when required, an 'x' value of zero is regarded as a Signals start.
 
-PeriodicSignal :- a Signal with an additional method Period(), returning the repeat dx, or any fundamental wavelength, or the sample spacing for one of te PCM Signal types.
+PeriodicSignal :- a Signal with an additional method; Period(), returning the 'x' length over which it repeats.
+	or when required any fundamental wavelength
+	or the sample spacing for one of the PCM Signal types.
 
 PeriodicLimitedSignal :- both above, and is implemented by the PCM Signal types.
 
@@ -38,6 +44,6 @@ package signals
 Implementation details.
 
 x and y are not exported, separating their abstract nature from an importing packages concrete implementation and allowing flexibility in representation, if needed they can be made through provided exposed functions.
-x and y are encoded as non-floating types, so resolution doesn't vary with value, but by changing unitX the precision of a value can be changed, and the overall range can be altered, making for a basic ability to 'float' the range of the variable, but only when directed, not automatically.
+x and y are encoded as non-floating types, so resolution doesn't vary with value. By changing unitX the precision of a value can be directly effected, and the overall range can be altered, making for a basic ability to 'float' the range of the variable, just not automatically.
 
 */

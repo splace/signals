@@ -480,6 +480,7 @@ func readInterleaved(r io.Reader, samples uint32, channels uint32, sampleBytes u
 	var err error
 	for s := uint32(0); s < samples; s++ {
 		// de-interlace channels by reading directly into separate regions of a byte slice
+		// TODO better to de-interlace into separate readers?
 		for c := uint32(0); c < uint32(channels); c++ {
 			if n, err := r.Read(sampleData[(c*samples+s)*sampleBytes : (c*samples+s+1)*sampleBytes]); err != nil || n != int(sampleBytes) {
 				return nil, errors.New(fmt.Sprintf("data ran out at %v of %v", s, samples))
