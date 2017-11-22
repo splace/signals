@@ -11,20 +11,18 @@ see; https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signals_and
 Types
 
  
- 
-
-x (int)
+	x (int)
 
 the 'parameter' designed to be used as if it were unbounded (+ve and -ve), with unitX near the centre of its precision range.
 
-y (int)
+	y (int)
 
 the 'property', a value between limits, +unitY and -unitY.
 
 (the underlying types of x and y are kept hidden to enable simple generation of optimised packages with different ranges/precisions.)
 
 
-Signal (Interface{})
+	Signal (Interface{})
 
 has one method, property(x)y, which returns a 'y' value from an 'x' value parameter.
 
@@ -37,14 +35,14 @@ saved/loaded, lossily, as PCM data. (PCM data can be Waveform Audio File Format 
 saved/loaded from a go code binary (.gob) file, (and signals can stream data, including gob files.) making for a basic interpreted signal language.
 
 
-LimitedSignal (Interface{})
+	LimitedSignal (Interface{})
 
 a Signal with an additional method; MaxX(), that returns the 'x' value above which the Signal can be assumed to return zero, effectively the Signals end.
 
 when required, an 'x' value of zero is regarded as a Signals start.
 
 
-PeriodicSignal (Interface{})
+	PeriodicSignal (Interface{})
 
 a Signal with an additional method; Period(), returning the 'x' length over which it repeats.
 
@@ -53,7 +51,7 @@ or when required any fundamental wavelength
 or the sample spacing for one of the PCM Signal types.
 
 
-PeriodicLimitedSignal Interface{})
+	PeriodicLimitedSignal Interface{})
 
 both above, and is implemented by the PCM Signal types.
 
