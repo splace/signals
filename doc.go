@@ -1,5 +1,5 @@
 /*
-Package Signals generates, stores, downloads and manipulates abstract signals, when imported it can then be used with specific real-world quantities.
+This Package generates, stores, downloads and manipulates abstract signals, when imported it can then be used with specific real-world quantities.
 
 Definition of a 'signal'
 
@@ -8,36 +8,43 @@ Definition of a 'signal'
 
 see; https://en.wikibooks.org/wiki/Signals_and_Systems/Definition_of_Signals_and_Systems.
 
+Types
 
-Fundamental Types
+ 
+ 
 
-x :- the 'parameter' designed to be used as if it were unbounded (+ve and -ve), with unitX near the centre of its precision range.
-y :- the 'property', a value between limits, +unitY and -unitY.
+x (int)
+
+the 'parameter' designed to be used as if it were unbounded (+ve and -ve), with unitX near the centre of its precision range.
+
+y (int)
+
+the 'property', a value between limits, +unitY and -unitY.
 
 (the underlying types of x and y are kept hidden to enable simple generation of optimised packages with different ranges/precisions.)
 
 
-Interfaces
+Signal (Interface{})
 
-Signal
-
-has one method, property, which returning a 'y' value from an 'x' value parameter
+has one method, property(x)y, which returns a 'y' value from an 'x' value parameter.
 
 fundamentally procedural, calculated as needed, so that any 'x' value returns a 'y' value.
 
 changes to parameters effect returned values from any other Signals composed from them.
 
-saved/loaded, lossily, as PCM data. (PCM data can be encoded and saved in a Waveform Audio File Format (wav) file.)
+saved/loaded, lossily, as PCM data. (PCM data can be Waveform Audio File Format ,.wav file.)
 
-saved/loaded from a go code binary (gob) file, (and signals can stream data, including gob files.) making for a basic interpreted signal language.
+saved/loaded from a go code binary (.gob) file, (and signals can stream data, including gob files.) making for a basic interpreted signal language.
 
-LimitedSignal
+
+LimitedSignal (Interface{})
 
 a Signal with an additional method; MaxX(), that returns the 'x' value above which the Signal can be assumed to return zero, effectively the Signals end.
 
 when required, an 'x' value of zero is regarded as a Signals start.
 
-PeriodicSignal
+
+PeriodicSignal (Interface{})
 
 a Signal with an additional method; Period(), returning the 'x' length over which it repeats.
 
@@ -45,7 +52,8 @@ or when required any fundamental wavelength
 
 or the sample spacing for one of the PCM Signal types.
 
-PeriodicLimitedSignal
+
+PeriodicLimitedSignal Interface{})
 
 both above, and is implemented by the PCM Signal types.
 
