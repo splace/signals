@@ -10,16 +10,9 @@ import (
 	"bufio"
 )
 
-// RIFF file header holder
-type riffHeader struct {
-	C1, C2, C3, C4 byte
-	DataLen        uint32
-	C5, C6, C7, C8 byte
-}
-
 // RIFF chunk header holder
 type chunkHeader struct {
-	C1, C2, C3, C4 byte
+	Id [4]byte
 	DataLen        uint32
 }
 
@@ -45,8 +38,9 @@ func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 func encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...Signal) (err error) {
 	samplePeriod := X(1 / float32(sampleRate))
 	samples := uint32(length/samplePeriod) + 1
-	binary.Write(w, binary.LittleEndian, riffHeader{'R', 'I', 'F', 'F', samples*uint32(sampleBytes) + 36, 'W', 'A', 'V', 'E'})
-	binary.Write(w, binary.LittleEndian, chunkHeader{'f', 'm', 't', ' ', 16})
+	binary.Write(w, binary.LittleEndian, chunkHeader{[4]byte{'R', 'I', 'F', 'F'}, samples*uint32(sampleBytes) + 36})
+	w.Write([]byte{'W', 'A', 'V', 'E'})
+	binary.Write(w, binary.LittleEndian, chunkHeader{[4]byte{'f', 'm', 't', ' '}, 16})
 	binary.Write(w, binary.LittleEndian, formatChunk{
 		Code:        1,
 		Channels:    uint16(len(ss)),
@@ -55,7 +49,7 @@ func encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...S
 		SampleBytes: uint16(sampleBytes) * uint16(len(ss)),
 		Bits:        uint16(8 * sampleBytes),
 	})
-	binary.Write(w, binary.LittleEndian, chunkHeader{'d', 'a', 't', 'a', samples * uint32(sampleBytes) * uint32(len(ss))})
+	binary.Write(w, binary.LittleEndian, chunkHeader{[4]byte{'d', 'a', 't', 'a'}, samples * uint32(sampleBytes) * uint32(len(ss))})
 	readerForPCM8Bit := func(s Signal) io.Reader {
 		r, w := io.Pipe()
 		go func() {
@@ -404,21 +398,28 @@ func Decode(wav io.Reader) ([]PeriodicLimitedSignal, error) {
 }
 
 func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
-	var header riffHeader
+	var header chunkHeader
 	var formatHeader chunkHeader
 	var format formatChunk
 	var dataHeader chunkHeader
 	if err := binary.Read(wav, binary.LittleEndian, &header); err != nil {
 		return 0, nil, errParsing{err,wav}
 	}
-	if header.C1 != 'R' || header.C2 != 'I' || header.C3 != 'F' || header.C4 != 'F' || header.C5 != 'W' || header.C6 != 'A' || header.C7 != 'V' || header.C8 != 'E' {
-		return 0, nil, errParsing{errors.New("Not RIFF/WAVE format."),wav}
+	if header.Id != [4]byte{'R','I','F','F'}{
+		return 0, nil, errParsing{errors.New("Not RIFF format."),wav}
 	}
+	b:=make([]byte,4)
+	if _,err:=wav.Read(b); err != nil{
+		return 0, nil, errParsing{err,wav}
+	}
+	if b[0] != 'W' || b[1] != 'A' || b[2] != 'V' || b[3] != 'E' {
+		return 0, nil, errParsing{errors.New("Not WAVE format."),wav}
+	} 
 	if err := binary.Read(wav, binary.LittleEndian, &formatHeader); err != nil {
 		return 0, nil, errParsing{err,wav}
 	}
 	// skip any non-"fmt " chunks
-	for formatHeader.C1 != 'f' || formatHeader.C2 != 'm' || formatHeader.C3 != 't' || formatHeader.C4 != ' ' {
+	for formatHeader.Id != [4]byte{'f','m','t',' '} {
 		var err error
 		if s, ok := wav.(io.Seeker); ok {
 			_, err = s.Seek(int64(formatHeader.DataLen), os.SEEK_CUR) // seek relative to current file pointer if possible
@@ -426,7 +427,7 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(formatHeader.DataLen))
 		}
 		if err != nil {
-			return 0, &format, errParsing{errors.New(string(formatHeader.C1) + string(formatHeader.C2) + string(formatHeader.C3) + string(formatHeader.C4) + " " + err.Error()),wav}
+			return 0, &format, errParsing{errors.New(fmt.Sprint(formatHeader.Id) + " " + err.Error()),wav}
 		}
 
 		if err := binary.Read(wav, binary.LittleEndian, &formatHeader); err != nil {
@@ -454,7 +455,7 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
 		return 0, &format, errParsing{err,wav}
 	}
-	for dataHeader.C1 != 'd' || dataHeader.C2 != 'a' || dataHeader.C3 != 't' || dataHeader.C4 != 'a' {
+	for dataHeader.Id[0] != 'd' || dataHeader.Id[1] != 'a' || dataHeader.Id[2] != 't' || dataHeader.Id[3] != 'a' {
 		var err error
 		if s, ok := wav.(io.Seeker); ok {
 			_, err = s.Seek(int64(dataHeader.DataLen), os.SEEK_CUR) // seek relative to current file pointer if possible
@@ -462,7 +463,7 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 			_, err = io.CopyN(ioutil.Discard, wav, int64(dataHeader.DataLen))
 		}
 		if err != nil {
-			return 0, &format, errParsing{errors.New(string(formatHeader.C1) + string(formatHeader.C2) + string(formatHeader.C3) + string(formatHeader.C4) + " " + err.Error()),wav}
+			return 0, &format, errParsing{errors.New(fmt.Sprint(formatHeader.Id) + " " + err.Error()),wav}
 		}
 
 		if err := binary.Read(wav, binary.LittleEndian, &dataHeader); err != nil {
@@ -489,6 +490,5 @@ func readInterleaved(r io.Reader, samples uint32, channels uint32, sampleBytes u
 	}
 	return sampleData, err
 }
-
 
 

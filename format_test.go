@@ -37,7 +37,7 @@ func TestFormatLoad(t *testing.T) {
 	defer file.Close()
 	noises, err := Decode(file)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("%[1]T %[1]v",err))
 	}
 	if len(noises) != 1 {
 		t.Error("Not Single channel", len(noises), file.Name())
