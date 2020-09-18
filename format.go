@@ -436,14 +436,14 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 	}
 
 	if formatHeader.DataLen != 16 {
-		return 0, nil, errParsing{errors.New("Format chunk wrong size." + string(formatHeader.DataLen)),wav}
+		return 0, nil, errParsing{errors.New("Format chunk wrong size." + fmt.Sprint(formatHeader.DataLen)),wav}
 	}
 
 	if err := binary.Read(wav, binary.LittleEndian, &format); err != nil {
 		return 0, nil, errParsing{err,wav}
 	}
 	if format.Code != 1 {
-		return 0, &format, errParsing{errors.New("only PCM supported. not format code:" + string(format.Code)),wav}
+		return 0, &format, errParsing{errors.New("only PCM supported. not format code:" + fmt.Sprint(format.Code)),wav}
 	}
 	if format.Bits%8 != 0 {
 		return 0, &format, errParsing{errors.New("not whole byte samples size!"),wav}
@@ -471,7 +471,7 @@ func readWaveHeader(wav io.Reader) (uint32, *formatChunk, error) {
 		}
 	}
 	if dataHeader.DataLen%uint32(format.Channels) != 0 {
-		return 0, &format, errParsing{errors.New("sound sample data length not divisible by channel count:" + string(dataHeader.DataLen)),wav}
+		return 0, &format, errParsing{errors.New("sound sample data length not divisible by channel count:" + fmt.Sprint(dataHeader.DataLen)),wav}
 	}
 	return dataHeader.DataLen, &format, nil
 }
