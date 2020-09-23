@@ -34,9 +34,8 @@ func (s ADSREnvelope) property(p x) y {
 		return y(s.sustainStart-p)*s.decaySlope + s.sustain
 	} else if p > 0 {
 		return y(p) * s.attackSlope
-	} else {
-		return 0
-	}
+	} 
+	return 0
 }
 
 func (s ADSREnvelope) MaxX() x {

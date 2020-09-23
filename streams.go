@@ -25,7 +25,7 @@ const bufferSize = 16
 // Encodings for Http(s); MIME: "audio/l?;rate=?","sound/wav"(mono),"audio/x-wav" (mono)
 // Encoding for File: ".wav"(mono),".pcm",".gob"
 // Encodings for Data: MIME: "base64" or none. (and MIME as for Http.) 
-// Buffers at least 32 samples, but if queried for a property value that needs a sample prior to that, might return zero.
+// Buffers at least 32 samples, but if queried for a property value that needs a sample prior to that, might return zero. ( really only used for filtering/smoothing)
 type Wave struct {
 	Offset
 	URL    string

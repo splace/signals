@@ -9,7 +9,7 @@ import (
 	"errors"
 )
 
-// PCM is the state embedded in all the different precisions of PCM signals, it doesn't itself include encoding information, so cannot return a property and so is not a Signal.
+// PCM is the common state embedded in all the different precisions of PCM signals, it doesn't itself include encoding information, so cannot return a property and so is not a Signal.
 // PCM Signals return continuous property values that step from one PCM value to the next, Segmented could be used to get interpolated property values.
 type PCM struct {
 	samplePeriod x
@@ -25,7 +25,10 @@ func (s PCM) Period() x {
 	return s.samplePeriod
 }
 
-// load a PCM from provided path, which if not explicitly pointing into a folder with the <<Sample Rate>>, numerically as its name, will look into a sub-folder with the sampleRate indicated by the PCM parameter, and if that's zero will load any samplerate available. Also adds extension ".pcm".
+// loads, in advanced way, a PCM from provided path. 
+// if the path has a numerical name, that is taken as the loaded sampleRate, and the PCM is set to it.
+// if it isn't, the subfolder with a name equal to the provided PCM's sample rate is loaded. (PCM sample rate unchanged.)
+// actual data is taken from files with extension ".pcm".
 func LoadPCM(pathTo string, p *PCM) (err error) {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
@@ -57,7 +60,9 @@ func SavePCM(path string,pcm PCM) error {
 	return pcm.SaveTo(path)
 }
 
-// save the PCM to a given path, which if not ending in a folder with the PCM's Sample Rate as its name, will add it as a sub-folder. This means the file won't then actually simply be at the 'path' address, separate folders for each Sample Rate will be generated. using LoadPCM will automatically fund it. Also adds extension ".pcm".
+// save the PCM to a given path, which if not ending in a folder with the PCM's Sample Rate as its name, will add it as a sub-folder.
+// This means the file won't then actually simply be at the 'path' address, separate folders for each saved Sample Rate will be generated.
+// using LoadPCM will automatically find it. Also adds extension ".pcm".
 func (p PCM) SaveTo(pathTo string) error {
 	sampleRate,err:=strconv.ParseUint(path.Base(path.Dir(pathTo)), 10, 32)
 	if err!=nil {
