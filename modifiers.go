@@ -153,31 +153,29 @@ func (s RateModulated) Period() x {
 type Segmented struct {
 	Signal
 	Width x
-	ends *endInfo
+	endInfo
 }
 
 type endInfo struct {
+	sync.Mutex
 	x1, x2, l1, l2 x
 }
 
-
-var segmentedMutex = &sync.Mutex{}
-
-func NewSegmented(s Signal, width x) Segmented {
-	return Segmented{s, width, &endInfo{}}
+func NewSegmented(s Signal, w x) Segmented {
+	return Segmented{Signal:s, Width:w}
 }
 
 func (s Segmented) property(p x) (value y) {
 	temp := p % s.Width
-	segmentedMutex.Lock()
-	if p-temp != s.ends.x1 || p+s.Width-temp != s.ends.x2 {
-		s.ends.x1 = p - temp
-		s.ends.x2 = p + s.Width - temp
-		s.ends.l1 = x(s.Signal.property(s.ends.x1)) 
-		s.ends.l2 = x(s.Signal.property(s.ends.x2))/s.Width - s.ends.l1/ s.Width
+	s.endInfo.Lock()
+	if p-temp != s.endInfo.x1 || p+s.Width-temp != s.endInfo.x2 {
+		s.endInfo.x1 = p - temp
+		s.endInfo.x2 = p + s.Width - temp
+		s.endInfo.l1 = x(s.Signal.property(s.endInfo.x1)) 
+		s.endInfo.l2 = x(s.Signal.property(s.endInfo.x2))/s.Width - s.endInfo.l1/ s.Width
 	}
-	value=y(s.ends.l1 + s.ends.l2*temp)
-	segmentedMutex.Unlock()
+	value=y(s.endInfo.l1 + s.endInfo.l2*temp)
+	s.endInfo.Unlock()
 	return
 }
 

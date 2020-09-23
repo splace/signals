@@ -54,4 +54,3 @@ func ExampleNoise() {
  -87.69%      X
 	*/
 }
-

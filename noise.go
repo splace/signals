@@ -23,11 +23,11 @@ func NewNoise() Noise {
 }
 
 func (s Noise) property(p x) (v y) {
-	s.Mutex.Lock()
+	s.Lock()
 	rand.Seed(int64(p)) // set the default generators seed to the same, for the same x
 	s.Seed(int64(rand.Int63())) // a Noise sets its generator's seed to a random number from the default generator, which will be the same for the same x, and so the same random numbers will be generated from it, but will be different for different Noises.
 	v = y(s.Int63())
 	v -= y(s.Int63())  // makes for normal dist (linear delta) and full range
-	s.Mutex.Unlock()
+	s.Unlock()
 	return
 }

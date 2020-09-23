@@ -26,7 +26,7 @@ type formatChunk struct {
 }
 
 
-// Encode Signals as PCM data,in a Riff wave container.
+// Encode Signals as PCM data, in a Riff wave container.
 func Encode(w io.Writer, sampleBytes uint8, sampleRate uint32, length x, ss ...Signal) (err error) {
 	buf:=bufio.NewWriter(w)
 	err = encode(buf, sampleBytes, sampleRate, length, ss...) 
