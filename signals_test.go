@@ -940,7 +940,7 @@ func BenchmarkSignalsSine(b *testing.B) {
 
 func BenchmarkSignalsSineSegmented(b *testing.B) {
 	b.StopTimer()
-	s := &Segmented{Signal:Sine{unitX}, Width:unitX/512}
+	s := NewSegmented(Sine{unitX}, unitX/16)
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		Encode(ioutil.Discard, 1, 44100, unitX, s)
@@ -1074,3 +1074,14 @@ ok  	_/home/simon/Dropbox/github/working/signals	8.593s
 Wed 8 Nov 17:09:02 GMT 2017
 */
 
+/* benchmark: "Signals" Wed 23 Sep 22:52:51 BST 2020 go version go1.15.2 linux/amd64
+goos: linux
+goarch: amd64
+BenchmarkSignalsSine              	      19	 120458776 ns/op
+BenchmarkSignalsSine-2            	      19	  87693538 ns/op
+BenchmarkSignalsSineSegmented     	      14	  74451892 ns/op
+BenchmarkSignalsSineSegmented-2   	      15	  79937410 ns/op
+PASS
+ok  	_/home/simon/Dropbox/github/working/signals	8.294s
+Wed 23 Sep 22:53:02 BST 2020
+*/

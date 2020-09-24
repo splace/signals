@@ -150,37 +150,37 @@ func (s RateModulated) Period() x {
 
 // Segmented is a Signal that is a sequence of equal width segments each with a uniform gradient, that approximate another Signal.
 // Repeated calls within the same segment, are generated from interpolating cached segment end values, so avoiding calls to the embedded Signal.
+// thread safe but threads sampling from different segments will incure a high cost. (in that case just duplicate )
 type Segmented struct {
 	Signal
 	Width x
-	endInfo
+	*endInfo
 }
 
 type endInfo struct {
-	sync.Mutex
 	x1, x2, l1, l2 x
+	sync.Mutex
 }
 
 func NewSegmented(s Signal, w x) Segmented {
-	return Segmented{Signal:s, Width:w}
+	return Segmented{s,w, &endInfo{}}
 }
 
-func (s Segmented) property(p x) (value y) {
-	temp := p % s.Width
+func (s Segmented) property(p x) y {
+	frac := p % s.Width
 	s.endInfo.Lock()
-	if p-temp != s.endInfo.x1 || p+s.Width-temp != s.endInfo.x2 {
-		s.endInfo.x1 = p - temp
-		s.endInfo.x2 = p + s.Width - temp
+	defer s.endInfo.Unlock()
+	if start:= p-frac; start != s.endInfo.x1 || start+s.Width != s.endInfo.x2 {
+		s.endInfo.x1 = start
+		s.endInfo.x2 = start+s.Width
 		s.endInfo.l1 = x(s.Signal.property(s.endInfo.x1)) 
 		s.endInfo.l2 = x(s.Signal.property(s.endInfo.x2))/s.Width - s.endInfo.l1/ s.Width
 	}
-	value=y(s.endInfo.l1 + s.endInfo.l2*temp)
-	s.endInfo.Unlock()
-	return
+	return y(s.endInfo.l1 + s.endInfo.l2*frac)
 }
 
 func (s Segmented) Period() x {
-	// TODO could use shortest of width and signal periods?
+	// XXX could use shortest of width and signal periods?
 	return s.Width
 }
 
